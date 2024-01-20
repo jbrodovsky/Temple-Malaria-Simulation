@@ -26,3 +26,5 @@ out
 monthly_data\.txt
 reporter\.txt
 
+compile_commands.json
+

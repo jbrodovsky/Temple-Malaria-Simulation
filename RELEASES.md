@@ -5,6 +5,20 @@ submitted for peer review. This also drives the feature that are added to the si
 dictate the features currently under development.
 
 ## Change Log
+### Version 4.1.8
+
+- update build script, now most dependent libraries will be managed by vcpkg
+- as of 2024-01-20, the versions of dependent libraries are:
+    - fmt 10.2.1
+    - gsl 2.7.1#3
+    - libpq 16.0
+    - libpqxx 7.8.1
+    - sqlite3 3.43.2#1
+    - yaml-cpp 0.8.0#1
+    - date 3.0.1#5
+    - cli11 2.3.2
+- remove error handler in `main.cpp`, will find a better solution later
+
 
 ### Version 4.1.7.1
 
