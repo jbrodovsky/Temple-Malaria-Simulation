@@ -19,6 +19,13 @@ dictate the features currently under development.
     - cli11 2.3.2
 - remove error handler in `main.cpp`, will find a better solution later
 
+- add SQLiteDistrictReporter to support reporting to SQLite database file at district level.
+
+To use this reporter, you need to specify the `-r SQLiteDistrictReporter` option when running the simulation.
+
+```sh
+MaSim -i input.yaml -r SQLiteDistrictReporter -j 1 # this will generate a SQLite database named monthly_data_1.db
+```
 
 ### Version 4.1.7.1
 
