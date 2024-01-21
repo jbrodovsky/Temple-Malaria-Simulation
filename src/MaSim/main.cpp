@@ -96,7 +96,7 @@ void handle_cli(Model *model, int argc, char **argv, int& job_number, std::strin
    * --md          - record the movement between districts
    */
   // NOLINTBEGIN(cppcoreguidelines-slicing) / Disable the slicing check while we define the argument parser
-  args::ArgumentParser parser("Individual-based simulation for malaria.", "Boni Lab at Penn State");
+  args::ArgumentParser parser("Individual-based simulation for malaria.", "Boni Lab at Temple University");
   args::Group commands(parser, "commands");
   args::HelpFlag help(commands, "help", "Display this help menu", {'h', "help"});
   args::ValueFlag<std::string> input_file(commands, "string", "The config file (YAML format). \nEx: MaSim -i input.yml", {'i', 'c', "input", "config"});
