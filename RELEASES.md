@@ -7,8 +7,10 @@ dictate the features currently under development.
 ## Change Log
 ### Version 4.1.8
 
-- update build script, now most dependent libraries will be managed by vcpkg
-- as of 2024-01-20, the versions of dependent libraries are:
+Version 4.1.8 is currently in progress and will update the simuation to run in the compute environment at Temple University, 
+and includes the following updates:
+
+1. Build script updated, most dependent libraries will be managed by vcpkg. As of 2024-01-20, the versions of dependent libraries are:
     - fmt 10.2.1
     - gsl 2.7.1#3
     - libpq 16.0
@@ -17,11 +19,10 @@ dictate the features currently under development.
     - yaml-cpp 0.8.0#1
     - date 3.0.1#5
     - cli11 2.3.2
-- remove error handler in `main.cpp`, will find a better solution later
+2. Added SQLiteDistrictReporter to support reporting to SQLite database file at district level.
+3. Removal of last-change error handler in `main.cpp` for Linux platforms (will find a better solution later)
 
-- add SQLiteDistrictReporter to support reporting to SQLite database file at district level.
-
-To use this reporter, you need to specify the `-r SQLiteDistrictReporter` option when running the simulation.
+To use this `SQLiteDistrictReporter` reporter, you need to specify the `-r SQLiteDistrictReporter` option when running the simulation:
 
 ```sh
 MaSim -i input.yaml -r SQLiteDistrictReporter -j 1 # this will generate a SQLite database named monthly_data_1.db
