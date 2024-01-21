@@ -117,7 +117,69 @@ Locate the CSV file on disk and open in spreadsheet software such as Microsoft E
 knitr::include_graphics("figures/gis_excel_csv.png")
 ```
 
+## Preparing the Population Raster
 
+After preparing the district raster, the next step is to prepare the population raster. In doing so, there are three approaches that can be used:
+
+1. Using an unconstrained global mosaic of populations at 30 arc seconds^[ Such as [WorldPop spatial distrubiton of poulation in 2020](https://hub.worldpop.org/geodata/summary?id=24777)]
+2. Using an unconstrained national mosaic of population at 30 arc seconds^[ Such as [WorldPop spatial distribution of popuation in 2020 for Kenya at 30 arc](https://hub.worldpop.org/geodata/summary?id=32002)]
+3. Using a unconstrained national mosaic of population at 3 arc seconds^[ Such as [WorldPop spaital distrubiton of population for 2020 for Kenya at 3 arc](https://hub.worldpop.org/geodata/summary?id=6530)]
+
+These data sets are *unconstrained* meaning the processing does not attempt to restrict the population based upon building footprints or other restrictions on residency such as national parks.^[ See https://www.worldpop.org/methods/top_down_constrained_vs_unconstrained/ for more details.] For the purposes of malaria modeling, unconstrained data sets are preferable since we want allow people to move around the landscape and occupy locations that they may not typically (or legally) domicile at.
+
+Note that each of these data sets have a resolution of arc seconds, which are 1/60th of a nautical mile or 30.87 meters are the equator. However, it is important to remember that  arc seconds of longitude decrease mathematically as one moves toward the Earth's poles. As such, it is important to remember that distortion **will** occur when projecting data that is originally supplied in degrees.
+
+Here we are going to use second option of processing an unconstrained national mosaic of the population at 30 arc seconds (about 1 km at the equator). Start by dragging the raster on to the map, when the pop-up dialog to build pyramids (used to improve the performance of displaying the raster) and statistics appears, make sure both `Build` and `Calculate` are checked and click `OK`. After the calculations are complete, the raster should appear on the map (see Figure \@ref(fig:gisinitialpopraster-png)).
+
+At this point it is recommended to create a new Group Layer for the raster data (e.g., "Raster Data") and to adjust the symbology of the raster to make it easier to see. Here the raster has been updated so the color scheme is inverted and the "Stretch Type" is set to "Standard Deviation" (see Figure \@ref(fig:gispopvisualupdates-png)).
+
+```{r gisinitialpopraster-png, fig.cap="The population raster after it has been initially loaded by ArcGIS. Note that much of the map appears to be black, suggesting a population of zero.", out.width="450px", echo = FALSE }
+knitr::include_graphics("figures/gis_initial_pop_raster.png")
+```
+
+```{r gispopvisualupdates-png, fig.cap="The population raster after it has been moved to a new Group Layer and the symbology is adjusted.", out.width="450px", echo = FALSE }
+knitr::include_graphics("figures/gis_pop_visual_updates.png")
+```
+
+Assuming you are working with data from WorldPop, the next step is to create a new raster whose projection is in meters as opposed to degrees. Under the `Geoprocessing` tab, type "project raster" and click the `Project Raster (Data Management Tools)` command that appears. This will load the `Project Raster` tool to the right side of the screen. Enter the following:
+
+1.`Input Raster` is the population raster that you loaded (e.g., "ken_ppp_2020_1km_Aggregated.tif" in the example, where "ppp" is population per pixel) \
+2. Select `Current Map [Map]` for the `Output Coordinate System`, this will cause the map's coordinate system to be filled in, along with the correct `Geographic Transformation` \
+3. The `X` and `Y` values are the cell (i.e., pixel) size, in the case of Kenya the values are both `926.456581851104`, for both of these fields enter "1000" \
+4. Click `Run` \
+
+After processing this will create a new raster and add it to the map (see Figure \@ref(fig:gisprojectedpopraster-png)). By default ArcGIS Pro will postfix the names of rasters or shapefiles with the tool used to process them (e.g., "ken_ppp_2020_1_ProjectRaster") and store them in the geodatabase created for the project ("Kenya.gdb" in this case). In most cases these are effectively temporary files and can be deleted once the workflow is complete.
+
+```{r gisprojectedpopraster-png, fig.cap="The projected population raster, now in 1000 m resolution. Note the default symbology has again been applied by ArcGIS.", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis_projected_pop_raster.png")
+```
+
+Next the resolution of the raster needs to be reduced from 1000 m (1 km) to 5000 m (5 km). In the `Geoprocessing` tab, type "aggregate" and click the `Aggregate (Spatial Analyst Tools)` command that appears. This will load the `Aggregate` tool to the right side of the screen. Enter the following:
+
+1. `Input Raster` is the projected raster we just created ("ken_ppp_2020_1_ProjectRaster" in this case)
+2. `Cell Factor` is the down sampling factor, since we are going from 1 km to 5 km we want to enter 5
+3. `Aggregation Technique` is how the aggregation will occur, since we are working with population we want to make sure `Sum` is selected
+4. Click the `Enviornments` tab at the top of the tool window so that additional options appear
+5. `Snap Raster` will adjust the extent of rasters so that they align with each other, select the previously created district raster (e.g., "ken_admin_one")
+6. Click `Run`
+
+Once complete the raster should appear similar to the one in Figure \@ref(fig:gisaggregatedpop-png). However, perpetration of the population raster is still not complete since the underlying WorldPop data may contain fractional data. For the purposes of the simulation we want to ensure that all pixels contain either `NODATA` or whole integers. 
+
+On the `Geoprocessing` tab, type "raster calculator" and click the `Raster Calculator (Image Analyst Tools)` that appears. This will cause the `Raster Calcuator` to load on the right side of the screen. In the text box enter `RoundUp("RASTERNAME")` where `RASTERNAME` is the name of the raster created by the `Aggregation` tool.^[ The reason that we round up is that we assume that any decimal value represents a whole person.] Under `Output raster` enter the final name for the raster (e.g., "ken_ppp_2020_5km") and since it will write to the geodatabase by default, you may wish to change the output location. Click `Run` and the final raster will appear (see Figure \@ref(fig:gisroundedpopulation-png)).
+
+At this point temporary rasters created during the projection and aggregation can be deleted. You may also wish to reorganize the location of the raster to be with the previously created district raster in the group layers (see Figure \@ref(fig:gispopulationraster-png)).
+
+```{r gisaggregatedpop-png, fig.cap="The population raster aggregated up to 5 km. Note that the data now appears slightly more pixelated", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis_aggregated_pop.png")
+```
+
+```{r gisroundedpopulation-png, fig.cap="The output of the Raster Calcluator, note that the new raster has the final name applied to it but temporary rasters are still in place.", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis_rounded_population.png")
+```
+
+```{r gispopulationraster-png, fig.cap="The final popuation raster, with population aggregated up to 5 km. Note the organization of the raster under the \"Simulation Rasters\" Group Layer and the storage of the raster in the geodatabase.", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis_population_raster.png")
+```
 
 \newpage
 \blandscape
