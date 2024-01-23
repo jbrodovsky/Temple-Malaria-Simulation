@@ -63,6 +63,7 @@ public:
 
     // SQLite reporter
     SQLITE_DISTRICT_REPORTER,
+    SQLITE_PIXEL_REPORTER,
 
     // Null reporter used when the model needs to be initialized for access to
     // functionality

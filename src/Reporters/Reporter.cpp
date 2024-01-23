@@ -12,6 +12,7 @@
 #include "MMCReporter.h"
 #include "Model.h"
 #include "MonthlyReporter.h"
+#include "Reporters/SQLitePixelReporter.h"
 #include "SQLiteDistrictReporter.h"
 #include "Specialist/AgeBandReporter.h"
 #include "Specialist/CellularReporter.h"
@@ -37,6 +38,7 @@ std::map<std::string, Reporter::ReportType> Reporter::ReportTypeMap{
     {"AgeBand", AGE_BAND_REPORTER},
     {"TherapyRecord", THERAPY_RECORD_REPORTER},
     {"SQLiteDistrictReporter", SQLITE_DISTRICT_REPORTER},
+    {"SQLitePixelReporter", SQLITE_PIXEL_REPORTER},
     {"Null", NULL_REPORTER}};
 
 Reporter *Reporter::MakeReport(ReportType report_type) {
@@ -67,6 +69,8 @@ Reporter *Reporter::MakeReport(ReportType report_type) {
     return new TherapyRecordReporter();
   case SQLITE_DISTRICT_REPORTER:
     return new SQLiteDistrictReporter();
+  case SQLITE_PIXEL_REPORTER:
+    return new SQLitePixelReporter();
   case NULL_REPORTER:
     return new NullReporter();
   default:

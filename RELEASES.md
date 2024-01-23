@@ -19,7 +19,7 @@ and includes the following updates:
     - yaml-cpp 0.8.0#1
     - date 3.0.1#5
     - cli11 2.3.2
-2. Added SQLiteDistrictReporter to support reporting to SQLite database file at district level.
+2. Added SQLiteDistrictReporter and SQLitePixelReporter to support reporting to SQLite database file.
 3. Removal of last-change error handler in `main.cpp` for Linux platforms (will find a better solution later)
 
 To use this `SQLiteDistrictReporter` reporter, you need to specify the `-r SQLiteDistrictReporter` option when running the simulation:

@@ -7,193 +7,25 @@
 #include "Population/Population.h"
 #include "Population/Properties/PersonIndexByLocationStateAgeClass.h"
 #include "easylogging++.h"
-#include <filesystem>
-
-// Destructor for SQLiteDistrictReporter class
-// Closes the database connection if it's open
-SQLiteDistrictReporter::~SQLiteDistrictReporter() {}
-
-// Function to populate the 'genotype' table in the database
-void SQLiteDistrictReporter::populate_genotype_table() {
-  const std::string INSERT_GENOTYPE =
-      "INSERT INTO genotype (id, name) VALUES (?, ?);";
-
-  try {
-    // Use the Database class to execute and prepare SQL statements
-    db->execute("DELETE FROM genotype;"); // Clear the genotype table
-
-    // Prepare the bulk query
-    auto stmt = db->prepare(INSERT_GENOTYPE);
-
-    auto *config = Model::CONFIG;
-
-    for (auto id = 0ul; id < config->number_of_parasite_types(); id++) {
-      auto genotype = (*config->genotype_db())[id];
-      // Bind values to the prepared statement
-      sqlite3_bind_int(stmt, 1, id);
-      sqlite3_bind_text(stmt, 2, genotype->to_string(config).c_str(), -1,
-                        SQLITE_STATIC);
-
-      if (sqlite3_step(stmt) != SQLITE_DONE) {
-        throw std::runtime_error("Error executing INSERT statement");
-      }
-
-      sqlite3_reset(stmt); // Reset the statement for the next iteration
-    }
-
-    sqlite3_finalize(stmt); // Finalize the statement
-
-  } catch (const std::exception &ex) {
-    LOG(ERROR) << __FUNCTION__ << "-" << ex.what();
-    exit(1);
-  }
-}
-
-// Function to create the database schema
-// This sets up the necessary tables in the database
-void SQLiteDistrictReporter::populate_db_schema() {
-  // Create the table schema
-  const std::string createMonthlyData = R""""(
-    CREATE TABLE IF NOT EXISTS monthlydata (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        dayselapsed INTEGER NOT NULL,
-        modeltime INTEGER NOT NULL,
-        seasonalfactor INTEGER NOT NULL
-    );
-  )"""";
-
-  const std::string createMonthlySiteData = R""""(
-    CREATE TABLE IF NOT EXISTS monthlysitedata (
-        monthlydataid INTEGER NOT NULL,
-        locationid INTEGER NOT NULL,
-        population INTEGER NOT NULL,
-        clinicalepisodes INTEGER NOT NULL,
-        treatments INTEGER NOT NULL,
-        treatmentfailures INTEGER NOT NULL,
-        eir REAL NOT NULL,
-        pfprunder5 REAL NOT NULL,
-        pfpr2to10 REAL NOT NULL,
-        pfprall REAL NOT NULL,
-        infectedindividuals INTEGER,
-        nontreatment INTEGER NOT NULL,
-        under5treatment INTEGER NOT NULL,
-        over5treatment INTEGER NOT NULL,
-        PRIMARY KEY (monthlydataid, locationid),
-        FOREIGN KEY (monthlydataid) REFERENCES monthlydata(id)
-    );
-  )"""";
-
-  const std::string createGenotype = R""""(
-    CREATE TABLE IF NOT EXISTS genotype (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL
-    );
-  )"""";
-
-  const std::string createMonthlyGenomeData = R""""(
-    CREATE TABLE IF NOT EXISTS monthlygenomedata (
-        monthlydataid INTEGER NOT NULL,
-        locationid INTEGER NOT NULL,
-        genomeid INTEGER NOT NULL,
-        occurrences INTEGER NOT NULL,
-        clinicaloccurrences INTEGER NOT NULL,
-        occurrences0to5 INTEGER NOT NULL,
-        occurrences2to10 INTEGER NOT NULL,
-        weightedoccurrences REAL NOT NULL,
-        PRIMARY KEY (monthlydataid, genomeid, locationid),
-        FOREIGN KEY (genomeid) REFERENCES genotype(id),
-        FOREIGN KEY (monthlydataid) REFERENCES monthlydata(id)
-    );
-  )"""";
-
-  try {
-    // Use the Database class to execute SQL statements
-    db->execute(createMonthlyData);
-    db->execute(createMonthlySiteData);
-    db->execute(createGenotype);
-    db->execute(createMonthlyGenomeData);
-  } catch (const std::exception &ex) {
-    LOG(ERROR) << "Error in populate_db_schema: " << ex.what();
-    // Consider more robust error handling rather than simply logging
-  }
-}
 
 // Initialize the reporter
 // Sets up the database and prepares it for data entry
 void SQLiteDistrictReporter::initialize(int job_number, std::string path) {
   // Inform the user of the reporter type and make sure there are districts
-  VLOG(1)
-      << "Using SQLiteDistrictReporterwith aggregation at the district level.";
+  VLOG(1) << "Using SQLiteDbReporterwith aggregation at the district level.";
   if (!SpatialData::get_instance().has_raster(SpatialData::Districts)) {
     LOG(ERROR) << "District raster must be present when aggregating data at "
                   "the district level.";
     throw std::invalid_argument("No district raster present");
   }
 
+  SQLiteDbReporter::initialize(job_number, path);
+
   // Build a lookup for location to district
   for (auto loc = 0; loc < Model::CONFIG->number_of_locations(); loc++) {
     district_lookup.emplace_back(SpatialData::get_instance().get_district(loc));
   }
-
-  // Define the database file path
-  auto dbPath = fmt::format("{}monthly_data_{}.db", path, job_number);
-
-  // Check if the file exists
-  if (std::filesystem::exists(dbPath)) {
-    // Delete the old database file if it exists
-    if (std::remove(dbPath.c_str()) != 0) {
-      // Handle the error, if any, when deleting the old file
-      LOG(ERROR) << "Error deleting old database file.";
-    }
-  } else {
-    // The file doesn't exist, so no need to delete it
-    LOG(INFO) << "Database file does not exist. No deletion needed."
-              << std::endl;
-  }
-  int result;
-
-  // Open or create the SQLite database file
-  db = std::make_unique<SQLiteDatabase>(dbPath);
-
-  populate_db_schema();
-  // populate the genotype table
-  populate_genotype_table();
 }
-
-void SQLiteDistrictReporter::monthly_report() {
-
-  // Get the relevant data
-  auto days_elapsed = Model::SCHEDULER->current_time();
-  auto model_time =
-      std::chrono::system_clock::to_time_t(Model::SCHEDULER->calendar_date);
-  auto seasonal_factor = Model::CONFIG->seasonal_info()->get_seasonal_factor(
-      Model::SCHEDULER->calendar_date, 0);
-
-  auto id =
-      db->insert_data(INSERT_COMMON, days_elapsed, model_time, seasonal_factor);
-
-  std::string query = "";
-  monthly_site_data(id);
-  if (Model::CONFIG->record_genome_db() &&
-      Model::DATA_COLLECTOR->recording_data()) {
-    // Add the genome information, this will also update infected individuals
-    monthly_genome_data(id);
-  } else {
-    // If we aren't recording genome data still update the infected
-    // individuals
-    monthly_infected_individuals(id);
-  }
-}
-
-// Function to be called after the simulation run
-// Closes the database connection
-void SQLiteDistrictReporter::after_run() {
-  // With the new Database class, the database connection will automatically be
-  // closed when the Database object is destroyed. Therefore, no explicit action
-  // is required here. If there are other cleanup actions to perform, they can
-  // be added here.
-}
-
 // Collect and store monthly site data
 // Aggregates data related to various site metrics and stores them in the
 // database
@@ -463,11 +295,6 @@ void SQLiteDistrictReporter::monthly_infected_individuals(int id) {
       }
     }
   }
-
-  const std::string UPDATE_INFECTED_INDIVIDUALS = R"""(
-    UPDATE MonthlySiteData SET InfectedIndividuals = {} 
-    WHERE MonthlyDataId = {} AND LocationId = {};
-  )""";
   // Iterate over the districts and append the query
   for (auto district = 0; district < districts; district++) {
     std::string updateQuery =
