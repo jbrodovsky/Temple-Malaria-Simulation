@@ -240,6 +240,28 @@ knitr::include_graphics("figures/gis/kenya_pfpr_masked.png")
 knitr::include_graphics("figures/gis/kenya_pfpr_raster.png")
 ```
 
+\newpage
+
+## Preparation of Treatment Coverage Raster
+
+Now that we have the administrative regions, population, and *Pf*PR~2-10~ rasters prepared, the last required raster for the simulation is the under-5 and over-5 treatment seeking behavior. The typical source for this data is the Malaria Indicator Survey (MIS) from the Demographic and Health Surveys (DHS) Program, run by USAID.^[ https://dhsprogram.com/] In this example we will be using the 2020 MIS data for Kenya [@division_of_national_malaria_programme_dnmp_kenya_kenya_2021].^[ Note that due to the survey process there is typically a lag between when the survey is conducted, when the results are released. At the time of writing, the 2020 MIS data is the most recent for Kenya.]
+
+<!-- Define the caption for the following figure since we need to include citations -->
+(ref:fig-mis-kenya) Comparison of the EIR versus the prevalence under different population sizes, note the inclusion of calibration points prepared by Malaria Modeling Consortium members (Reproduced from @division_of_national_malaria_programme_dnmp_kenya_kenya_2021, p. xxii)
+```{r miskenya2020-png, fig.cap = "(ref:fig-mis-kenya)", out.width = "450px", echo = FALSE}
+knitr::include_graphics("figures/gis/mis_kenya_2020.png")
+```
+
+Typically, the MIS will follow the administrative boundaries of a country, but it's not also uncommon for boundaries to be re-drawn for a survey, as was the case for the Kenyan 2020 MIS (see Figure \@ref(fig:miskenya2020-png)). As such, the first step will be to acquire the survey boundary data via the DHS Spatial Data Repository.^[ https://spatialdata.dhsprogram.com/home/] Once the shapefile has been imported into ArcPRO it is important to assess the survey boundaries and note any discrepancies that are present. In the case of the Keyna MIS 2020 boundaries we can see that the Ilemi Triangle disputed area is excluded along Lake Turkana and Lake Victoria.
+
+```{r dhsmisboundaries-png, fig.cap="The DHS Program's Spatial Data Repositry showing the results of a search for Kenya", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis/dhs_mis_boundaries.png")
+```
+
+```{r misboundryoverlay-png, fig.cap="The 2020 MIS boundries imported into ArcGIS with the default symbology. Note the appearnace of the survey bounderies in gray while the admin one bounderies are in black. The overlay suggests that the survey was defined by a lower adminsitraive level. Also note that some reasons were excluded from the survey.", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis/mis_boundry_overlay.png")
+```
+
 # Climatic Data Production
 
 Placeholder for pending work...
