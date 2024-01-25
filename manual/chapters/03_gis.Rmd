@@ -252,7 +252,7 @@ Now that we have the administrative regions, population, and *Pf*PR~2-10~ raster
 knitr::include_graphics("figures/gis/mis_kenya_2020.png")
 ```
 
-Typically, the MIS will follow the administrative boundaries of a country, but it's not also uncommon for boundaries to be re-drawn for a survey, as was the case for the Kenyan 2020 MIS (see Figure \@ref(fig:miskenya2020-png)). As such, the first step will be to acquire the survey boundary data via the DHS Spatial Data Repository.^[ https://spatialdata.dhsprogram.com/home/] Once the shapefile has been imported into ArcPRO it is important to assess the survey boundaries and note any discrepancies that are present. In the case of the Keyna MIS 2020 boundaries we can see that the Ilemi Triangle disputed area is excluded along Lake Turkana and Lake Victoria.
+Typically, the MIS will follow the administrative boundaries of a country, but it's not also uncommon for boundaries to be re-drawn for a survey, as was the case for the Kenyan 2020 MIS (see Figure \@ref(fig:miskenya2020-png)). As such, the first step will be to acquire the survey boundary data via the DHS Spatial Data Repository.^[ https://spatialdata.dhsprogram.com/home/] Once the shapefile has been imported into ArcGIS it is important to assess the survey boundaries and note any discrepancies that are present. In the case of the Keyna MIS 2020 boundaries we can see that the Ilemi Triangle disputed area is excluded along Lake Turkana and Lake Victoria.
 
 ```{r dhsmisboundaries-png, fig.cap="The DHS Program's Spatial Data Repositry showing the results of a search for Kenya", out.width="450px", echo = FALSE}
 knitr::include_graphics("figures/gis/dhs_mis_boundaries.png")
@@ -260,6 +260,46 @@ knitr::include_graphics("figures/gis/dhs_mis_boundaries.png")
 
 ```{r misboundryoverlay-png, fig.cap="The 2020 MIS boundries imported into ArcGIS with the default symbology. Note the appearnace of the survey bounderies in gray while the admin one bounderies are in black. The overlay suggests that the survey was defined by a lower adminsitraive level. Also note that some reasons were excluded from the survey.", out.width="450px", echo = FALSE}
 knitr::include_graphics("figures/gis/mis_boundry_overlay.png")
+```
+
+In this case, visual inspection of the shapefiles suggests that the MIS boundaries are being drawn based upon the admin two boundaries. As such we can use the MIS boundaries to inform the selection of the appropriate admin two boundaries, followed by dissolving the data into a shapefile that can be edited and used for creation of raster containing the treatment seeking values. Let's start by first preparing the work space so that all of the MIS regions are correctly labeled and the layer is grouped with the other administrative boundaries. Once complete you should have something similar to Figure \@ref(fig:misworkspaceready-png).
+
+```{r misworkspaceready-png, fig.cap="The workspace prepared for processing. Note the updated symbology and layer organization.", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis/mis_workspace_ready.png")
+```
+
+Visual inspection of the map suggests that the majority of the admin two districts have their centroid contained within the MIS regions; however, for the Lake Endemic region in the west, this may not be the case, so we will start there. Start by selecting the `Select By Attributes` tool under the `Map` on the ribbon menu, the `Select By Attributes` dialog will appear. Make sure the MIS regions shapefile is selected for `Input Rows`, select `DHSREGEN` for the start of the `Where` clause and then select `Lake Endemic` when the values appear.^[ As you might suspect, functionally what ArcGIS is doing is preparing a SQL query against the data set.] Click `Apply` and the dialog will not close, but the regions will be selected (see Figure \@ref(fig:mislakeendemicselected-png)). This is so you can verify the query results, if the Lake Endemic region is highlighted, click `OK` to close the dialog.
+
+Next, right click on the MIS region layer and select `Selection` then `Make Layer From Selected Features` from the sub-menu that appears. This will create a new *temporary* layer as shown in Figure \@ref(fig:mistemplayer-png).^[ Here *temporary* means that the layer has not been saved as a shapefile or saved in a geodatabase, and is instead associated with the map itself. So if you close ArcGIS the layer will still be present.] Note that features are selected by ArcGIS, click the `Clear` button on the ribbon bar under `Map`, this will clear any selected features. Since some of the ArcGIS tools operate on selected features, it is important to make sure selections are cleared as soon as work is done with them.
+
+```{r mislakeendemicselected-png, fig.cap="Previewing the selection of the Lake Endemic features before closing the Select By Attributes dialog.", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis/mis_lake_endemic_selected.png")
+```
+
+```{r mistemplayer-png, fig.cap="The temporary layer created after creating a layer from the selected features.", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis/mis_temp_layer.png")
+```
+
+Now we are going to select the shapes from the admin two shapefile, start by toggling off the viability of the MIS regions. You should see the outlines of the admin two regions as well as the filled shape that contains the Lake Endemic region. Click the `Select By Location` under the `Map` tools in the top ribbon bar, a new dialog should appear. Under `Input Features` select the admin two layer, and under `Selecting Features` select the temporary layer that was just created.^[ Typically ArcGIS will place it at the top of the other layers and append `selection` to the name.] For the `Relationship` select `Have their center in` and click `Apply` to preview the selection (see Figure \@ref(fig:misadmintwoselected-png)).^[ While there are several other selections available, the `Have their center in` bases the selection on if the centroid is in the selecting feature or not. The default `Intersect` option will select not only the shapes in the the selecting feature, but ones that share a border with the selecting feature.] If the selection was successful, click `OK` to close the dialog.
+
+```{r misadmintwoselected-png, fig.cap="Previewing the selection fo the admin two regions based upon the Lake Endemic region.", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis/mis_admin_two_selected.png")
+```
+
+Zooming in on the selected region find that one admin two region is select unselected. Select the region by first clicking the `Select` button in the ribbon menu under `Map`, next hold `[SHIFT]` and click in the two unselected regions.^[ The second region is small and can be hard to spot, you may want to create a temporary layer and apply a fill to spot it.] If successful the region should look like Figure \@ref(fig:misadmintwolakeendemic-png). Right click the admin two layer and select `Selection` then `Make Layer From Selected Features` to create a new temporary layer from the selected features. Clear any selected features, update the symbology, and rename the temporary layer to help in keeping track of it (e.g., "Admin Two - Lake Endemic").
+
+We now have a temporary layer that draws from the admin two regions, but contains all of the MIS Lake Endemic regions. However, since we will ultimately want a single shapefile, now is a good time to add a new column to the shapefile which will be used to distinguish the regions. Open the attribute table, and select `Add` to create a new field. In the resulting dialog enter the new field name (e.g., "DHSREGEN" for DHS region") and set the `Data Type` to `Text` (see Figure \@ref(fig:misadmintwoaddfield-png)). Click `Save` to save the new field and close the `Fields Editor`. Scroll the Attribute Table to the left until you find the new column. Right click the field name and select `Calculate Field`, this will open the `Calculate Field` dialog which will allow us to apply a label to all regions at once. Make sure the `Input Table` and `Field Name` are correct and  in the text box below `DHSREGEN =` -- assuming you entered "DHSREGEN", otherwise it will be the field name you used -- enter `"Lake Endemic"` (with quotes). Click `Apply` to apply the change without closing the dialog, you should see `Lake Endemic` for all rows in the column (see Figure \@ref(fig:misadmintwoapplyinglabel-png)), click `OK` to close the dialog.
+
+```{r misadmintwolakeendemic-png, fig.cap="Selection of all admin two regions in the MIS Lake Endemic region.", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis/mis_admin_two_lake_endemic.png")
+```
+
+```{r misadmintwoaddfield-png, fig.cap="Adding the new column for to store the DHS region.", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis/mis_admin_two_add_field.png")
+```
+
+```{r misadmintwoapplyinglabel-png, fig.cap="Result of using Calculate Field to apply the \"Lake Endemic\" label", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis/mis_admin_two_applying_label.png")
 ```
 
 # Climatic Data Production
