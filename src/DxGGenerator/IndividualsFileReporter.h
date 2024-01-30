@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   IndividualsFileReporter.h
  * Author: Merlin
  *
@@ -6,27 +6,28 @@
  */
 
 #ifndef INDIVIDUALSFILEREPORTER_H
-#define    INDIVIDUALSFILEREPORTER_H
+#define INDIVIDUALSFILEREPORTER_H
 
-#include "Core/PropertyMacro.h"
 #include <fstream>
 #include <string>
+
+#include "Core/PropertyMacro.h"
 #include "Reporters/Reporter.h"
 
 class IndividualsFileReporter : public Reporter {
- DISALLOW_COPY_AND_ASSIGN(IndividualsFileReporter)
+  DISALLOW_COPY_AND_ASSIGN(IndividualsFileReporter)
 
   std::fstream fs_;
   std::string file_name_;
 
- public:
+public:
   IndividualsFileReporter(const std::string &file_name);
 
   //    IndividualsFileReporter(const IndividualsFileReporter& orig);
   virtual ~IndividualsFileReporter();
 
- private:
-  void initialize(int job_number, std::string path) override { }
+private:
+  void initialize(int job_number, std::string path) override {}
 
   void before_run() override;
 
@@ -36,8 +37,8 @@ class IndividualsFileReporter : public Reporter {
 
   virtual void after_time_step();
 
- public:
+public:
   void monthly_report() override;
 };
 
-#endif    /* INDIVIDUALSFILEREPORTER_H */
+#endif /* INDIVIDUALSFILEREPORTER_H */

@@ -4,12 +4,11 @@
  * Alternative executable built against the malaria simulation that can be used
  * to calculate the drug efficacies for the various genotypes.
  */
+#include <CLI/CLI.hpp>
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
-
-#include <CLI/CLI.hpp>
 
 #include "Core/Config/Config.h"
 #include "Core/Random.h"
@@ -29,7 +28,7 @@ INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 
-double getEfficacyForTherapy(Genotype *g, int therapy_id, Model *p_model);
+double getEfficacyForTherapy(Genotype* g, int therapy_id, Model* p_model);
 
 void create_cli_option(CLI::App &app);
 
@@ -42,15 +41,14 @@ double as_ec50 = -1.0;
 std::string input_file;
 
 inline double round(double val) {
-  if (val < 0)
-    return ceil(val - 0.5);
+  if (val < 0) return ceil(val - 0.5);
   return floor(val + 0.5);
 }
 
 /*
  *
  */
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   CLI::App app{"PK/PD model"};
   create_cli_option(app);
   CLI11_PARSE(app, argc, argv);
@@ -62,7 +60,7 @@ int main(int argc, char **argv) {
   el::Loggers::reconfigureLogger("default", default_conf);
   START_EASYLOGGINGPP(argc, argv);
 
-  auto *p_model = new Model();
+  auto* p_model = new Model();
   p_model->set_config_filename(input_file);
   p_model->set_reporter_type("Null");
   p_model->initialize();
@@ -146,11 +144,11 @@ void create_cli_option(CLI::App &app) {
   app.add_option("-i,--input", input_file, "Input filename for DxG");
 }
 
-double getEfficacyForTherapy(Genotype *g, int therapy_id, Model *p_model) {
-  auto *mainTherapy = Model::CONFIG->therapy_db()[therapy_id];
+double getEfficacyForTherapy(Genotype* g, int therapy_id, Model* p_model) {
+  auto* mainTherapy = Model::CONFIG->therapy_db()[therapy_id];
 
   // Verify the strategy in the configuration
-  auto *strategy = dynamic_cast<SFTStrategy *>(Model::TREATMENT_STRATEGY);
+  auto* strategy = dynamic_cast<SFTStrategy*>(Model::TREATMENT_STRATEGY);
   if (strategy == nullptr) {
     std::cerr << "The DxGGenerator can only be used with a SFTStrategy!"
               << std::endl;
@@ -161,17 +159,15 @@ double getEfficacyForTherapy(Genotype *g, int therapy_id, Model *p_model) {
   strategy->add_therapy(mainTherapy);
 
   // Reset the reporter and add the PK/PD reporter
-  for (auto reporter : p_model->reporters()) {
-    delete reporter;
-  }
+  for (auto reporter : p_model->reporters()) { delete reporter; }
   p_model->reporters().clear();
   p_model->add_reporter(new PkPdReporter());
 
-  auto *genotype = Model::CONFIG->genotype_db()->at(g->genotype_id());
+  auto* genotype = Model::CONFIG->genotype_db()->at(g->genotype_id());
   for (auto person : Model::POPULATION->all_persons()->vPerson()) {
     auto density =
         Model::CONFIG->parasite_density_level().log_parasite_density_from_liver;
-    auto *blood_parasite = person->add_new_parasite_to_blood(genotype);
+    auto* blood_parasite = person->add_new_parasite_to_blood(genotype);
 
     person->immune_system()->set_increase(true);
     person->set_host_state(Person::EXPOSED);

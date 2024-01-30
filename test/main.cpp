@@ -1,7 +1,7 @@
 //
 // Created by Nguyen Tran on 6/25/18.
 //
-#include "easylogging++.h"
+#include <easylogging++.h>
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -9,18 +9,25 @@ INITIALIZE_EASYLOGGINGPP
 
 #define CATCH_CONFIG_RUNNER
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_session.hpp>
 
 void config_logger() {
   el::Configurations default_conf;
   default_conf.setToDefault();
-  default_conf.set(el::Level::Debug, el::ConfigurationType::Format, "[%level] [%logger] [%host] [%func] [%loc] %msg");
-  default_conf.set(el::Level::Error, el::ConfigurationType::Format, "[%level] [%logger] [%host] [%func] [%loc] %msg");
-  default_conf.set(el::Level::Fatal, el::ConfigurationType::Format, "[%level] [%logger] [%host] [%func] [%loc] %msg");
-  default_conf.set(el::Level::Trace, el::ConfigurationType::Format, "[%level] [%logger] [%host] [%func] [%loc] %msg");
-  default_conf.set(el::Level::Info, el::ConfigurationType::Format, "[%level] [%logger] %msg");
-  default_conf.set(el::Level::Warning, el::ConfigurationType::Format, "[%level] [%logger] %msg");
-  default_conf.set(el::Level::Verbose, el::ConfigurationType::Format, "[%level-%vlevel] [%logger] %msg");
+  default_conf.set(el::Level::Debug, el::ConfigurationType::Format,
+                   "[%level] [%logger] [%host] [%func] [%loc] %msg");
+  default_conf.set(el::Level::Error, el::ConfigurationType::Format,
+                   "[%level] [%logger] [%host] [%func] [%loc] %msg");
+  default_conf.set(el::Level::Fatal, el::ConfigurationType::Format,
+                   "[%level] [%logger] [%host] [%func] [%loc] %msg");
+  default_conf.set(el::Level::Trace, el::ConfigurationType::Format,
+                   "[%level] [%logger] [%host] [%func] [%loc] %msg");
+  default_conf.set(el::Level::Info, el::ConfigurationType::Format,
+                   "[%level] [%logger] %msg");
+  default_conf.set(el::Level::Warning, el::ConfigurationType::Format,
+                   "[%level] [%logger] %msg");
+  default_conf.set(el::Level::Verbose, el::ConfigurationType::Format,
+                   "[%level-%vlevel] [%logger] %msg");
 
   default_conf.setGlobally(el::ConfigurationType::ToFile, "false");
   default_conf.setGlobally(el::ConfigurationType::ToStandardOutput, "true");
@@ -37,9 +44,12 @@ void config_logger() {
                       "[%level] [%logger] [%host] [%func] [%loc] %msg");
   reporter_logger.set(el::Level::Trace, el::ConfigurationType::Format,
                       "[%level] [%logger] [%host] [%func] [%loc] %msg");
-  reporter_logger.set(el::Level::Info, el::ConfigurationType::Format, "[%level] [%logger] %msg");
-  reporter_logger.set(el::Level::Warning, el::ConfigurationType::Format, "[%level] [%logger] %msg");
-  reporter_logger.set(el::Level::Verbose, el::ConfigurationType::Format, "[%level-%vlevel] [%logger] %msg");
+  reporter_logger.set(el::Level::Info, el::ConfigurationType::Format,
+                      "[%level] [%logger] %msg");
+  reporter_logger.set(el::Level::Warning, el::ConfigurationType::Format,
+                      "[%level] [%logger] %msg");
+  reporter_logger.set(el::Level::Verbose, el::ConfigurationType::Format,
+                      "[%level-%vlevel] [%logger] %msg");
 
   reporter_logger.setGlobally(el::ConfigurationType::ToFile, "true");
   reporter_logger.setGlobally(el::ConfigurationType::Filename, "reporter.txt");
@@ -52,7 +62,7 @@ void config_logger() {
   // CLOG(INFO, "reporter") << "test reporter log2";
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   // global setup...
   config_logger();
 

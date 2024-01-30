@@ -931,7 +931,7 @@ struct DefaultEventFormatter : public EventFormatter {
   }
 
   static void formatInvocationList(std::ostream &out, const std::vector<fakeit::Invocation *> &actualSequence) {
-    size_t max_size = actualSequence.size();
+    std::size_t max_size = actualSequence.size();
     if (max_size > 5)
       max_size = 5;
 
@@ -5680,7 +5680,7 @@ namespace fakeit {
 		void copyFrom(VirtualTable<C, baseclasses...> &from) {
 			unsigned int size = VTUtils::getVTSize<C>();
 
-			for (size_t i = 0; i < size; ++i) {
+			for (std::size_t i = 0; i < size; ++i) {
 				_firstMethod[i] = from.getMethod(i);
 			}
 		}
@@ -5790,7 +5790,7 @@ class FakeObject {
 
   VirtualTable<C, baseclasses...> vtable;
 
-  static const size_t SIZE = sizeof(C) - sizeof(VirtualTable<C, baseclasses...>);
+  static const std::size_t SIZE = sizeof(C) - sizeof(VirtualTable<C, baseclasses...>);
   char instanceArea[SIZE ? SIZE : 0];
 
   FakeObject(FakeObject const &) = delete;
@@ -5808,7 +5808,7 @@ class FakeObject {
   }
 
   void initializeDataMembersArea() {
-    for (size_t i = 0; i < SIZE; ++i) instanceArea[i] = (char) 0;
+    for (std::size_t i = 0; i < SIZE; ++i) instanceArea[i] = (char) 0;
   }
 
   void setMethod(unsigned int index, void *method) {
@@ -6160,39 +6160,39 @@ struct TupleDispatcher {
 
   template<typename TupleType, typename FunctionType>
   static void for_each(TupleType &&, FunctionType &,
-                       std::integral_constant<size_t,
+                       std::integral_constant<std::size_t,
                                               std::tuple_size<typename std::remove_reference<TupleType>::type>::value>) {
   }
 
   template<std::size_t I, typename TupleType, typename FunctionType, typename = typename std::enable_if<
       I!=std::tuple_size<typename std::remove_reference<TupleType>::type>::value>::type>
-  static void for_each(TupleType &&t, FunctionType &f, std::integral_constant<size_t, I>) {
+  static void for_each(TupleType &&t, FunctionType &f, std::integral_constant<std::size_t, I>) {
     f(I, std::get<I>(t));
-    for_each(std::forward<TupleType>(t), f, std::integral_constant<size_t, I + 1>());
+    for_each(std::forward<TupleType>(t), f, std::integral_constant<std::size_t, I + 1>());
   }
 
   template<typename TupleType, typename FunctionType>
   static void for_each(TupleType &&t, FunctionType &f) {
-    for_each(std::forward<TupleType>(t), f, std::integral_constant<size_t, 0>());
+    for_each(std::forward<TupleType>(t), f, std::integral_constant<std::size_t, 0>());
   }
 
   template<typename TupleType1, typename TupleType2, typename FunctionType>
   static void for_each(TupleType1 &&, TupleType2 &&, FunctionType &,
-                       std::integral_constant<size_t,
+                       std::integral_constant<std::size_t,
                                               std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>) {
   }
 
   template<std::size_t I, typename TupleType1, typename TupleType2, typename FunctionType, typename = typename std::enable_if<
       I!=std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>::type>
-  static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f, std::integral_constant<size_t, I>) {
+  static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f, std::integral_constant<std::size_t, I>) {
     f(I, std::get<I>(t), std::get<I>(t2));
     for_each(std::forward<TupleType1>(t), std::forward<TupleType2>(t2), f,
-             std::integral_constant<size_t, I + 1>());
+             std::integral_constant<std::size_t, I + 1>());
   }
 
   template<typename TupleType1, typename TupleType2, typename FunctionType>
   static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f) {
-    for_each(std::forward<TupleType1>(t), std::forward<TupleType2>(t2), f, std::integral_constant<size_t, 0>());
+    for_each(std::forward<TupleType1>(t), std::forward<TupleType2>(t2), f, std::integral_constant<std::size_t, 0>());
   }
 };
 }

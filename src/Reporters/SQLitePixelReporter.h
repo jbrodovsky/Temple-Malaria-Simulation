@@ -10,7 +10,6 @@
 #include "Reporters/SQLiteDbReporter.h"
 
 class SQLitePixelReporter : public SQLiteDbReporter {
-
 protected:
   // Return the character code that indicates the level of genotype records (c:
   // cell, d: district)

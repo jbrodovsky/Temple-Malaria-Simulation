@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   BirthdayEvent.h
  * Author: nguyentran
  *
@@ -6,31 +6,32 @@
  */
 
 #ifndef BIRTHDAYEVENT_H
-#define    BIRTHDAYEVENT_H
+#define BIRTHDAYEVENT_H
 
-#include "Event.h"
-#include "Core/ObjectPool.h"
 #include <string>
+
+#include "Core/ObjectPool.h"
+#include "Event.h"
 
 class Person;
 
 class BirthdayEvent : public Event {
- OBJECTPOOL(BirthdayEvent)
+  OBJECTPOOL(BirthdayEvent)
 
- DISALLOW_COPY_AND_ASSIGN(BirthdayEvent)
+  DISALLOW_COPY_AND_ASSIGN(BirthdayEvent)
 
- public:
+public:
   BirthdayEvent();
 
   //    BirthdayEvent(const BirthdayEvent& orig);
   virtual ~BirthdayEvent();
 
-  static void schedule_event(Scheduler *scheduler, Person *p, const int &time);
+  static void schedule_event(Scheduler* scheduler, Person* p, const int &time);
 
   std::string name() override;
 
- private:
+private:
   void execute() override;
 };
 
-#endif    /* BIRTHDAYEVENT_H */
+#endif /* BIRTHDAYEVENT_H */

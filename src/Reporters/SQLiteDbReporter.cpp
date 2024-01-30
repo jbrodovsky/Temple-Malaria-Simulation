@@ -1,10 +1,12 @@
 #include "SQLiteDbReporter.h"
+
+#include <filesystem>
+
 #include "Core/Config/Config.h"
 #include "MDC/ModelDataCollector.h"
 #include "Model.h"
 #include "Population/Population.h"
 #include "easylogging++.h"
-#include <filesystem>
 
 // Function to populate the 'genotype' table in the database
 void SQLiteDbReporter::populate_genotype_table() {
@@ -13,12 +15,12 @@ void SQLiteDbReporter::populate_genotype_table() {
 
   try {
     // Use the Database class to execute and prepare SQL statements
-    db->execute("DELETE FROM genotype;"); // Clear the genotype table
+    db->execute("DELETE FROM genotype;");  // Clear the genotype table
 
     // Prepare the bulk query
     auto stmt = db->prepare(INSERT_GENOTYPE);
 
-    auto *config = Model::CONFIG;
+    auto* config = Model::CONFIG;
 
     for (auto id = 0ul; id < config->number_of_parasite_types(); id++) {
       auto genotype = (*config->genotype_db())[id];
@@ -31,10 +33,10 @@ void SQLiteDbReporter::populate_genotype_table() {
         throw std::runtime_error("Error executing INSERT statement");
       }
 
-      sqlite3_reset(stmt); // Reset the statement for the next iteration
+      sqlite3_reset(stmt);  // Reset the statement for the next iteration
     }
 
-    sqlite3_finalize(stmt); // Finalize the statement
+    sqlite3_finalize(stmt);  // Finalize the statement
 
   } catch (const std::exception &ex) {
     LOG(ERROR) << __FUNCTION__ << "-" << ex.what();
@@ -142,7 +144,6 @@ void SQLiteDbReporter::initialize(int job_number, std::string path) {
 }
 
 void SQLiteDbReporter::monthly_report() {
-
   // Get the relevant data
   auto days_elapsed = Model::SCHEDULER->current_time();
   auto model_time =
@@ -155,8 +156,8 @@ void SQLiteDbReporter::monthly_report() {
 
   std::string query = "";
   monthly_site_data(id);
-  if (Model::CONFIG->record_genome_db() &&
-      Model::DATA_COLLECTOR->recording_data()) {
+  if (Model::CONFIG->record_genome_db()
+      && Model::DATA_COLLECTOR->recording_data()) {
     // Add the genome information, this will also update infected individuals
     monthly_genome_data(id);
   } else {

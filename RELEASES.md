@@ -1,26 +1,31 @@
 # Releases
 
-The simulation does not follow a fixed release schedule and new versions are typically finalized when a publication is 
+The simulation does not follow a fixed release schedule and new versions are typically finalized when a publication is
 submitted for peer review. This also drives the feature that are added to the simulation since the current research needs
 dictate the features currently under development.
 
 ## Change Log
+
 ### Version 4.1.8
 
-Version 4.1.8 is currently in progress and will update the simuation to run in the compute environment at Temple University, 
+Version 4.1.8 is currently in progress and will update the simuation to run in the compute environment at Temple University,
 and includes the following updates:
 
-1. Build script updated, most dependent libraries will be managed by vcpkg. As of 2024-01-20, the versions of dependent libraries are:
-    - fmt 10.2.1
-    - gsl 2.7.1#3
-    - libpq 16.0
-    - libpqxx 7.8.1
-    - sqlite3 3.43.2#1
-    - yaml-cpp 0.8.0#1
-    - date 3.0.1#5
-    - cli11 2.3.2
+1. Build script updated, most dependent libraries will be managed by vcpkg. As of 2024-01-30, the versions of dependent libraries are:
+   - fmt 10.2.1
+   - gsl 2.7.1#3
+   - libpq 16.0
+   - libpqxx 7.8.1
+   - sqlite3 3.43.2#1
+   - yaml-cpp 0.8.0#1
+   - date 3.0.1#5
+   - cli11 2.3.2
+   - easyloggingpp 9.97.1
+   - catch2 3.5.2
 2. Added SQLiteDistrictReporter and SQLitePixelReporter to support reporting to SQLite database file.
 3. Removal of last-change error handler in `main.cpp` for Linux platforms (will find a better solution later)
+4. Add clang-format to the project to enforce code style.
+5. Add clang-tidy to the project to enforce code quality.
 
 To use this `SQLiteDistrictReporter` reporter, you need to specify the `-r SQLiteDistrictReporter` option when running the simulation:
 
@@ -30,10 +35,10 @@ MaSim -i input.yaml -r SQLiteDistrictReporter -j 1 # this will generate a SQLite
 
 ### Version 4.1.7.1
 
-The version 4.1.7.1 release is the last version of the simulation while the project was based at Penn State, and 
+The version 4.1.7.1 release is the last version of the simulation while the project was based at Penn State, and
 includes new features needed for research, with significant improvements to the documentation.
 
-1. Added `change_circulation_percent_event`  
+1. Added `change_circulation_percent_event`
 2. Added `rotate_treatment_strategy_event`
 
 ### Version 4.1.7

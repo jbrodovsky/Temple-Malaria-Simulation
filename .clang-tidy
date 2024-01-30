@@ -1,0 +1,4 @@
+Checks: "*,-fuchsia-*,-google-*,-llvm-*,-darwin-*,-zircon-*,-abseil-*,-android-*,-modernize-use-trailing-return-type,-llvmlibc-*"
+# WarningsAsErrors: "*,-readability-convert-member-functions-to-static"
+HeaderFilterRegex: ""
+FormatStyle: google

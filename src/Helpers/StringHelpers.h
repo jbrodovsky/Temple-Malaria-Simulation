@@ -26,8 +26,7 @@ public:
     auto tokens = std::vector<tstring<Elem>>{};
     auto token = tstring<Elem>{};
     while (std::getline(sstr, token, delimiter)) {
-      if (!token.empty())
-        tokens.push_back(token);
+      if (!token.empty()) tokens.push_back(token);
     }
 
     return tokens;
@@ -38,9 +37,9 @@ public:
                                           tstring<Elem> const &delimiters) {
     auto tokens = std::vector<tstring<Elem>>{};
 
-    size_t pos, prev_pos = 0;
-    while ((pos = text.find_first_of(delimiters, prev_pos)) !=
-           std::string::npos) {
+    std::size_t pos, prev_pos = 0;
+    while ((pos = text.find_first_of(delimiters, prev_pos))
+           != std::string::npos) {
       if (pos > prev_pos)
         tokens.push_back(text.substr(prev_pos, pos - prev_pos));
       prev_pos = pos + 1;
@@ -57,14 +56,12 @@ public:
   static std::string join(const std::vector<std::string> &vec,
                           const std::string &delimiter) {
     std::string result;
-    for (size_t i = 0; i < vec.size(); i++) {
+    for (std::size_t i = 0; i < vec.size(); i++) {
       result += vec[i];
-      if (i != vec.size() - 1) {
-        result += delimiter;
-      }
+      if (i != vec.size() - 1) { result += delimiter; }
     }
     return result;
   }
 };
 
-#endif // POMS_STRINGSPLITHELPER_H
+#endif  // POMS_STRINGSPLITHELPER_H

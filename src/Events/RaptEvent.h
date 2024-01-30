@@ -19,7 +19,7 @@ public:
   RaptEvent() = default;
   ~RaptEvent() override = default;
 
-  static void schedule_event(Scheduler *scheduler, Person *p, const int &time);
+  static void schedule_event(Scheduler* scheduler, Person* p, const int &time);
 
   std::string name() override { return "RAPT Event"; }
 

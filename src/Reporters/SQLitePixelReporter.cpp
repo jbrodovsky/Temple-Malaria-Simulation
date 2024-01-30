@@ -17,7 +17,6 @@
 #include "easylogging++.h"
 
 void SQLitePixelReporter::initialize(int job_number, std::string path) {
-
   // Inform the user of the reporter type is pixel / cell level
   VLOG(1)
       << "Using SQLiteDbReporterwith aggregation at the pixel / cell level.";
@@ -39,7 +38,7 @@ void SQLitePixelReporter::monthly_genome_data(int id) {
   std::vector<int> individual(genotypes, 0);
 
   // Cache some values
-  auto *index =
+  auto* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
   auto age_classes = index->vPerson()[0][0].size();
 
@@ -49,20 +48,21 @@ void SQLitePixelReporter::monthly_genome_data(int id) {
   for (auto location = 0; location < Model::CONFIG->number_of_locations();
        location++) {
     std::vector<int> occurrences(
-        genotypes, 0); // discrete count of occurrences of the parasite genotype
+        genotypes,
+        0);  // discrete count of occurrences of the parasite genotype
     std::vector<int> clinicalOccurrences(
         genotypes,
-        0); // discrete count of clinical occurrences of the parasite genotype
+        0);  // discrete count of clinical occurrences of the parasite genotype
     std::vector<int> occurrencesZeroToFive(
-        genotypes, 0); // discrete count of the occurrences of the parasite
-                       // genotype in individuals 0 - 5
+        genotypes, 0);  // discrete count of the occurrences of the parasite
+                        // genotype in individuals 0 - 5
     std::vector<int> occurrencesTwoToTen(
-        genotypes, 0); // discrete count of the occurrences of the parasite
-                       // genotype in individuals 2 - 10
+        genotypes, 0);  // discrete count of the occurrences of the parasite
+                        // genotype in individuals 2 - 10
     std::vector<double> weightedOccurrences(
-        genotypes, 0.0); // weighted occurrences of the genotype
+        genotypes, 0.0);  // weighted occurrences of the genotype
     int infectedIndividuals =
-        0; // discrete count of infected individuals in the location
+        0;  // discrete count of infected individuals in the location
 
     // Iterate over all the possible states
     for (auto hs = 0; hs < Person::NUMBER_OF_STATE - 1; hs++) {
@@ -71,15 +71,12 @@ void SQLitePixelReporter::monthly_genome_data(int id) {
         // Iterate over all the genotypes
         auto age_class = index->vPerson()[location][hs][ac];
         for (auto &person : age_class) {
-
           // Get the person, press on if they are not infected (i.e., no
           // parasites)
           auto parasites =
               person->all_clonal_parasite_populations()->parasites();
           auto size = parasites->size();
-          if (size == 0) {
-            continue;
-          }
+          if (size == 0) { continue; }
 
           // Note the age and clinical status of the person
           auto age = person->age();
@@ -117,9 +114,7 @@ void SQLitePixelReporter::monthly_genome_data(int id) {
     // infections were seen
     if (infectedIndividuals != 0) {
       for (auto genotype = 0; genotype < genotypes; genotype++) {
-        if (weightedOccurrences[genotype] == 0) {
-          continue;
-        }
+        if (weightedOccurrences[genotype] == 0) { continue; }
 
         std::string singleRow = fmt::format(
             "({}, {}, {}, {}, {}, {}, {}, {})", id, location, genotype,
@@ -152,9 +147,7 @@ void SQLitePixelReporter::monthly_site_data(int id) {
   for (auto location = 0; location < Model::CONFIG->number_of_locations();
        location++) {
     // Check the population, if there is nobody there, press on
-    if (Model::POPULATION->size(location) == 0) {
-      continue;
-    }
+    if (Model::POPULATION->size(location) == 0) { continue; }
 
     // Determine the EIR and PfPR values
     auto eir =
@@ -162,14 +155,14 @@ void SQLitePixelReporter::monthly_site_data(int id) {
             ? 0
             : Model::DATA_COLLECTOR->EIR_by_location_year()[location].back();
     auto pfpr_under5 =
-        Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 0, 5) *
-        100.0;
+        Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 0, 5)
+        * 100.0;
     auto pfpr_2to10 =
-        Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 2, 10) *
-        100.0;
+        Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 2, 10)
+        * 100.0;
     auto pfpr_all =
-        Model::DATA_COLLECTOR->blood_slide_prevalence_by_location()[location] *
-        100.0;
+        Model::DATA_COLLECTOR->blood_slide_prevalence_by_location()[location]
+        * 100.0;
 
     // Collect the treatment by age class, following the 0-59 month convention
     // for under-5
@@ -213,7 +206,7 @@ void SQLitePixelReporter::monthly_site_data(int id) {
 void SQLitePixelReporter::monthly_infected_individuals(int id) {
   /* std::cout << "monthly_infected_individuals" << std::endl; */
   // Cache some values
-  auto *index =
+  auto* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
   auto age_classes = index->vPerson()[0][0].size();
 
@@ -228,7 +221,6 @@ void SQLitePixelReporter::monthly_infected_individuals(int id) {
         // Iterate over all the genotypes
         auto age_class = index->vPerson()[location][hs][ac];
         for (auto &person : age_class) {
-
           // Update the count if the individual is infected
           if (!person->all_clonal_parasite_populations()
                    ->parasites()

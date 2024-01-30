@@ -32,7 +32,7 @@ TEST_CASE("RandomTest", "[Core]") {
 
     Random r;
     r.initialize(0);
-    r.shuffle(&v_int_ptr[0], number_of_individuals, sizeof(size_t));
+    r.shuffle(&v_int_ptr[0], number_of_individuals, sizeof(std::size_t));
 
     for (auto int_ptr : v_int_ptr) {
       std::cout << *int_ptr << " ";

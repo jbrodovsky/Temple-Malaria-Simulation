@@ -9,13 +9,14 @@
 #include <pqxx/pqxx>
 
 namespace pqxx_db {
-    // Number of times various retry events should be tried
-    const int RETRY_LIMIT = 10;
+// Number of times various retry events should be tried
+const int RETRY_LIMIT = 10;
 
-    // Time to wait between trying to reconnect to the database, 10 seconds in milliseconds
-    const int WAIT_TIMESPAN = 10000;
+// Time to wait between trying to reconnect to the database, 10 seconds in
+// milliseconds
+const int WAIT_TIMESPAN = 10000;
 
-    pqxx::connection *get_connection();
-}
+pqxx::connection* get_connection();
+}  // namespace pqxx_db
 
 #endif

@@ -5,23 +5,23 @@
 #ifndef POMS_BFREPORTER_H
 #define POMS_BFREPORTER_H
 
-#include "Reporter.h"
 #include <sstream>
 
+#include "Reporter.h"
+
 class MonthlyReporter : public Reporter {
- DISALLOW_COPY_AND_ASSIGN(MonthlyReporter)
+  DISALLOW_COPY_AND_ASSIGN(MonthlyReporter)
 
- DISALLOW_MOVE(MonthlyReporter)
+  DISALLOW_MOVE(MonthlyReporter)
 
- public:
-
+public:
   MonthlyReporter();
 
   ~MonthlyReporter() override;
 
-  void before_run() override { }
+  void before_run() override {}
 
-  void begin_time_step() override { }
+  void begin_time_step() override {}
 
   void initialize(int job_number, std::string path) override;
 
@@ -31,7 +31,7 @@ class MonthlyReporter : public Reporter {
 
   void print_EIR_PfPR_by_location();
 
-//  void print_monthly_incidence_by_location();
+  //  void print_monthly_incidence_by_location();
 };
 
-#endif //POMS_BFREPORTER_H
+#endif  // POMS_BFREPORTER_H

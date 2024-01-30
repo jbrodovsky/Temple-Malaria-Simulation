@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Event.h
  * Author: nguyentran
  *
@@ -6,24 +6,25 @@
  */
 
 #ifndef EVENT_H
-#define    EVENT_H
+#define EVENT_H
 
-#include "Population/Properties/IndexHandler.hxx"
-#include "Core/PropertyMacro.h"
 #include <string>
+
+#include "Core/PropertyMacro.h"
+#include "Population/Properties/IndexHandler.hxx"
 
 class Dispatcher;
 
 class Scheduler;
 
 class Event : public IndexHandler {
- DISALLOW_COPY_AND_ASSIGN(Event)
+  DISALLOW_COPY_AND_ASSIGN(Event)
 
- DISALLOW_MOVE(Event)
+  DISALLOW_MOVE(Event)
 
- public:
-  Scheduler *scheduler{nullptr};
-  Dispatcher *dispatcher{nullptr};
+public:
+  Scheduler* scheduler{nullptr};
+  Dispatcher* dispatcher{nullptr};
   bool executable{false};
   int time{-1};
 
@@ -36,9 +37,8 @@ class Event : public IndexHandler {
 
   virtual std::string name() = 0;
 
- private:
+private:
   virtual void execute() = 0;
-
 };
 
-#endif    /* EVENT_H */
+#endif /* EVENT_H */

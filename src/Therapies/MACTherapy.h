@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   MACTherapy.h
  * Author: Merlin
  *
@@ -6,20 +6,21 @@
  */
 
 #ifndef MACTHERAPY_H
-#define    MACTHERAPY_H
+#define MACTHERAPY_H
+
+#include <vector>
 
 #include "Core/PropertyMacro.h"
-#include <vector>
 #include "Therapies/Therapy.hxx"
 
 class MACTherapy : public Therapy {
- DISALLOW_COPY_AND_ASSIGN(MACTherapy)
+  DISALLOW_COPY_AND_ASSIGN(MACTherapy)
 
- VIRTUAL_PROPERTY_REF(std::vector<int>, therapy_ids)
+  VIRTUAL_PROPERTY_REF(std::vector<int>, therapy_ids)
 
- VIRTUAL_PROPERTY_REF(std::vector<int>, start_at_days)
+  VIRTUAL_PROPERTY_REF(std::vector<int>, start_at_days)
 
- public:
+public:
   MACTherapy();
 
   ~MACTherapy() override;
@@ -28,8 +29,7 @@ class MACTherapy : public Therapy {
 
   void add_schedule(const int &start_at_day);
 
-  void print(std::ostream& os) const override;
-
+  void print(std::ostream &os) const override;
 };
 
 #endif

@@ -1,4 +1,4 @@
-/* 
+/*
  * ReturnToResidenceEvent.cpp
  *
  * Implement the event to return the individual to their original location.
@@ -12,9 +12,10 @@
 
 OBJECTPOOL_IMPL(ReturnToResidenceEvent)
 
-void ReturnToResidenceEvent::schedule_event(Scheduler *scheduler, Person *p, const int &time) {
-  if (scheduler!=nullptr) {
-    auto *e = new ReturnToResidenceEvent();
+void ReturnToResidenceEvent::schedule_event(Scheduler* scheduler, Person* p,
+                                            const int &time) {
+  if (scheduler != nullptr) {
+    auto* e = new ReturnToResidenceEvent();
     e->dispatcher = p;
     e->time = time;
     p->add(e);
@@ -23,8 +24,9 @@ void ReturnToResidenceEvent::schedule_event(Scheduler *scheduler, Person *p, con
 }
 
 void ReturnToResidenceEvent::execute() {
-  auto *person = dynamic_cast<Person *>(dispatcher);
+  auto* person = dynamic_cast<Person*>(dispatcher);
   auto source_location = person->location();
   person->set_location(person->residence_location());
-  Model::POPULATION->notify_movement(source_location, person->residence_location());
+  Model::POPULATION->notify_movement(source_location,
+                                     person->residence_location());
 }

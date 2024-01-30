@@ -14,7 +14,7 @@ APP_EXECUTABLE ?= $(or $(word 2,$(MAKECMDGOALS)),$(DEFAULT_APP_EXECUTABLE))
 all: build
 
 build b:
-	cmake --build build --config $(BUILD_TYPE) -j 4
+	cmake --build build --config $(BUILD_TYPE) -j 6
 
 test t: build
 	cmake --build build --target test
@@ -32,20 +32,32 @@ setup-vcpkg:
 	fi
 
 install-deps: setup-vcpkg
-	[ -z "$(VCPKG_BASE)" ] || $(VCPKG_EXEC) install gsl yaml-cpp fmt libpq libpqxx sqlite3 date args cli11 gtest catch 
+	[ -z "$(VCPKG_BASE)" ] || $(VCPKG_EXEC) install gsl yaml-cpp fmt libpq libpqxx sqlite3 date args cli11 gtest catch easyloggingpp
 
 generate g:
-	cmake -Bbuild -DCMAKE_EXPORT_COMPILE_COMMANDS=1 . $(TOOLCHAIN_ARG)
+	cmake -Bbuild -DCMAKE_EXPORT_COMPILE_COMMANDS=1 $(TOOLCHAIN_ARG) .
+	cp $(PWD)build/compile_commands.json $(PWD)
+
+generate_cluster gc:
+	cmake -Bbuild -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCLUSTER_BUILD=1 $(TOOLCHAIN_ARG) .
+	cp $(PWD)build/compile_commands.json $(PWD)
+
+generate_test gt:
+	cmake -Bbuild -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DBUILD_TESTS=1 $(TOOLCHAIN_ARG) .
 	cp $(PWD)build/compile_commands.json $(PWD)
 
 generate-no-test:
 	cmake -Bbuild -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DWITH_TESTS=0 . $(TOOLCHAIN_ARG)
 	cp $(PWD)build/compile_commands.json $(PWD)
 
-help:
+format f:
+	fd "\.(h|cpp|hxx)$$" src -x clang-format -i
+
+help h:
 	@echo "Available targets:"
 	@echo "  all             : Default target, builds the project."
 	@echo "  build (b)       : Build the project with specified BUILD_TYPE (default: Release)."
+	@echo "  format (f)      : Format the source code using clang-format."
 	@echo "  test            : Rebuild and run tests."
 	@echo "  run [path]      : Rebuild and run the executable. Provide path to override default."
 	@echo "  clean           : Remove the build directory."

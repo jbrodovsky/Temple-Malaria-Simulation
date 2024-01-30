@@ -8,9 +8,10 @@
 #ifndef REPORTER_H
 #define REPORTER_H
 
-#include "Core/PropertyMacro.h"
 #include <map>
 #include <sstream>
+
+#include "Core/PropertyMacro.h"
 
 class Model;
 
@@ -19,14 +20,14 @@ namespace Tsv {
 const std::string sep = "\t";
 const std::string end_line = "\n";
 const std::string extension = "tsv";
-} // namespace Tsv
+}  // namespace Tsv
 
 // Wrapper for CSV file constants
 namespace Csv {
 const std::string sep = ",";
 const std::string end_line = "\n";
 const std::string extension = "csv";
-} // namespace Csv
+}  // namespace Csv
 
 class Reporter {
   DISALLOW_COPY_AND_ASSIGN(Reporter)
@@ -86,7 +87,7 @@ public:
 
   virtual void monthly_report() = 0;
 
-  static Reporter *MakeReport(ReportType report_type);
+  static Reporter* MakeReport(ReportType report_type);
 };
 
 #endif

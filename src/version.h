@@ -1,7 +1,8 @@
 /*
  * version.h
  *
- * This file exposes the simulation version so that it can be retrieved by other scripts.
+ * This file exposes the simulation version so that it can be retrieved by other
+ * scripts.
  */
 
-const char *VERSION = "4.1.8";
+const char* VERSION = "4.1.8";

@@ -5,20 +5,17 @@
 #include "Treatment/ITreatmentCoverageModel.h"
 
 class ChangeTreatmentCoverageEvent : public Event {
+public:
+  ITreatmentCoverageModel* treatment_coverage_model;
 
- public:
-  ITreatmentCoverageModel *treatment_coverage_model;
-
-  explicit ChangeTreatmentCoverageEvent(ITreatmentCoverageModel *tcm);
+  explicit ChangeTreatmentCoverageEvent(ITreatmentCoverageModel* tcm);
 
   virtual ~ChangeTreatmentCoverageEvent();
 
-  std::string name() override {
-    return "ChangeTreatmentCoverageEvent";
-  }
+  std::string name() override { return "ChangeTreatmentCoverageEvent"; }
 
- private:
+private:
   void execute() override;
 };
 
-#endif // CHANGETREATMENTCOVERAGEEVENT_H
+#endif  // CHANGETREATMENTCOVERAGEEVENT_H

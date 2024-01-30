@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ParasiteDatabase.h
  * Author: Merlin
  *
@@ -8,11 +8,12 @@
 #ifndef PARASITEDATABASE_H
 #define PARASITEDATABASE_H
 
+#include <map>
+
 #include "Core/FlatArray.hxx"
 #include "Core/PropertyMacro.h"
 #include "Core/TypeDef.h"
 #include "Genotype.h"
-#include <map>
 #include "Population/SingleHostClonalParasitePopulations.h"
 
 class Genotype;
@@ -27,29 +28,31 @@ class GenotypeDatabase : public GenotypePtrMap {
 
   VIRTUAL_PROPERTY_REF(IntVector, weight)
 
-  private:
-    Flat3D<double>* mating_matrix = nullptr;
+private:
+  Flat3D<double>* mating_matrix = nullptr;
 
-    // This is generally bad practice, but since the method gets called a lot 
-    // during the model we need to get as much performance as we can out of it.
-    // By making the function a friend we can avoid any stack calls at the
-    // expense of needing to be more diligent about our code.
-    friend void SingleHostClonalParasitePopulations::update_relative_effective_parasite_density_using_free_recombination();
+  // This is generally bad practice, but since the method gets called a lot
+  // during the model we need to get as much performance as we can out of it.
+  // By making the function a friend we can avoid any stack calls at the
+  // expense of needing to be more diligent about our code.
+  friend void SingleHostClonalParasitePopulations::
+      update_relative_effective_parasite_density_using_free_recombination();
 
-  public:
-    GenotypeDatabase() = default;
+public:
+  GenotypeDatabase() = default;
 
-    virtual ~GenotypeDatabase();
+  virtual ~GenotypeDatabase();
 
-    void add(Genotype* genotype);
+  void add(Genotype* genotype);
 
-    int get_id(const IntVector &gene);
+  int get_id(const IntVector &gene);
 
-    void initialize_matting_matrix();
+  void initialize_matting_matrix();
 
-    std::vector<double> generate_offspring_parasite_density(const IntVector &m, const IntVector &f);
+  std::vector<double> generate_offspring_parasite_density(const IntVector &m,
+                                                          const IntVector &f);
 
-    double get_offspring_density(const int &m, const int &f, const int &p);
+  double get_offspring_density(const int &m, const int &f, const int &p);
 };
 
 #endif

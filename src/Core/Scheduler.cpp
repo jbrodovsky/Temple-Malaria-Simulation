@@ -6,7 +6,6 @@
 #include "Scheduler.h"
 
 #include <iomanip>
-#include "easylogging++.h"
 
 #include "Core/Config/Config.h"
 #include "Dispatcher.h"
@@ -14,15 +13,18 @@
 #include "Helpers/ObjectHelpers.h"
 #include "Helpers/TimeHelpers.h"
 #include "Model.h"
+#include "easylogging++.h"
 
 using namespace date;
 
-Scheduler::Scheduler(Model *model) :
-  current_time_(-1), total_available_time_(-1), model_(model), is_force_stop_(false), days_between_notifications_(0) {}
+Scheduler::Scheduler(Model* model)
+    : current_time_(-1),
+      total_available_time_(-1),
+      model_(model),
+      is_force_stop_(false),
+      days_between_notifications_(0) {}
 
-Scheduler::~Scheduler() {
-  clear_all_events();
-}
+Scheduler::~Scheduler() { clear_all_events(); }
 
 [[maybe_unused]] void Scheduler::extend_total_time(int new_total_time) {
   if (total_available_time_ < new_total_time)
@@ -38,7 +40,8 @@ void Scheduler::clear_all_events() {
   clear_all_events(population_events_list_);
 }
 
-void Scheduler::initialize(const date::year_month_day &starting_date, const int &total_time) {
+void Scheduler::initialize(const date::year_month_day &starting_date,
+                           const int &total_time) {
   // Pad the available time out beyond the expected end of the simulation to
   // allow periodic events to be scheduled without generating an error.
   set_total_available_time(total_time + SCHEDULE_PADDING);
@@ -49,10 +52,8 @@ void Scheduler::initialize(const date::year_month_day &starting_date, const int 
 
 void Scheduler::clear_all_events(EventPtrVector2 &events_list) {
   for (auto &timestep_events : events_list) {
-    for (auto *event : timestep_events) {
-      if (event->dispatcher!=nullptr) {
-        event->dispatcher->remove(event);
-      }
+    for (auto* event : timestep_events) {
+      if (event->dispatcher != nullptr) { event->dispatcher->remove(event); }
       ObjectHelpers::delete_pointer<Event>(event);
     }
     timestep_events.clear();
@@ -60,37 +61,34 @@ void Scheduler::clear_all_events(EventPtrVector2 &events_list) {
   events_list.clear();
 }
 
-int Scheduler::total_available_time() const {
-  return total_available_time_;
-}
+int Scheduler::total_available_time() const { return total_available_time_; }
 
 void Scheduler::set_total_available_time(const int &value) {
-  if (total_available_time_ > 0) {
-    clear_all_events();
-  }
+  if (total_available_time_ > 0) { clear_all_events(); }
   total_available_time_ = value;
   individual_events_list_.assign(total_available_time_, EventPtrVector());
   population_events_list_.assign(total_available_time_, EventPtrVector());
 }
 
-void Scheduler::schedule_individual_event(Event *event) {
+void Scheduler::schedule_individual_event(Event* event) {
   schedule_event(individual_events_list_[event->time], event);
 }
 
-void Scheduler::schedule_population_event(Event *event) {
+void Scheduler::schedule_population_event(Event* event) {
   schedule_event(population_events_list_[event->time], event);
 }
 
-void Scheduler::schedule_event(EventPtrVector &time_events, Event *event) {
+void Scheduler::schedule_event(EventPtrVector &time_events, Event* event) {
   // Schedule event in the future
   // Event time cannot exceed total available time or less than current time
   if (event->time > total_available_time() || event->time < current_time_) {
-    LOG_IF(event->time < current_time_, FATAL) << "Error when scheduling event " << event->name() << " at "
-                                               << event->time
-                                               << ". Current_time: " << current_time_ << " - total time: "
-                                               << total_available_time_;
-    VLOG(2) << "Cannot schedule event " << event->name() << " at " << event->time << ". Current_time: "
-            << current_time_ << " - total time: " << total_available_time_;
+    LOG_IF(event->time < current_time_, FATAL)
+        << "Error when scheduling event " << event->name() << " at "
+        << event->time << ". Current_time: " << current_time_
+        << " - total time: " << total_available_time_;
+    VLOG(2) << "Cannot schedule event " << event->name() << " at "
+            << event->time << ". Current_time: " << current_time_
+            << " - total time: " << total_available_time_;
     ObjectHelpers::delete_pointer<Event>(event);
   } else {
     time_events.push_back(event);
@@ -108,7 +106,6 @@ void Scheduler::execute_events_list(EventPtrVector &events_list) {
 }
 
 void Scheduler::run() {
-
   // Make sure we have a model
   if (model_ == nullptr) {
     throw std::runtime_error("Scheduler::run() called without model!");
@@ -118,7 +115,9 @@ void Scheduler::run() {
   current_time_ = 0;
   for (current_time_ = 0; !can_stop(); current_time_++) {
     std::time_t t = std::time(nullptr);
-    LOG_IF(current_time_ % days_between_notifications_ == 0, INFO) <<  std::put_time(std::localtime(&t), "%H:%M:%S - ") <<  "Day: " << current_time_;
+    LOG_IF(current_time_ % days_between_notifications_ == 0, INFO)
+        << std::put_time(std::localtime(&t), "%H:%M:%S - ")
+        << "Day: " << current_time_;
 
     begin_time_step();
 
@@ -137,17 +136,11 @@ void Scheduler::run() {
 
 void Scheduler::begin_time_step() const {
   model_->begin_time_step();
-  if (is_today_first_day_of_month()) {
-    model_->monthly_update();
-  }
-  if (is_today_first_day_of_year()) {
-    model_->yearly_update();
-  }
+  if (is_today_first_day_of_month()) { model_->monthly_update(); }
+  if (is_today_first_day_of_year()) { model_->yearly_update(); }
 }
 
-void Scheduler::end_time_step() const {
-  model_->daily_update(current_time_);
-}
+void Scheduler::end_time_step() const { model_->daily_update(current_time_); }
 
 bool Scheduler::can_stop() const {
   return current_time_ > Model::CONFIG->total_time() || is_force_stop_;
@@ -159,10 +152,10 @@ int Scheduler::current_day_in_year() const {
 
 bool Scheduler::is_today_first_day_of_month() const {
   year_month_day ymd{calendar_date};
-  return ymd.day()==day{1};
+  return ymd.day() == day{1};
 }
 
 bool Scheduler::is_today_first_day_of_year() const {
   year_month_day ymd{calendar_date};
-  return ymd.month()==month{1} && ymd.day()==day{1};
+  return ymd.month() == month{1} && ymd.day() == day{1};
 }

@@ -1,6 +1,6 @@
 /*
  * GenotypeReporter.h
- * 
+ *
  * Define the GenotypeReporter class which offers support for reporting genotype
  * information for the given time step.
  */
@@ -10,9 +10,9 @@
 #include <fstream>
 
 class GenotypeReporter {
-    public:
-        static void output_genotype_weighted(std::ofstream &out);
-        static void output_genotype_weighted_header(std::ofstream &out);
+public:
+  static void output_genotype_weighted(std::ofstream &out);
+  static void output_genotype_weighted_header(std::ofstream &out);
 };
 
 #endif

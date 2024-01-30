@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   MoveParasiteToBloodEvent.h
  * Author: Merlin
  *
@@ -6,12 +6,13 @@
  */
 
 #ifndef MOVEPARASITETOBLOODEVENT_H
-#define    MOVEPARASITETOBLOODEVENT_H
+#define MOVEPARASITETOBLOODEVENT_H
 
-#include "Event.h"
+#include <string>
+
 #include "Core/ObjectPool.h"
 #include "Core/PropertyMacro.h"
-#include <string>
+#include "Event.h"
 
 class ClonalParasitePopulation;
 
@@ -22,28 +23,27 @@ class Person;
 class Genotype;
 
 class MoveParasiteToBloodEvent : public Event {
- DISALLOW_COPY_AND_ASSIGN(MoveParasiteToBloodEvent)
+  DISALLOW_COPY_AND_ASSIGN(MoveParasiteToBloodEvent)
 
- DISALLOW_MOVE(MoveParasiteToBloodEvent)
+  DISALLOW_MOVE(MoveParasiteToBloodEvent)
 
- OBJECTPOOL(MoveParasiteToBloodEvent)
+  OBJECTPOOL(MoveParasiteToBloodEvent)
 
- POINTER_PROPERTY(Genotype, infection_genotype)
+  POINTER_PROPERTY(Genotype, infection_genotype)
 
- public:
+public:
   MoveParasiteToBloodEvent();
 
   //    MoveParasiteToBloodEvent(const MoveParasiteToBloodEvent& orig);
   virtual ~MoveParasiteToBloodEvent();
 
-  static void schedule_event(Scheduler *scheduler, Person *p, Genotype *infection_type, const int &time);
+  static void schedule_event(Scheduler* scheduler, Person* p,
+                             Genotype* infection_type, const int &time);
 
-  std::string name() override {
-    return "MoveParasiteToBloodEvent";
-  }
+  std::string name() override { return "MoveParasiteToBloodEvent"; }
 
- private:
+private:
   void execute() override;
 };
 
-#endif    /* MOVEPARASITETOBLOODEVENT_H */
+#endif /* MOVEPARASITETOBLOODEVENT_H */

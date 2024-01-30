@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   MFTStrategy.h
  * Author: nguyentran
  *
@@ -8,20 +8,20 @@
 #ifndef MFTSTRATEGY_H
 #define MFTSTRATEGY_H
 
-#include "IStrategy.h"
 #include "Core/PropertyMacro.h"
+#include "IStrategy.h"
 
 class Random;
 
 class Therapy;
 
 class MFTStrategy : public IStrategy {
- DISALLOW_COPY_AND_ASSIGN(MFTStrategy)
+  DISALLOW_COPY_AND_ASSIGN(MFTStrategy)
 
- DISALLOW_MOVE(MFTStrategy)
+  DISALLOW_MOVE(MFTStrategy)
 
- public:
-  std::vector<Therapy *> therapy_list;
+public:
+  std::vector<Therapy*> therapy_list;
   std::vector<double> distribution;
 
   MFTStrategy();
@@ -29,9 +29,9 @@ class MFTStrategy : public IStrategy {
   //    MFTStrategy(const MFTStrategy& orig);
   virtual ~MFTStrategy();
 
-  void add_therapy(Therapy *therapy) override;
+  void add_therapy(Therapy* therapy) override;
 
-  Therapy *get_therapy(Person *person) override;
+  Therapy* get_therapy(Person* person) override;
 
   void update_end_of_time_step() override;
 

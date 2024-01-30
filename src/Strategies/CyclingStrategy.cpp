@@ -1,23 +1,25 @@
-/* 
+/*
  * CyclingStrategy.cpp
  *
  * Implement the class for the drug cycling strategy.
  */
 
 #include "CyclingStrategy.h"
-#include "Model.h"
-#include "Core/Scheduler.h"
-#include "Core/Config/Config.h"
-#include "MDC/ModelDataCollector.h"
+
 #include <sstream>
+
+#include "Core/Config/Config.h"
+#include "Core/Scheduler.h"
 #include "IStrategy.h"
+#include "MDC/ModelDataCollector.h"
+#include "Model.h"
 #include "Therapies/Therapy.hxx"
 
 CyclingStrategy::CyclingStrategy() : IStrategy("CyclingStrategy", Cycling) {}
 
 CyclingStrategy::~CyclingStrategy() = default;
 
-void CyclingStrategy::add_therapy(Therapy *therapy) {
+void CyclingStrategy::add_therapy(Therapy* therapy) {
   therapy_list.push_back(therapy);
 }
 
@@ -27,10 +29,11 @@ void CyclingStrategy::switch_therapy() {
 
   next_switching_day = Model::SCHEDULER->current_time() + cycling_time;
   LOG(INFO) << date::year_month_day{Model::SCHEDULER->calendar_date}
-            << ": Cycling Strategy Switch Therapy to: " << therapy_list[index]->id();
+            << ": Cycling Strategy Switch Therapy to: "
+            << therapy_list[index]->id();
 }
 
-Therapy *CyclingStrategy::get_therapy(Person *person) {
+Therapy* CyclingStrategy::get_therapy(Person* person) {
   return therapy_list[index];
 }
 
@@ -38,7 +41,7 @@ std::string CyclingStrategy::to_string() const {
   std::stringstream sstm;
   sstm << id() << "-" << name() << "-";
   std::string sep;
-  for (auto *therapy : therapy_list) {
+  for (auto* therapy : therapy_list) {
     sstm << sep << therapy->id();
     sep = ",";
   }
@@ -46,7 +49,7 @@ std::string CyclingStrategy::to_string() const {
 }
 
 void CyclingStrategy::update_end_of_time_step() {
-  if (Model::SCHEDULER->current_time()==next_switching_day) {
+  if (Model::SCHEDULER->current_time() == next_switching_day) {
     switch_therapy();
   }
 }

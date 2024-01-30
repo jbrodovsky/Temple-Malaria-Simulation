@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Genotype.h
  * Author: Merlin
  *
@@ -8,8 +8,8 @@
 #ifndef Genotype_H
 #define Genotype_H
 
-#include "Core/TypeDef.h"
 #include "Core/PropertyMacro.h"
+#include "Core/TypeDef.h"
 
 class Config;
 
@@ -20,32 +20,33 @@ class DrugType;
 class Therapy;
 
 class Genotype {
- DISALLOW_COPY_AND_ASSIGN(Genotype)
+  DISALLOW_COPY_AND_ASSIGN(Genotype)
 
- PROPERTY_REF(int, genotype_id)
+  PROPERTY_REF(int, genotype_id)
 
- PROPERTY_REF(IntVector, gene_expression)
+  PROPERTY_REF(IntVector, gene_expression)
 
- PROPERTY_REF(double, daily_fitness_multiple_infection)
+  PROPERTY_REF(double, daily_fitness_multiple_infection)
 
- PROPERTY_REF(int, number_of_resistance_position)
+  PROPERTY_REF(int, number_of_resistance_position)
 
- POINTER_PROPERTY(DrugDatabase, drug_db)
+  POINTER_PROPERTY(DrugDatabase, drug_db)
 
- public:
-  explicit Genotype(const int &id, const GenotypeInfo &genotype_info, const IntVector &weight);
+public:
+  explicit Genotype(const int &id, const GenotypeInfo &genotype_info,
+                    const IntVector &weight);
 
   virtual ~Genotype();
 
-  double get_EC50_power_n(DrugType *dt) const;
+  double get_EC50_power_n(DrugType* dt) const;
 
   double get_EC50(const int &drug_id) const;
 
-  bool resist_to(DrugType *dt);
+  bool resist_to(DrugType* dt);
 
-  bool resist_to(Therapy *therapy);
+  bool resist_to(Therapy* therapy);
 
-  Genotype *combine_mutation_to(const int &locus, const int &value);
+  Genotype* combine_mutation_to(const int &locus, const int &value);
 
   int select_mutation_allele(const int &mutation_locus);
 

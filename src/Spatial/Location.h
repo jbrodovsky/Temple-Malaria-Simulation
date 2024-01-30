@@ -5,23 +5,25 @@
 #ifndef SPATIAL_LOCATION_H
 #define SPATIAL_LOCATION_H
 
-#include "Core/PropertyMacro.h"
-#include "Coordinate.h"
 #include <memory>
 #include <ostream>
 #include <vector>
+
+#include "Coordinate.h"
+#include "Core/PropertyMacro.h"
 
 namespace Spatial {
 
 /*!
  *  Location is the smallest entity in the spatial structure.
- *  Location could be district, province, or zone depends on the availability of the data
+ *  Location could be district, province, or zone depends on the availability of
+ * the data
  */
 
 class Location {
-//    DISALLOW_COPY_AND_ASSIGN_(Location)
+  //    DISALLOW_COPY_AND_ASSIGN_(Location)
 
- public:
+public:
   int id;
   int population_size;
   float beta;
@@ -29,7 +31,8 @@ class Location {
   float p_treatment_more_than_5;
   std::unique_ptr<Coordinate> coordinate;
   std::vector<double> age_distribution;
- public:
+
+public:
   Location(int id, float latitude, float longitude, int population_size);
 
   virtual ~Location();
@@ -40,6 +43,6 @@ class Location {
 
   friend std::ostream &operator<<(std::ostream &os, const Location &location);
 };
-}
+}  // namespace Spatial
 
-#endif //SPATIAL_LOCATION_H
+#endif  // SPATIAL_LOCATION_H

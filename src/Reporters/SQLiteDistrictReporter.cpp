@@ -1,4 +1,5 @@
 #include "SQLiteDistrictReporter.h"
+
 #include "Core/Config/Config.h"
 #include "GIS/SpatialData.h"
 #include "Helpers/StringHelpers.h"
@@ -49,13 +50,10 @@ void SQLiteDistrictReporter::monthly_site_data(int id) {
   // Collect the data
   for (auto location = 0; location < Model::CONFIG->number_of_locations();
        location++) {
-
     // If the population is zero, press on
     auto location_population =
         static_cast<int>(Model::POPULATION->size(location));
-    if (location_population == 0) {
-      continue;
-    }
+    if (location_population == 0) { continue; }
 
     // Note the district we are in, make sure things are zero indexed
     auto district = district_lookup[location] - first_index;
@@ -100,15 +98,14 @@ void SQLiteDistrictReporter::monthly_site_data(int id) {
               : Model::DATA_COLLECTOR->EIR_by_location_year()[location].back();
       eir[district] += (eir_location * location_population);
       pfpr_under5[district] +=
-          (Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 0, 5) *
-           location_population);
+          (Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 0, 5)
+           * location_population);
       pfpr_2to10[district] +=
-          (Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 2, 10) *
-           location_population);
+          (Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 2, 10)
+           * location_population);
       pfpr_all[district] +=
-          (Model::DATA_COLLECTOR
-               ->blood_slide_prevalence_by_location()[location] *
-           location_population);
+          (Model::DATA_COLLECTOR->blood_slide_prevalence_by_location()[location]
+           * location_population);
     }
   }
 
@@ -148,12 +145,11 @@ void SQLiteDistrictReporter::monthly_site_data(int id) {
 // Collect and store monthly genome data
 // Aggregates and stores data related to the genotypes found in the population
 void SQLiteDistrictReporter::monthly_genome_data(int id) {
-
   // Cache some values
   auto genotypes = Model::CONFIG->number_of_parasite_types();
   auto districts = SpatialData::get_instance().get_district_count();
   auto first_index = SpatialData::get_instance().get_first_district();
-  auto *index =
+  auto* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
   auto age_classes = index->vPerson()[0][0].size();
 
@@ -173,7 +169,6 @@ void SQLiteDistrictReporter::monthly_genome_data(int id) {
 
   // Iterate over all the possible states
   for (auto location = 0; location < index->vPerson().size(); location++) {
-
     // Get the current index and apply the off set, so we are zero aligned
     auto district = district_lookup[location] - first_index;
     int infectedIndividuals = 0;
@@ -184,14 +179,11 @@ void SQLiteDistrictReporter::monthly_genome_data(int id) {
         // Iterate over all the genotypes
         auto age_class = index->vPerson()[location][hs][ac];
         for (auto &person : age_class) {
-
           // Get the person, press on if they are not infected
           auto parasites =
               person->all_clonal_parasite_populations()->parasites();
           auto size = parasites->size();
-          if (size == 0) {
-            continue;
-          }
+          if (size == 0) { continue; }
 
           // Note the age and clinical status of the person
           auto age = person->age();
@@ -236,9 +228,7 @@ void SQLiteDistrictReporter::monthly_genome_data(int id) {
   std::string insert_genotypes, update_infections;
   for (auto district = 0; district < districts; district++) {
     for (auto genotype = 0; genotype < genotypes; genotype++) {
-      if (weightedOccurrences[district][genotype] == 0) {
-        continue;
-      }
+      if (weightedOccurrences[district][genotype] == 0) { continue; }
       std::string singleRow = fmt::format(
           "({}, {}, {}, {}, {}, {}, {}, {})", id, district + first_index,
           genotype, occurrences[district][genotype],
@@ -273,7 +263,7 @@ void SQLiteDistrictReporter::monthly_infected_individuals(int id) {
   // Cache some values and prepare the data structure
   auto districts = SpatialData::get_instance().get_district_count();
   auto first_index = SpatialData::get_instance().get_first_district();
-  auto *index =
+  auto* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
   auto age_classes = index->vPerson()[0][0].size();
   std::vector<int> infections_district(districts, 0);

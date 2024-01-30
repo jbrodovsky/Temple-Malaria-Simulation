@@ -6,9 +6,9 @@
 #include "DbReporter.h"
 
 #include <fmt/format.h>
+
 #include <regex>
 #include <thread>
-
 
 #include "Core/Config/Config.h"
 #include "Core/Random.h"
@@ -18,8 +18,7 @@
 #include "Population/Properties/PersonIndexByLocationStateAgeClass.h"
 #include "easylogging++.h"
 
-
-pqxx::connection *DbReporter::get_connection() const {
+pqxx::connection* DbReporter::get_connection() const {
   // Getting a connection is straightforward, so this function is largely
   // intended to warp retry functionality
   int retry_count = 0;
@@ -47,7 +46,7 @@ pqxx::connection *DbReporter::get_connection() const {
 
 void DbReporter::initialize(int job_number, std::string path) {
   // Connect to the database
-  pqxx::connection *connection = get_connection();
+  pqxx::connection* connection = get_connection();
   LOG(INFO) << "Connected to " << connection->dbname();
 
   // Ensure that the database is prepared and grab relevant ids before running
@@ -64,7 +63,7 @@ void DbReporter::initialize(int job_number, std::string path) {
 }
 
 // Make sure the relevant entries for the configuration are in the database
-void DbReporter::prepare_configuration(pqxx::connection *connection) {
+void DbReporter::prepare_configuration(pqxx::connection* connection) {
   // Load the text of the configuration
   std::string filename = Model::MODEL->config_filename();
   std::ifstream input(filename);
@@ -150,7 +149,7 @@ void DbReporter::prepare_configuration(pqxx::connection *connection) {
 }
 
 // Make sure the relevant entries for this replicate are in the database
-void DbReporter::prepare_replicate(pqxx::connection *connection) {
+void DbReporter::prepare_replicate(pqxx::connection* connection) {
   // Check to see what type of movement is being recorded, if any
   char movement = 'X';
   if (Model::MODEL->report_movement()) {
@@ -185,16 +184,13 @@ void DbReporter::prepare_replicate(pqxx::connection *connection) {
 
 // Prepare the monthly report and insert the results in the database
 void DbReporter::monthly_report() {
-
   // Core loop for attempting to store the monthly report, if a broken
   // connection occurs, the delay in getting a new connection will
   // give us a chance at recovery
   int attempt = 0;
   while (attempt < RETRY_LIMIT) {
     // Return from the function on success
-    if (do_monthly_report()) {
-      return;
-    }
+    if (do_monthly_report()) { return; }
     attempt++;
   }
 
@@ -208,7 +204,7 @@ void DbReporter::monthly_report() {
 
 // Perform the actual monthly report,
 bool DbReporter::do_monthly_report() {
-  pqxx::connection *connection;
+  pqxx::connection* connection;
 
   try {
     // Get the relevant data
@@ -231,8 +227,8 @@ bool DbReporter::do_monthly_report() {
     // Build the queries that contain the site data
     query = "";
     monthly_site_data(id, query);
-    if (Model::CONFIG->record_genome_db() &&
-        Model::DATA_COLLECTOR->recording_data()) {
+    if (Model::CONFIG->record_genome_db()
+        && Model::DATA_COLLECTOR->recording_data()) {
       // Add the genome information, this will also update infected individuals
       monthly_genome_data(id, query);
     } else {
@@ -264,13 +260,12 @@ bool DbReporter::do_monthly_report() {
 //         be invoked after monthly_site_data to ensure the data is inserted
 //         correctly.
 void DbReporter::monthly_genome_data(int id, std::string &query) {
-
   // Prepare the data structures
   auto genotypes = Model::CONFIG->number_of_parasite_types();
   std::vector<int> individual(genotypes, 0);
 
   // Cache some values
-  auto *index =
+  auto* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
   auto age_classes = index->vPerson()[0][0].size();
 
@@ -278,20 +273,21 @@ void DbReporter::monthly_genome_data(int id, std::string &query) {
   for (unsigned int location = 0; location < index->vPerson().size();
        location++) {
     std::vector<int> occurrences(
-        genotypes, 0); // discrete count of occurrences of the parasite genotype
+        genotypes,
+        0);  // discrete count of occurrences of the parasite genotype
     std::vector<int> clinicalOccurrences(
         genotypes,
-        0); // discrete count of clinical occurrences of the parasite genotype
+        0);  // discrete count of clinical occurrences of the parasite genotype
     std::vector<int> occurrencesZeroToFive(
-        genotypes, 0); // discrete count of the occurrences of the parasite
-                       // genotype in individuals 0 - 5
+        genotypes, 0);  // discrete count of the occurrences of the parasite
+                        // genotype in individuals 0 - 5
     std::vector<int> occurrencesTwoToTen(
-        genotypes, 0); // discrete count of the occurrences of the parasite
-                       // genotype in individuals 2 - 10
+        genotypes, 0);  // discrete count of the occurrences of the parasite
+                        // genotype in individuals 2 - 10
     std::vector<double> weightedOccurrences(
-        genotypes, 0.0); // weighted occurrences of the genotype
+        genotypes, 0.0);  // weighted occurrences of the genotype
     int infectedIndividuals =
-        0; // discrete count of infected individuals in the location
+        0;  // discrete count of infected individuals in the location
 
     // Iterate over all the possible states
     for (auto hs = 0; hs < Person::NUMBER_OF_STATE - 1; hs++) {
@@ -300,15 +296,12 @@ void DbReporter::monthly_genome_data(int id, std::string &query) {
         // Iterate over all the genotypes
         auto age_class = index->vPerson()[location][hs][ac];
         for (auto &person : age_class) {
-
           // Get the person, press on if they are not infected (i.e., no
           // parasites)
           auto parasites =
               person->all_clonal_parasite_populations()->parasites();
           auto size = parasites->size();
-          if (size == 0) {
-            continue;
-          }
+          if (size == 0) { continue; }
 
           // Note the age and clinical status of the person
           auto age = person->age();
@@ -350,9 +343,7 @@ void DbReporter::monthly_genome_data(int id, std::string &query) {
     if (infectedIndividuals != 0) {
       query.append(INSERT_GENOTYPE_PREFIX);
       for (unsigned int genotype = 0; genotype < genotypes; genotype++) {
-        if (weightedOccurrences[genotype] == 0) {
-          continue;
-        }
+        if (weightedOccurrences[genotype] == 0) { continue; }
         query.append(fmt::format(
             INSERT_GENOTYPE_ROW, id, location_index[location], genotype,
             occurrences[genotype], clinicalOccurrences[genotype],
@@ -377,9 +368,7 @@ void DbReporter::monthly_site_data(int id, std::string &query) {
   for (auto location = 0; location < Model::CONFIG->number_of_locations();
        location++) {
     // Check the population, if there is nobody there, press on
-    if (Model::POPULATION->size(location) == 0) {
-      continue;
-    }
+    if (Model::POPULATION->size(location) == 0) { continue; }
 
     // Determine the EIR and PfPR values
     auto eir =
@@ -387,14 +376,14 @@ void DbReporter::monthly_site_data(int id, std::string &query) {
             ? 0
             : Model::DATA_COLLECTOR->EIR_by_location_year()[location].back();
     auto pfpr_under5 =
-        Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 0, 5) *
-        100.0;
+        Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 0, 5)
+        * 100.0;
     auto pfpr_2to10 =
-        Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 2, 10) *
-        100.0;
+        Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 2, 10)
+        * 100.0;
     auto pfpr_all =
-        Model::DATA_COLLECTOR->blood_slide_prevalence_by_location()[location] *
-        100.0;
+        Model::DATA_COLLECTOR->blood_slide_prevalence_by_location()[location]
+        * 100.0;
 
     // Collect the treatment by age class, following the 0-59 month convention
     // for under-5
@@ -433,7 +422,7 @@ void DbReporter::monthly_site_data(int id, std::string &query) {
 // Update the monthly count of infected individuals.
 void DbReporter::monthly_infected_individuals(int id, std::string &query) {
   // Cache some values
-  auto *index =
+  auto* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
   auto age_classes = index->vPerson()[0][0].size();
 
@@ -449,7 +438,6 @@ void DbReporter::monthly_infected_individuals(int id, std::string &query) {
         // Iterate over all the genotypes
         auto age_class = index->vPerson()[location][hs][ac];
         for (auto &person : age_class) {
-
           // Update the count if the individual is infected
           if (!person->all_clonal_parasite_populations()
                    ->parasites()
@@ -468,7 +456,7 @@ void DbReporter::monthly_infected_individuals(int id, std::string &query) {
 
 void DbReporter::after_run() {
   // Report that we are done
-  auto *connection = new pqxx::connection(Model::CONFIG->connection_string());
+  auto* connection = new pqxx::connection(Model::CONFIG->connection_string());
   pqxx::work db(*connection);
   db.exec(fmt::format(UPDATE_REPLICATE, replicate));
   db.commit();

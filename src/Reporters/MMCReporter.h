@@ -2,21 +2,21 @@
 #ifndef MMCREPORTER_H
 #define MMCREPORTER_H
 
-#include "Reporter.h"
 #include <sstream>
 
-class MMCReporter : public Reporter {
-DISALLOW_COPY_AND_ASSIGN(MMCReporter)
+#include "Reporter.h"
 
-DISALLOW_MOVE(MMCReporter)
+class MMCReporter : public Reporter {
+  DISALLOW_COPY_AND_ASSIGN(MMCReporter)
+
+  DISALLOW_MOVE(MMCReporter)
 
 public:
-
   MMCReporter();
 
   ~MMCReporter() override = default;
 
-  void initialize(int job_number, std::string path) override { }
+  void initialize(int job_number, std::string path) override {}
 
   void before_run() override;
 
@@ -31,4 +31,4 @@ public:
   void print_EIR_PfPR_by_location();
 };
 
-#endif // MMCREPORTER_H
+#endif  // MMCREPORTER_H

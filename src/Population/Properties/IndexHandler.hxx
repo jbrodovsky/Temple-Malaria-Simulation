@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   IndexHandler.h
  * Author: nguyentran
  *
@@ -8,19 +8,19 @@
 #ifndef INDEXHANDLER_H
 #define INDEXHANDLER_H
 
+#include <stdio.h>
+
 #include "Core/PropertyMacro.h"
 
 class IndexHandler {
- DISALLOW_COPY_AND_ASSIGN(IndexHandler)
+  DISALLOW_COPY_AND_ASSIGN(IndexHandler)
 
- PROPERTY_REF(std::size_t, index)
+  PROPERTY_REF(std::size_t, index)
 
- public:
-  IndexHandler() : index_(-1) { }
+public:
+  IndexHandler() : index_(-1) {}
 
   virtual ~IndexHandler() = default;
-
 };
 
 #endif
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   MatureGametocyteEvent.h
  * Author: Merlin
  *
@@ -6,11 +6,11 @@
  */
 
 #ifndef MATUREGAMETOCYTEEVENT_H
-#define    MATUREGAMETOCYTEEVENT_H
+#define MATUREGAMETOCYTEEVENT_H
 
-#include "Event.h"
 #include "Core/ObjectPool.h"
 #include "Core/PropertyMacro.h"
+#include "Event.h"
 
 class ClonalParasitePopulation;
 
@@ -19,26 +19,25 @@ class Scheduler;
 class Person;
 
 class MatureGametocyteEvent : public Event {
- DISALLOW_COPY_AND_ASSIGN(MatureGametocyteEvent);
- OBJECTPOOL(MatureGametocyteEvent)
+  DISALLOW_COPY_AND_ASSIGN(MatureGametocyteEvent);
+  OBJECTPOOL(MatureGametocyteEvent)
 
- POINTER_PROPERTY(ClonalParasitePopulation, blood_parasite)
+  POINTER_PROPERTY(ClonalParasitePopulation, blood_parasite)
 
- public:
+public:
   MatureGametocyteEvent();
 
   //    MatureGametocyteEvent(const MatureGametocyteEvent& orig);
   virtual ~MatureGametocyteEvent();
 
-  static void
-  schedule_event(Scheduler *scheduler, Person *p, ClonalParasitePopulation *blood_parasite, const int &time);
+  static void schedule_event(Scheduler* scheduler, Person* p,
+                             ClonalParasitePopulation* blood_parasite,
+                             const int &time);
 
-  std::string name() override {
-    return "MatureGametocyteEvent";
-  }
+  std::string name() override { return "MatureGametocyteEvent"; }
 
- private:
+private:
   void execute() override;
 };
 
-#endif    /* MATUREGAMETOCYTEEVENT_H */
+#endif /* MATUREGAMETOCYTEEVENT_H */

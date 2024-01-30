@@ -14,19 +14,20 @@ class Person;
 class Scheduler;
 
 class CirculateToTargetLocationNextDayEvent : public Event {
- DISALLOW_COPY_AND_ASSIGN(CirculateToTargetLocationNextDayEvent)
- DISALLOW_MOVE(CirculateToTargetLocationNextDayEvent)
- OBJECTPOOL(CirculateToTargetLocationNextDayEvent)
- PROPERTY_REF(int, target_location)
+  DISALLOW_COPY_AND_ASSIGN(CirculateToTargetLocationNextDayEvent)
+  DISALLOW_MOVE(CirculateToTargetLocationNextDayEvent)
+  OBJECTPOOL(CirculateToTargetLocationNextDayEvent)
+  PROPERTY_REF(int, target_location)
 
- public:
-  CirculateToTargetLocationNextDayEvent() : target_location_(0) { }
+public:
+  CirculateToTargetLocationNextDayEvent() : target_location_(0) {}
   ~CirculateToTargetLocationNextDayEvent() override = default;
 
-  static void schedule_event(Scheduler *scheduler, Person *p, const int &target_location, const int &time);
+  static void schedule_event(Scheduler* scheduler, Person* p,
+                             const int &target_location, const int &time);
   std::string name() override;
 
- private:
+private:
   void execute() override;
 };
 

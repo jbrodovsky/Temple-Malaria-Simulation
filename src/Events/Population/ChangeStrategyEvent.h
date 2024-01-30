@@ -1,28 +1,27 @@
 #ifndef CHANGESTRATEGYEVENT_H
 #define CHANGESTRATEGYEVENT_H
 
-#include "Core/PropertyMacro.h"
-#include "Events/Event.h"
 #include <string>
 
+#include "Core/PropertyMacro.h"
+#include "Events/Event.h"
+
 class ChangeStrategyEvent : public Event {
- DISALLOW_COPY_AND_ASSIGN(ChangeStrategyEvent)
+  DISALLOW_COPY_AND_ASSIGN(ChangeStrategyEvent)
 
- DISALLOW_MOVE(ChangeStrategyEvent)
+  DISALLOW_MOVE(ChangeStrategyEvent)
 
- public:
+public:
   int strategy_id{-1};
 
   ChangeStrategyEvent(const int &at_time, const int &strategy_id);
 
   virtual ~ChangeStrategyEvent() = default;
 
-  std::string name() override {
-    return "ChangeStrategyEvent";
-  }
+  std::string name() override { return "ChangeStrategyEvent"; }
 
- private:
+private:
   void execute() override;
 };
 
-#endif // CHANGESTRATEGYEVENT_H
+#endif  // CHANGESTRATEGYEVENT_H

@@ -1,14 +1,15 @@
-/* 
+/*
  * File:   Dispatcher.cpp
  * Author: nguyentran
- * 
+ *
  * Created on May 3, 2013, 3:46 PM
  */
 
 #include "Dispatcher.h"
-#include "Population/Properties/IndexHandler.hxx"
+
 #include "Events/Event.h"
 #include "Helpers/ObjectHelpers.h"
+#include "Population/Properties/IndexHandler.hxx"
 
 Dispatcher::Dispatcher() : events_(nullptr) {}
 
@@ -24,13 +25,13 @@ Dispatcher::~Dispatcher() {
 }
 
 // Add the event to the dispatcher
-void Dispatcher::add(Event *event) {
+void Dispatcher::add(Event* event) {
   events_->push_back(event);
   event->IndexHandler::set_index(events_->size() - 1);
 }
 
 // Remove the event from the dispatcher
-void Dispatcher::remove(Event *event) {
+void Dispatcher::remove(Event* event) {
   // Move the given event to the back of the vector
   events_->back()->IndexHandler::set_index(event->IndexHandler::index());
   (*events_)[event->IndexHandler::index()] = events_->back();
@@ -56,6 +57,4 @@ void Dispatcher::clear_events() {
   events_->clear();
 }
 
-void Dispatcher::update() {
-  events_->shrink_to_fit();
-}
+void Dispatcher::update() { events_->shrink_to_fit(); }

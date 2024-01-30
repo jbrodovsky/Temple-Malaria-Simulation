@@ -29,4 +29,4 @@ monthly_data\.txt
 reporter\.txt
 
 compile_commands.json
-
+*.log

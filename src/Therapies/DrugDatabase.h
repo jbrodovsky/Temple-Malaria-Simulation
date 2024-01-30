@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   DrugDatabase.h
  * Author: nguyentran
  *
@@ -6,30 +6,28 @@
  */
 
 #ifndef DRUGDATABASE_H
-#define    DRUGDATABASE_H
+#define DRUGDATABASE_H
+
+#include <map>
 
 #include "Core/PropertyMacro.h"
 #include "DrugType.h"
-#include <map>
 
-typedef std::map<int, DrugType *> DrugTypePtrMap;
+typedef std::map<int, DrugType*> DrugTypePtrMap;
 
 class DrugDatabase : public DrugTypePtrMap {
- DISALLOW_COPY_AND_ASSIGN(DrugDatabase)
+  DISALLOW_COPY_AND_ASSIGN(DrugDatabase)
   // VIRTUAL_PROPERTY_REF(DrugTypePtrMap, drug_db)
 
- public:
+public:
   DrugDatabase();
 
   //    DrugDatabase(const DrugDatabase& orig);
   virtual ~DrugDatabase();
 
-  void add(DrugType *dt);
+  void add(DrugType* dt);
 
-
- private:
-
+private:
 };
 
-#endif    /* DRUGDATABASE_H */
-
+#endif /* DRUGDATABASE_H */

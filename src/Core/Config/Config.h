@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Config.h
  * Author: nguyentran
  *
@@ -8,37 +8,41 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <date/date.h>
+
+#include <string>
+#include <vector>
+
+#include "ConfigItem.hxx"
+#include "Core/MultinomialDistributionGenerator.h"
 #include "Core/PropertyMacro.h"
 #include "Core/TypeDef.h"
 #include "CustomConfigItem.h"
-#include "ConfigItem.hxx"
 #include "PreconfigEvents.hxx"
 #include "Spatial/Location.h"
-#include "Core/MultinomialDistributionGenerator.h"
 #include "rapt_config.h"
-#include <string>
-#include <vector>
-#include <date/date.h>
 
 class Model;
 
 class Config {
- DISALLOW_COPY_AND_ASSIGN(Config)
+  DISALLOW_COPY_AND_ASSIGN(Config)
 
- DISALLOW_MOVE(Config)
+  DISALLOW_MOVE(Config)
 
- public:
- POINTER_PROPERTY(Model, model)
+public:
+  POINTER_PROPERTY(Model, model)
 
-  std::vector<IConfigItem *> config_items{};
+  std::vector<IConfigItem*> config_items{};
 
   CONFIG_ITEM(days_between_notifications, int, 100)
   CONFIG_ITEM(initial_seed_number, unsigned long, 0)
   CONFIG_ITEM(connection_string, std::string, "")
   CONFIG_ITEM(record_genome_db, bool, false)
 
-  CONFIG_ITEM(starting_date, date::year_month_day, date::year_month_day{date::year{1999}/1/1})
-  CONFIG_ITEM(ending_date, date::year_month_day, date::year_month_day{date::year{1999}/1/2})
+  CONFIG_ITEM(starting_date, date::year_month_day,
+              date::year_month_day{date::year{1999} / 1 / 1})
+  CONFIG_ITEM(ending_date, date::year_month_day,
+              date::year_month_day{date::year{1999} / 1 / 2})
 
   CUSTOM_CONFIG_ITEM(total_time, 100)
 
@@ -85,9 +89,11 @@ class Config {
 
   CONFIG_ITEM(death_rate_by_age_class, DoubleVector, DoubleVector())
 
-  CONFIG_ITEM(mortality_when_treatment_fail_by_age_class, DoubleVector, DoubleVector())
+  CONFIG_ITEM(mortality_when_treatment_fail_by_age_class, DoubleVector,
+              DoubleVector())
 
-  CONFIG_ITEM(parasite_density_level, ParasiteDensityLevel, ParasiteDensityLevel())
+  CONFIG_ITEM(parasite_density_level, ParasiteDensityLevel,
+              ParasiteDensityLevel())
 
   CONFIG_ITEM(relative_infectivity, RelativeInfectivity, RelativeInfectivity())
 
@@ -95,7 +101,8 @@ class Config {
 
   CONFIG_ITEM(initial_strategy_id, int, -1)
 
-  CONFIG_ITEM(age_bracket_prob_individual_present_at_mda, IntVector, IntVector())
+  CONFIG_ITEM(age_bracket_prob_individual_present_at_mda, IntVector,
+              IntVector())
 
   CONFIG_ITEM(mean_prob_individual_present_at_mda, DoubleVector, DoubleVector())
 
@@ -137,28 +144,29 @@ class Config {
 
   CUSTOM_CONFIG_ITEM(initial_parasite_info, std::vector<InitialParasiteInfo>())
 
-  CUSTOM_CONFIG_ITEM(PreconfigEvents, std::vector<Event *>())
+  CUSTOM_CONFIG_ITEM(PreconfigEvents, std::vector<Event*>())
 
-  CUSTOM_CONFIG_ITEM(bitting_level_generator, MultinomialDistributionGenerator())
+  CUSTOM_CONFIG_ITEM(bitting_level_generator,
+                     MultinomialDistributionGenerator())
   CUSTOM_CONFIG_ITEM(moving_level_generator, MultinomialDistributionGenerator())
 
-  CUSTOM_CONFIG_ITEM(prob_individual_present_at_mda_distribution, std::vector<beta_distribution_params>())
+  CUSTOM_CONFIG_ITEM(prob_individual_present_at_mda_distribution,
+                     std::vector<beta_distribution_params>())
 
   CUSTOM_CONFIG_ITEM(rapt_config, RaptConfigEntry())
- VIRTUAL_PROPERTY_REF(double, modified_mutation_factor)
+  VIRTUAL_PROPERTY_REF(double, modified_mutation_factor)
 
- VIRTUAL_PROPERTY_REF(double, modified_drug_half_life)
+  VIRTUAL_PROPERTY_REF(double, modified_drug_half_life)
 
- VIRTUAL_PROPERTY_REF(double, modified_daily_cost_of_resistance)
+  VIRTUAL_PROPERTY_REF(double, modified_daily_cost_of_resistance)
 
- VIRTUAL_PROPERTY_REF(double, modified_mutation_probability)
+  VIRTUAL_PROPERTY_REF(double, modified_mutation_probability)
 
-  explicit Config(Model *model = nullptr);
+  explicit Config(Model* model = nullptr);
 
   virtual ~Config();
 
   void read_from_file(const std::string &config_file_name = "config.yml");
-
 };
 
 #endif /* CONFIG_H */

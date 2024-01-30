@@ -1,7 +1,7 @@
-/* 
+/*
  * ClonalParasitePopulation.h
  *
- * Define the ClonalParasitePopulation class which allows a single parasite 
+ * Define the ClonalParasitePopulation class which allows a single parasite
  * colony to be tracked in an individual.
  */
 #ifndef CLONAL_PARASITE_POPULATION_H
@@ -19,30 +19,30 @@ class SingleHostClonalParasitePopulations;
 class Therapy;
 
 class ClonalParasitePopulation : public IndexHandler {
- OBJECTPOOL(ClonalParasitePopulation);
+  OBJECTPOOL(ClonalParasitePopulation);
 
- DISALLOW_COPY_AND_ASSIGN(ClonalParasitePopulation)
+  DISALLOW_COPY_AND_ASSIGN(ClonalParasitePopulation)
 
- PROPERTY_HEADER(double, last_update_log10_parasite_density)
+  PROPERTY_HEADER(double, last_update_log10_parasite_density)
 
- PROPERTY_HEADER(double, gametocyte_level)
+  PROPERTY_HEADER(double, gametocyte_level)
 
- PROPERTY_REF(int, first_date_in_blood)
+  PROPERTY_REF(int, first_date_in_blood)
 
- POINTER_PROPERTY(SingleHostClonalParasitePopulations, parasite_population)
+  POINTER_PROPERTY(SingleHostClonalParasitePopulations, parasite_population)
 
- POINTER_PROPERTY_HEADER(Genotype, genotype)
+  POINTER_PROPERTY_HEADER(Genotype, genotype)
 
- POINTER_PROPERTY(ParasiteDensityUpdateFunction, update_function)
+  POINTER_PROPERTY(ParasiteDensityUpdateFunction, update_function)
 
- private:
+private:
   ul_uid _uid;
 
- public:
+public:
   static constexpr double LOG_ZERO_PARASITE_DENSITY = -1000;
 
- public:
-  explicit ClonalParasitePopulation(Genotype *genotype = nullptr);
+public:
+  explicit ClonalParasitePopulation(Genotype* genotype = nullptr);
 
   ~ClonalParasitePopulation() override;
 
@@ -57,8 +57,6 @@ class ClonalParasitePopulation : public IndexHandler {
   void perform_drug_action(const double &percent_parasite_remove);
 
   [[nodiscard]] ul_uid get_uid() const { return _uid; }
-
 };
 
 #endif
-

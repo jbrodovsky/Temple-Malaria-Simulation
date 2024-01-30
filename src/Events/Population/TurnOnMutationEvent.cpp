@@ -1,11 +1,14 @@
 #include "TurnOnMutationEvent.h"
-#include "easylogging++.h"
+
+#include "Core/Config/Config.h"
 #include "Core/Scheduler.h"
 #include "Model.h"
-#include "Core/Config/Config.h"
+#include "easylogging++.h"
 
-TurnOnMutationEvent::TurnOnMutationEvent(const int &at_time, const double &mutation_probability, const int &drug_id) :
-  mutation_probability{mutation_probability}, drug_id{drug_id} {
+TurnOnMutationEvent::TurnOnMutationEvent(const int &at_time,
+                                         const double &mutation_probability,
+                                         const int &drug_id)
+    : mutation_probability{mutation_probability}, drug_id{drug_id} {
   time = at_time;
 }
 
@@ -16,5 +19,6 @@ void TurnOnMutationEvent::execute() {
     }
   }
 
-  LOG(INFO) << date::year_month_day{scheduler->calendar_date} << " : turn mutation on";
+  LOG(INFO) << date::year_month_day{scheduler->calendar_date}
+            << " : turn mutation on";
 }

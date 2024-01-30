@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   PersonIndexByLocationMovingLevelHandler.h
  * Author: Merlin
  *
@@ -8,19 +8,16 @@
 #ifndef PERSONINDEXBYLOCATIONMOVINGLEVELHANDLER_H
 #define PERSONINDEXBYLOCATIONMOVINGLEVELHANDLER_H
 
-#include "IndexHandler.hxx"
 #include "Core/PropertyMacro.h"
+#include "IndexHandler.hxx"
 
 class PersonIndexByLocationMovingLevelHandler : public IndexHandler {
-    
- DISALLOW_COPY_AND_ASSIGN(PersonIndexByLocationMovingLevelHandler)
+  DISALLOW_COPY_AND_ASSIGN(PersonIndexByLocationMovingLevelHandler)
 
- public:
-  PersonIndexByLocationMovingLevelHandler() { }
+public:
+  PersonIndexByLocationMovingLevelHandler() {}
 
-  virtual ~PersonIndexByLocationMovingLevelHandler() { }
-
+  virtual ~PersonIndexByLocationMovingLevelHandler() {}
 };
 
 #endif
-

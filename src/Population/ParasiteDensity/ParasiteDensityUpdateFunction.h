@@ -1,4 +1,4 @@
-/* 
+/*
  * ParasiteUpdateFunction.h
  *
  * Define the parasite update function interface.
@@ -11,15 +11,15 @@
 class ClonalParasitePopulation;
 
 class ParasiteDensityUpdateFunction {
- DISALLOW_COPY_AND_ASSIGN(ParasiteDensityUpdateFunction)
+  DISALLOW_COPY_AND_ASSIGN(ParasiteDensityUpdateFunction)
 
- public:
+public:
   ParasiteDensityUpdateFunction() = default;
 
   virtual ~ParasiteDensityUpdateFunction() = default;
 
-  virtual double get_current_parasite_density(ClonalParasitePopulation *parasite, int duration) = 0;
-
+  virtual double get_current_parasite_density(
+      ClonalParasitePopulation* parasite, int duration) = 0;
 };
 
 #endif

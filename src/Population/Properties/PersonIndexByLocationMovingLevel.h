@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   PersonIndexByLocationMovingLevel.h
  * Author: Merlin
  *
@@ -6,42 +6,44 @@
  */
 
 #ifndef PERSONINDEXBYLOCATIONMOVINGLEVEL_H
-#define    PERSONINDEXBYLOCATIONMOVINGLEVEL_H
+#define PERSONINDEXBYLOCATIONMOVINGLEVEL_H
 
 #include "Core/PropertyMacro.h"
 #include "Core/TypeDef.h"
-#include "Population/Person.h"
 #include "PersonIndex.hxx"
+#include "Population/Person.h"
 
 class PersonIndexByLocationMovingLevel : public PersonIndex {
- DISALLOW_COPY_AND_ASSIGN(PersonIndexByLocationMovingLevel);
- PROPERTY_REF(PersonPtrVector3, vPerson);
- public:
-  PersonIndexByLocationMovingLevel(const int &no_location = 1, const int &no_level = 1);
+  DISALLOW_COPY_AND_ASSIGN(PersonIndexByLocationMovingLevel);
+  PROPERTY_REF(PersonPtrVector3, vPerson);
 
-  //    PersonIndexByLocationMovingLevel(const PersonIndexByLocationMovingLevel& orig);
+public:
+  PersonIndexByLocationMovingLevel(const int &no_location = 1,
+                                   const int &no_level = 1);
+
+  //    PersonIndexByLocationMovingLevel(const PersonIndexByLocationMovingLevel&
+  //    orig);
   virtual ~PersonIndexByLocationMovingLevel();
 
   void Initialize(const int &no_location = 1, const int &no_level = 1);
 
-  virtual void add(Person *p);
+  virtual void add(Person* p);
 
-  virtual void remove(Person *p);
+  virtual void remove(Person* p);
 
   virtual std::size_t size() const;
 
   virtual void defragment();
 
-  virtual void notify_change(Person *p, const Person::Property &property, const void *oldValue, const void *newValue);
+  virtual void notify_change(Person* p, const Person::Property &property,
+                             const void* oldValue, const void* newValue);
 
- private:
-  void remove_without_set_index(Person *p);
+private:
+  void remove_without_set_index(Person* p);
 
-  void add(Person *p, const int &location, const int &moving_level);
+  void add(Person* p, const int &location, const int &moving_level);
 
-  void change_property(Person *p, const int &location, const int &biting_level);
-
+  void change_property(Person* p, const int &location, const int &biting_level);
 };
 
-#endif    /* PERSONINDEXBYLOCATIONMOVINGLEVEL_H */
-
+#endif /* PERSONINDEXBYLOCATIONMOVINGLEVEL_H */

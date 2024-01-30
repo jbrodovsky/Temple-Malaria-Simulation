@@ -41,40 +41,40 @@ std::map<std::string, Reporter::ReportType> Reporter::ReportTypeMap{
     {"SQLitePixelReporter", SQLITE_PIXEL_REPORTER},
     {"Null", NULL_REPORTER}};
 
-Reporter *Reporter::MakeReport(ReportType report_type) {
+Reporter* Reporter::MakeReport(ReportType report_type) {
   switch (report_type) {
-  case CONSOLE:
-    return new ConsoleReporter();
-  case MONTHLY_REPORTER:
-    return new MonthlyReporter();
-  case MMC_REPORTER:
-    return new MMCReporter();
-  case DB_REPORTER:
-    return new DbReporter();
-  case DB_REPORTER_DISTRICT:
-    return new DbReporterDistrict();
-  case MOVEMENT_REPORTER:
-    return new MovementReporter();
-  case POPULATION_REPORTER:
-    return new PopulationReporter();
-  case CELLULAR_REPORTER:
-    return new CellularReporter();
-  case GENOTYPE_CARRIERS:
-    return new GenotypeCarriersReporter();
-  case SEASONAL_IMMUNITY:
-    return new SeasonalImmunity();
-  case AGE_BAND_REPORTER:
-    return new AgeBandReporter();
-  case THERAPY_RECORD_REPORTER:
-    return new TherapyRecordReporter();
-  case SQLITE_DISTRICT_REPORTER:
-    return new SQLiteDistrictReporter();
-  case SQLITE_PIXEL_REPORTER:
-    return new SQLitePixelReporter();
-  case NULL_REPORTER:
-    return new NullReporter();
-  default:
-    LOG(ERROR) << "No reporter type supplied";
-    throw std::runtime_error("No reporter type supplied");
+    case CONSOLE:
+      return new ConsoleReporter();
+    case MONTHLY_REPORTER:
+      return new MonthlyReporter();
+    case MMC_REPORTER:
+      return new MMCReporter();
+    case DB_REPORTER:
+      return new DbReporter();
+    case DB_REPORTER_DISTRICT:
+      return new DbReporterDistrict();
+    case MOVEMENT_REPORTER:
+      return new MovementReporter();
+    case POPULATION_REPORTER:
+      return new PopulationReporter();
+    case CELLULAR_REPORTER:
+      return new CellularReporter();
+    case GENOTYPE_CARRIERS:
+      return new GenotypeCarriersReporter();
+    case SEASONAL_IMMUNITY:
+      return new SeasonalImmunity();
+    case AGE_BAND_REPORTER:
+      return new AgeBandReporter();
+    case THERAPY_RECORD_REPORTER:
+      return new TherapyRecordReporter();
+    case SQLITE_DISTRICT_REPORTER:
+      return new SQLiteDistrictReporter();
+    case SQLITE_PIXEL_REPORTER:
+      return new SQLitePixelReporter();
+    case NULL_REPORTER:
+      return new NullReporter();
+    default:
+      LOG(ERROR) << "No reporter type supplied";
+      throw std::runtime_error("No reporter type supplied");
   }
 }

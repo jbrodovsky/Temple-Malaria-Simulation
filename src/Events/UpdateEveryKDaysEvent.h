@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   UpdateEveryKDaysEvent.h
  * Author: Merlin
  *
@@ -6,34 +6,31 @@
  */
 
 #ifndef UPDATEEVERYKDAYSEVENT_H
-#define    UPDATEEVERYKDAYSEVENT_H
+#define UPDATEEVERYKDAYSEVENT_H
 
-#include "Event.h"
 #include "Core/ObjectPool.h"
 #include "Core/PropertyMacro.h"
+#include "Event.h"
 
 class Person;
 
 class UpdateEveryKDaysEvent : public Event {
- DISALLOW_COPY_AND_ASSIGN(UpdateEveryKDaysEvent)
+  DISALLOW_COPY_AND_ASSIGN(UpdateEveryKDaysEvent)
 
- OBJECTPOOL(UpdateEveryKDaysEvent)
+  OBJECTPOOL(UpdateEveryKDaysEvent)
 
- public:
+public:
   UpdateEveryKDaysEvent();
 
   //    UpdateEveryKDaysEvent(const UpdateEveryKDaysEvent& orig);
   virtual ~UpdateEveryKDaysEvent();
 
-  static void schedule_event(Scheduler *scheduler, Person *p, const int &time);
+  static void schedule_event(Scheduler* scheduler, Person* p, const int &time);
 
-  std::string name() override {
-    return "UpdateEveryKDaysEvent";
-  }
+  std::string name() override { return "UpdateEveryKDaysEvent"; }
 
- private:
+private:
   void execute() override;
-
 };
 
-#endif    /* UPDATEEVERYKDAYSEVENT_H */
+#endif /* UPDATEEVERYKDAYSEVENT_H */
