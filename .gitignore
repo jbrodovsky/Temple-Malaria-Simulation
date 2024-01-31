@@ -19,6 +19,7 @@ bin
 node_modules
 Testing
 cmake-*
+compile_commands.json
 
 # Ignore the backups of diagrams
 documentation/diagrams/*.~vsdx
@@ -28,5 +29,8 @@ out
 monthly_data\.txt
 reporter\.txt
 
-compile_commands.json
+# Ignore temporary Excel files
+~$*.xlsx
+
+# Ignore log files
 *.log

@@ -34,7 +34,7 @@ $$p' = \frac{1000}{\left( 1 + \frac{cbr}{1000}\right) ^n}$$
 
 Where $cbr$ is the crude birth rate, $n$ is the number of years prior to calibration year, and $p'$ is the initial population. The cell multiplier can then be calculated as:
 
-$$multiplier = \frac{1000 - p'}{1000}$$
+$$multiplier = 1 - \left( \frac{1000 - p'}{1000} \right)$$
 
 The resulting $multiplier$ can then be applied using the Raster Calculator functionality in geographic information system (GIS) software (e.g., [ArcGIS Pro](https://www.esri.com/en-us/arcgis/products/arcgis-pro/overview), [GRASS GIS](https://grass.osgeo.org/), or [QGIS](https://qgis.org/en/site/)) where it is recommended that the floating point result be rounded up to the nearest integer value (i.e., [Round Up](https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/round-up.htm) function in ArcGIS Pro) to ensure that cells with a population always maintain a population. Once applied, the results can be validated by applying the equation:
 
