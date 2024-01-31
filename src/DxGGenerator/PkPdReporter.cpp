@@ -9,7 +9,7 @@
 
 #include "Core/Config/Config.h"
 #include "Core/Random.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/ClonalParasitePopulation.h"
 #include "Population/Person.h"
@@ -119,7 +119,7 @@ void PkPdReporter::after_time_step() {
 void PkPdReporter::monthly_report() {}
 
 void PkPdReporter::after_run() {
-  Model::DATA_COLLECTOR->update_after_run();
+  Model::MAIN_DATA_COLLECTOR->update_after_run();
 
   //    std::cout << 1-Model::DATA_COLLECTOR->current_TF_by_location()[0] <<
   //    std::endl;

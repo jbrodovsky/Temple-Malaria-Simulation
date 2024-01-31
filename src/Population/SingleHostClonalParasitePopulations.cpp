@@ -13,7 +13,7 @@
 #include "DrugsInBlood.h"
 #include "Helpers/NumberHelpers.hxx"
 #include "Helpers/ObjectHelpers.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Parasites/Genotype.h"
 #include "Person.h"
@@ -368,7 +368,7 @@ void SingleHostClonalParasitePopulations::update_by_drugs(
       // If the new genotype is not the same as the old one, then a mutation
       // occurred
       if (new_genotype != blood_parasite->genotype()) {
-        Model::DATA_COLLECTOR->record_1_mutation(person_->location());
+        Model::MAIN_DATA_COLLECTOR->record_1_mutation(person_->location());
         blood_parasite->set_genotype(new_genotype);
       }
 

@@ -3,7 +3,7 @@
 #include "Core/Config/Config.h"
 #include "GIS/SpatialData.h"
 #include "Helpers/StringHelpers.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/Population.h"
 #include "Population/Properties/PersonIndexByLocationStateAgeClass.h"
@@ -61,28 +61,29 @@ void SQLiteDistrictReporter::monthly_site_data(int id) {
     // Collect the simple data
     population[district] += location_population;
     clinical_episodes[district] +=
-        Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_clinical_episode_by_location()[location];
     treatments[district] +=
-        Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_treatment_by_location()[location];
     treatment_failures[district] +=
-        Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR
             ->monthly_treatment_failure_by_location()[location];
     nontreatment[district] +=
-        Model::DATA_COLLECTOR->monthly_nontreatment_by_location()[location];
+        Model::MAIN_DATA_COLLECTOR
+            ->monthly_nontreatment_by_location()[location];
 
     // Collect the treatment by age class, following the 0-59 month convention
     // for under-5
     for (auto ndx = 0; ndx < age_classes.size(); ndx++) {
       if (age_classes[ndx] < 5) {
         treatments_under5[district] +=
-            Model::DATA_COLLECTOR
+            Model::MAIN_DATA_COLLECTOR
                 ->monthly_number_of_treatment_by_location_age_class()[location]
                                                                      [ndx];
       } else {
         treatments_over5[district] +=
-            Model::DATA_COLLECTOR
+            Model::MAIN_DATA_COLLECTOR
                 ->monthly_number_of_treatment_by_location_age_class()[location]
                                                                      [ndx];
       }
@@ -91,20 +92,24 @@ void SQLiteDistrictReporter::monthly_site_data(int id) {
     // EIR and PfPR is a bit more complicated since it could be an invalid value
     // early in the simulation, and when aggregating at the district level the
     // weighted mean needs to be reported instead
-    if (Model::DATA_COLLECTOR->recording_data()) {
+    if (Model::MAIN_DATA_COLLECTOR->recording_data()) {
       auto eir_location =
-          Model::DATA_COLLECTOR->EIR_by_location_year()[location].empty()
+          Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[location].empty()
               ? 0
-              : Model::DATA_COLLECTOR->EIR_by_location_year()[location].back();
+              : Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[location]
+                    .back();
       eir[district] += (eir_location * location_population);
       pfpr_under5[district] +=
-          (Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 0, 5)
+          (Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 0,
+                                                                  5)
            * location_population);
       pfpr_2to10[district] +=
-          (Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 2, 10)
+          (Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 2,
+                                                                  10)
            * location_population);
       pfpr_all[district] +=
-          (Model::DATA_COLLECTOR->blood_slide_prevalence_by_location()[location]
+          (Model::MAIN_DATA_COLLECTOR
+               ->blood_slide_prevalence_by_location()[location]
            * location_population);
     }
   }

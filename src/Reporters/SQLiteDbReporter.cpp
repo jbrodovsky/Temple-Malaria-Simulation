@@ -3,7 +3,7 @@
 #include <filesystem>
 
 #include "Core/Config/Config.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/Population.h"
 #include "easylogging++.h"
@@ -157,7 +157,7 @@ void SQLiteDbReporter::monthly_report() {
   std::string query = "";
   monthly_site_data(id);
   if (Model::CONFIG->record_genome_db()
-      && Model::DATA_COLLECTOR->recording_data()) {
+      && Model::MAIN_DATA_COLLECTOR->recording_data()) {
     // Add the genome information, this will also update infected individuals
     monthly_genome_data(id);
   } else {

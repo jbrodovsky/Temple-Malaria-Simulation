@@ -17,7 +17,7 @@
 #include "Helpers/ObjectHelpers.h"
 #include "Helpers/TimeHelpers.h"
 #include "ImmuneSystem.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/ImmuneComponent/InfantImmuneComponent.h"
 #include "Population/ImmuneComponent/NonInfantImmuneComponent.h"
@@ -146,7 +146,7 @@ void Population::perform_infection_event() {
       if (number_of_bites <= 0) { continue; }
 
       // data_collector store number of bites
-      Model::DATA_COLLECTOR->collect_number_of_bites(loc, number_of_bites);
+      Model::MAIN_DATA_COLLECTOR->collect_number_of_bites(loc, number_of_bites);
 
       // Determine the distribution of the bites
       DoubleVector vLevelDensity;
@@ -191,7 +191,7 @@ void Population::perform_infection_event() {
 
   for (auto* p : today_infections) {
     if (!p->today_infections()->empty()) {
-      Model::DATA_COLLECTOR->record_1_infection(p->location());
+      Model::MAIN_DATA_COLLECTOR->record_1_infection(p->location());
     }
     p->randomly_choose_parasite();
   }
@@ -478,8 +478,8 @@ void Population::perform_birth_event() {
     const auto number_of_births = Model::RANDOM->random_poisson(poisson_means);
     for (int i = 0; i < number_of_births; i++) {
       give_1_birth(loc);
-      Model::DATA_COLLECTOR->record_1_birth(loc);
-      Model::DATA_COLLECTOR->update_person_days_by_years(
+      Model::MAIN_DATA_COLLECTOR->record_1_birth(loc);
+      Model::MAIN_DATA_COLLECTOR->update_person_days_by_years(
           loc,
           Constants::DAYS_IN_YEAR() - Model::SCHEDULER->current_day_in_year());
     }
@@ -596,7 +596,7 @@ void Population::perform_circulation_event() {
 
   // Grab a copy of residents by location
   const auto residents_by_location =
-      Model::DATA_COLLECTOR->popsize_residence_by_location();
+      Model::MAIN_DATA_COLLECTOR->popsize_residence_by_location();
 
   // for each location
   //  get number of circulations based on size * circulation_percent

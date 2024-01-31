@@ -41,7 +41,7 @@ class Model;
 
 class Config;
 
-class ModelDataCollector;
+class MainDataCollector;
 
 class Random;
 

@@ -12,7 +12,7 @@
 
 #include "Core/Config/Config.h"
 #include "Core/Random.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/Population.h"
 #include "Population/Properties/PersonIndexByLocationStateAgeClass.h"
@@ -228,7 +228,7 @@ bool DbReporter::do_monthly_report() {
     query = "";
     monthly_site_data(id, query);
     if (Model::CONFIG->record_genome_db()
-        && Model::DATA_COLLECTOR->recording_data()) {
+        && Model::MAIN_DATA_COLLECTOR->recording_data()) {
       // Add the genome information, this will also update infected individuals
       monthly_genome_data(id, query);
     } else {
@@ -372,18 +372,19 @@ void DbReporter::monthly_site_data(int id, std::string &query) {
 
     // Determine the EIR and PfPR values
     auto eir =
-        Model::DATA_COLLECTOR->EIR_by_location_year()[location].empty()
+        Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[location].empty()
             ? 0
-            : Model::DATA_COLLECTOR->EIR_by_location_year()[location].back();
+            : Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[location]
+                  .back();
     auto pfpr_under5 =
-        Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 0, 5)
+        Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 0, 5)
         * 100.0;
     auto pfpr_2to10 =
-        Model::DATA_COLLECTOR->get_blood_slide_prevalence(location, 2, 10)
+        Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 2, 10)
         * 100.0;
-    auto pfpr_all =
-        Model::DATA_COLLECTOR->blood_slide_prevalence_by_location()[location]
-        * 100.0;
+    auto pfpr_all = Model::MAIN_DATA_COLLECTOR
+                        ->blood_slide_prevalence_by_location()[location]
+                    * 100.0;
 
     // Collect the treatment by age class, following the 0-59 month convention
     // for under-5
@@ -392,12 +393,12 @@ void DbReporter::monthly_site_data(int id, std::string &query) {
     for (auto ndx = 0; ndx < age_classes.size(); ndx++) {
       if (age_classes[ndx] < 5) {
         treatments_under5 +=
-            Model::DATA_COLLECTOR
+            Model::MAIN_DATA_COLLECTOR
                 ->monthly_number_of_treatment_by_location_age_class()[location]
                                                                      [ndx];
       } else {
         treatments_over5 +=
-            Model::DATA_COLLECTOR
+            Model::MAIN_DATA_COLLECTOR
                 ->monthly_number_of_treatment_by_location_age_class()[location]
                                                                      [ndx];
       }
@@ -406,14 +407,15 @@ void DbReporter::monthly_site_data(int id, std::string &query) {
     query.append(fmt::format(
         INSERT_SITE_ROW, id, location_index[location],
         Model::POPULATION->size(location),
-        Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_clinical_episode_by_location()[location],
-        Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_treatment_by_location()[location],
         eir, pfpr_under5, pfpr_2to10, pfpr_all,
-        Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR
             ->monthly_treatment_failure_by_location()[location],
-        Model::DATA_COLLECTOR->monthly_nontreatment_by_location()[location],
+        Model::MAIN_DATA_COLLECTOR
+            ->monthly_nontreatment_by_location()[location],
         treatments_under5, treatments_over5));
   }
   query[query.length() - 1] = ';';

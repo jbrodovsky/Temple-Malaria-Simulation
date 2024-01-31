@@ -10,7 +10,7 @@
 #include "Core/Random.h"
 #include "Core/Scheduler.h"
 #include "Events/ReportTreatmentFailureDeathEvent.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/ClonalParasitePopulation.h"
 #include "Population/Person.h"
@@ -66,8 +66,8 @@ void ProgressToClinicalEvent::execute() {
       Model::MODEL->clinical_update_function());
 
   // Statistic collect cumulative clinical episodes
-  Model::DATA_COLLECTOR->collect_1_clinical_episode(person->location(),
-                                                    person->age_class());
+  Model::MAIN_DATA_COLLECTOR->collect_1_clinical_episode(person->location(),
+                                                         person->age_class());
 
   const auto p = Model::RANDOM->random_flat(0.0, 1.0);
 
@@ -81,7 +81,7 @@ void ProgressToClinicalEvent::execute() {
     person->receive_therapy(therapy, clinical_caused_parasite_);
 
     // Statistic increase today treatments
-    Model::DATA_COLLECTOR->record_1_treatment(
+    Model::MAIN_DATA_COLLECTOR->record_1_treatment(
         person->location(), person->age_class(), therapy->id());
 
     clinical_caused_parasite_->set_update_function(
@@ -97,8 +97,8 @@ void ProgressToClinicalEvent::execute() {
     if (person->will_progress_to_death_when_receive_treatment()) {
       person->cancel_all_events_except(nullptr);
       person->set_host_state(Person::DEAD);
-      Model::DATA_COLLECTOR->record_1_malaria_death(person->location(),
-                                                    person->age_class());
+      Model::MAIN_DATA_COLLECTOR->record_1_malaria_death(person->location(),
+                                                         person->age_class());
       ReportTreatmentFailureDeathEvent::schedule_event(
           Model::SCHEDULER, person, therapy->id(),
           Model::SCHEDULER->current_time() + Model::CONFIG->tf_testing_day());
@@ -114,13 +114,13 @@ void ProgressToClinicalEvent::execute() {
 
   } else {
     // Did not receive treatment
-    Model::DATA_COLLECTOR->record_1_non_treated_case(person->location(),
-                                                     person->age_class());
+    Model::MAIN_DATA_COLLECTOR->record_1_non_treated_case(person->location(),
+                                                          person->age_class());
 
     receive_no_treatment_routine(person);
     if (person->host_state() == Person::DEAD) {
-      Model::DATA_COLLECTOR->record_1_malaria_death(person->location(),
-                                                    person->age_class());
+      Model::MAIN_DATA_COLLECTOR->record_1_malaria_death(person->location(),
+                                                         person->age_class());
       return;
     }
 

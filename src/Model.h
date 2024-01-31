@@ -18,7 +18,7 @@ class Scheduler;
 class Population;
 class Config;
 class Random;
-class ModelDataCollector;
+class MainDataCollector;
 class Reporter;
 class MovementReporter;
 
@@ -30,7 +30,7 @@ class Model {
   POINTER_PROPERTY(Scheduler, scheduler)
   POINTER_PROPERTY(Population, population)
   POINTER_PROPERTY(Random, random)
-  POINTER_PROPERTY(ModelDataCollector, data_collector)
+  POINTER_PROPERTY(MainDataCollector, data_collector)
   POINTER_PROPERTY(ClinicalUpdateFunction, progress_to_clinical_update_function)
   POINTER_PROPERTY(ImmunityClearanceUpdateFunction,
                    immunity_clearance_update_function)
@@ -58,7 +58,7 @@ public:
   static Config* CONFIG;
   static Random* RANDOM;
   static Scheduler* SCHEDULER;
-  static ModelDataCollector* DATA_COLLECTOR;
+  static MainDataCollector* MAIN_DATA_COLLECTOR;
   static Population* POPULATION;
 
   static IStrategy* TREATMENT_STRATEGY;

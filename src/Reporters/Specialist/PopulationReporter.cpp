@@ -6,7 +6,7 @@
 #include "PopulationReporter.h"
 
 #include "Core/Config/Config.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/Population.h"
 #include "easylogging++.h"
@@ -37,13 +37,13 @@ void PopulationReporter::monthly_report() {
   for (std::size_t location = 0;
        location < Model::CONFIG->number_of_locations(); location++) {
     population += Model::POPULATION->size(location);
-    births += Model::DATA_COLLECTOR->births_by_location()[location];
-    deaths += Model::DATA_COLLECTOR->deaths_by_location()[location];
+    births += Model::MAIN_DATA_COLLECTOR->births_by_location()[location];
+    deaths += Model::MAIN_DATA_COLLECTOR->deaths_by_location()[location];
     malariaDeaths +=
-        Model::DATA_COLLECTOR->malaria_deaths_by_location()[location];
-    cases += Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR->malaria_deaths_by_location()[location];
+    cases += Model::MAIN_DATA_COLLECTOR
                  ->monthly_number_of_clinical_episode_by_location()[location];
-    treatments += Model::DATA_COLLECTOR
+    treatments += Model::MAIN_DATA_COLLECTOR
                       ->monthly_number_of_treatment_by_location()[location];
   }
 

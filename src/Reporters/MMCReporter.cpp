@@ -8,7 +8,7 @@
 #include "Core/Config/Config.h"
 #include "Core/Random.h"
 #include "Helpers/TimeHelpers.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/Population.h"
 #include "Population/Properties/PersonIndexByLocationStateAgeClass.h"
@@ -65,12 +65,13 @@ void MMCReporter::monthly_report() {
   print_EIR_PfPR_by_location();
   ss << group_sep;
   for (std::size_t loc = 0; loc < Model::CONFIG->number_of_locations(); loc++) {
-    ss << Model::DATA_COLLECTOR->monthly_number_of_treatment_by_location()[loc]
+    ss << Model::MAIN_DATA_COLLECTOR
+              ->monthly_number_of_treatment_by_location()[loc]
        << Tsv::sep;
   }
   ss << group_sep;
   for (std::size_t loc = 0; loc < Model::CONFIG->number_of_locations(); loc++) {
-    ss << Model::DATA_COLLECTOR
+    ss << Model::MAIN_DATA_COLLECTOR
               ->monthly_number_of_clinical_episode_by_location()[loc]
        << Tsv::sep;
   }
@@ -96,11 +97,13 @@ void MMCReporter::after_run() {
   ss << group_sep;
   // print # mutation events of first 10 years
   int number_of_years =
-      Model::DATA_COLLECTOR->number_of_mutation_events_by_year().size() >= 11
+      Model::MAIN_DATA_COLLECTOR->number_of_mutation_events_by_year().size()
+              >= 11
           ? 11
-          : Model::DATA_COLLECTOR->number_of_mutation_events_by_year().size();
+          : Model::MAIN_DATA_COLLECTOR->number_of_mutation_events_by_year()
+                .size();
   for (int i = 0; i < number_of_years; ++i) {
-    ss << Model::DATA_COLLECTOR->number_of_mutation_events_by_year()[i]
+    ss << Model::MAIN_DATA_COLLECTOR->number_of_mutation_events_by_year()[i]
        << Tsv::sep;
   }
   CLOG(INFO, "summary_reporter") << ss.str();
@@ -111,19 +114,22 @@ void MMCReporter::print_EIR_PfPR_by_location() {
   for (std::size_t loc = 0; loc < Model::CONFIG->number_of_locations(); ++loc) {
     //
     // EIR
-    if (Model::DATA_COLLECTOR->EIR_by_location_year()[loc].empty()) {
+    if (Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[loc].empty()) {
       ss << 0 << Tsv::sep;
     } else {
-      ss << Model::DATA_COLLECTOR->EIR_by_location_year()[loc].back()
+      ss << Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[loc].back()
          << Tsv::sep;
     }
 
     // pfpr <5 and all
-    ss << Model::DATA_COLLECTOR->get_blood_slide_prevalence(loc, 0, 5) * 100
+    ss << Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(loc, 0, 5)
+              * 100
        << Tsv::sep;
-    ss << Model::DATA_COLLECTOR->get_blood_slide_prevalence(loc, 2, 10) * 100
+    ss << Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(loc, 2, 10)
+              * 100
        << Tsv::sep;
-    ss << Model::DATA_COLLECTOR->blood_slide_prevalence_by_location()[loc] * 100
+    ss << Model::MAIN_DATA_COLLECTOR->blood_slide_prevalence_by_location()[loc]
+              * 100
        << Tsv::sep;
     //    std::cout << Model::POPULATION->size() << "\t"
     //              <<

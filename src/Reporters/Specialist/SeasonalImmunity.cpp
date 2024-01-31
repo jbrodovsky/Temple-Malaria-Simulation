@@ -8,7 +8,7 @@
 #include "Core/Config/Config.h"
 #include "GIS/SpatialData.h"
 #include "Helpers/RunningMedian.hxx"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/ImmuneSystem.h"
 #include "Population/Person.h"
@@ -50,7 +50,7 @@ void SeasonalImmunity::initialize(int job_number, std::string path) {
 void SeasonalImmunity::monthly_report() {
   // Hold off on logging until the MDC starts recording, this will help things
   // run a bit faster for large models
-  if (!Model::DATA_COLLECTOR->recording_data()) { return; }
+  if (!Model::MAIN_DATA_COLLECTOR->recording_data()) { return; }
 
   // Set up our storage, start with individual specific
   std::vector<int> population(lookup_allocation, 0);
@@ -83,18 +83,18 @@ void SeasonalImmunity::monthly_report() {
     // Update our location specific items
     auto zone = lookup[location];
     new_infections[zone] +=
-        Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_new_infections_by_location()[location];
     treatments[zone] +=
-        Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_treatment_by_location()[location];
-    nontreatment[zone] +=
-        Model::DATA_COLLECTOR->monthly_nontreatment_by_location()[location];
+    nontreatment[zone] += Model::MAIN_DATA_COLLECTOR
+                              ->monthly_nontreatment_by_location()[location];
     treatment_failure[zone] +=
-        Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR
             ->monthly_treatment_failure_by_location()[location];
     clinical_individuals[zone] +=
-        Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_clinical_episode_by_location()[location];
 
     // Iterate overall of the individuals in this location

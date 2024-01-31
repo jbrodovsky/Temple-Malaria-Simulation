@@ -8,7 +8,7 @@
 #include <pqxx/pqxx>
 
 #include "Core/Config/Config.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/Person.h"
 #include "Population/Population.h"

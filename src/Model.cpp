@@ -27,7 +27,7 @@
 #include "Events/UpdateWhenDrugIsPresentEvent.h"
 #include "Helpers/ObjectHelpers.h"
 #include "Helpers/StringHelpers.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Population/ClonalParasitePopulation.h"
 #include "Population/ImmuneSystem.h"
 #include "Population/Person.h"
@@ -45,7 +45,7 @@ Model* Model::MODEL = nullptr;
 Config* Model::CONFIG = nullptr;
 Random* Model::RANDOM = nullptr;
 Scheduler* Model::SCHEDULER = nullptr;
-ModelDataCollector* Model::DATA_COLLECTOR = nullptr;
+MainDataCollector* Model::MAIN_DATA_COLLECTOR = nullptr;
 Population* Model::POPULATION = nullptr;
 IStrategy* Model::TREATMENT_STRATEGY = nullptr;
 ITreatmentCoverageModel* Model::TREATMENT_COVERAGE = nullptr;
@@ -56,13 +56,13 @@ Model::Model(const int &object_pool_size) {
   config_ = new Config(this);
   scheduler_ = new Scheduler(this);
   population_ = new Population(this);
-  data_collector_ = new ModelDataCollector(this);
+  data_collector_ = new MainDataCollector(this);
 
   MODEL = this;
   CONFIG = config_;
   SCHEDULER = scheduler_;
   RANDOM = random_;
-  DATA_COLLECTOR = data_collector_;
+  MAIN_DATA_COLLECTOR = data_collector_;
   POPULATION = population_;
 
   progress_to_clinical_update_function_ = new ClinicalUpdateFunction(this);
@@ -387,7 +387,7 @@ void Model::release() {
       clinical_update_function_);
   ObjectHelpers::delete_pointer<Population>(population_);
   ObjectHelpers::delete_pointer<Scheduler>(scheduler_);
-  ObjectHelpers::delete_pointer<ModelDataCollector>(data_collector_);
+  ObjectHelpers::delete_pointer<MainDataCollector>(data_collector_);
 
   treatment_strategy_ = nullptr;
   ObjectHelpers::delete_pointer<ITreatmentCoverageModel>(treatment_coverage_);
@@ -404,7 +404,7 @@ void Model::release() {
   CONFIG = nullptr;
   SCHEDULER = nullptr;
   RANDOM = nullptr;
-  DATA_COLLECTOR = nullptr;
+  MAIN_DATA_COLLECTOR = nullptr;
   POPULATION = nullptr;
   TREATMENT_STRATEGY = nullptr;
   TREATMENT_COVERAGE = nullptr;

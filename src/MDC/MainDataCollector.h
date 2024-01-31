@@ -25,8 +25,8 @@ class Person;
 class Therapy;
 class ClonalParasitePopulation;
 
-class ModelDataCollector {
-  DISALLOW_COPY_AND_ASSIGN(ModelDataCollector)
+class MainDataCollector {
+  DISALLOW_COPY_AND_ASSIGN(MainDataCollector)
 
   POINTER_PROPERTY(Model, model)
 
@@ -210,9 +210,9 @@ public:
   // The number of reported multiple of infection (MOI)
   static const int NUMBER_OF_REPORTED_MOI = 8;
 
-  explicit ModelDataCollector(Model* model = nullptr);
+  explicit MainDataCollector(Model* model = nullptr);
 
-  virtual ~ModelDataCollector() = default;
+  virtual ~MainDataCollector() = default;
 
   void initialize();
 

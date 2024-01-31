@@ -6,7 +6,7 @@
 #include "CellularReporter.h"
 
 #include "Core/Config/Config.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/ImmuneSystem.h"
 #include "Population/Population.h"
@@ -150,7 +150,7 @@ void CellularReporter::monthly_report() {
   }
 
   // Note some values
-  auto clinical_all = Model::DATA_COLLECTOR
+  auto clinical_all = Model::MAIN_DATA_COLLECTOR
                           ->monthly_number_of_clinical_episode_by_location()[0];
   auto clinical_u5 = 0;
   for (auto ndx = 0; ndx < Model::CONFIG->number_of_age_classes(); ndx++) {
@@ -158,26 +158,28 @@ void CellularReporter::monthly_report() {
     if (Model::CONFIG->age_structure()[ndx] < 5) { break; }
 
     clinical_u5 +=
-        Model::DATA_COLLECTOR
+        Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_clinical_episode_by_location_age_class()[0]
                                                                         [ndx];
   }
 
   // Store the data
   ss << Model::SCHEDULER->current_time() << Csv::sep << population << Csv::sep
-     << Model::DATA_COLLECTOR->get_blood_slide_prevalence(0, 2, 10) * 100.0
+     << Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(0, 2, 10) * 100.0
      << Csv::sep
      << (Model::TREATMENT_COVERAGE->p_treatment_less_than_5[0]
          + Model::TREATMENT_COVERAGE->p_treatment_more_than_5[0])
             / 2
      << Csv::sep << infectedIndividuals << Csv::sep << clinical_all << Csv::sep
      << clinical_u5 << Csv::sep << (clinical_all - clinical_u5) << Csv::sep
-     << Model::DATA_COLLECTOR->monthly_number_of_new_infections_by_location()[0]
+     << Model::MAIN_DATA_COLLECTOR
+            ->monthly_number_of_new_infections_by_location()[0]
      << Csv::sep
-     << Model::DATA_COLLECTOR->monthly_number_of_treatment_by_location()[0]
-     << Csv::sep << Model::DATA_COLLECTOR->monthly_nontreatment_by_location()[0]
+     << Model::MAIN_DATA_COLLECTOR->monthly_number_of_treatment_by_location()[0]
      << Csv::sep
-     << Model::DATA_COLLECTOR->monthly_treatment_failure_by_location()[0]
+     << Model::MAIN_DATA_COLLECTOR->monthly_nontreatment_by_location()[0]
+     << Csv::sep
+     << Model::MAIN_DATA_COLLECTOR->monthly_treatment_failure_by_location()[0]
      << Csv::sep << parasiteClones << Csv::sep << population_mean_theta()
      << Csv::sep << _580yWeighted << Csv::sep << _580yCount << Csv::sep
      << plasmepsinDoubleCopyWeighted << Csv::sep << plasmepsinDoubleCopy

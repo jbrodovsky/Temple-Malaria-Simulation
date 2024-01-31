@@ -13,7 +13,7 @@
 #include "Core/Config/Config.h"
 #include "Core/Random.h"
 #include "Events/ProgressToClinicalEvent.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "PkPdReporter.h"
 #include "Population/ImmuneSystem.h"
@@ -182,7 +182,7 @@ double getEfficacyForTherapy(Genotype* g, int therapy_id, Model* p_model) {
 
   p_model->run();
   const auto result =
-      1 - Model::DATA_COLLECTOR->blood_slide_prevalence_by_location()[0];
+      1 - Model::MAIN_DATA_COLLECTOR->blood_slide_prevalence_by_location()[0];
 
   delete Model::POPULATION;
   delete Model::SCHEDULER;

@@ -1,4 +1,16 @@
-Checks: "*,-fuchsia-*,-google-*,-llvm-*,-darwin-*,-zircon-*,-abseil-*,-android-*,-modernize-use-trailing-return-type,-llvmlibc-*"
+Checks: "-*,
+  google-*,
+  -google-readability-todo,
+  bugprone-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  concurrency-*,
+  modernize-*,
+  misc-*,
+  performance-*,
+  readability-*,
+  "
+
 # WarningsAsErrors: "*,-readability-convert-member-functions-to-static"
 HeaderFilterRegex: ""
 FormatStyle: google

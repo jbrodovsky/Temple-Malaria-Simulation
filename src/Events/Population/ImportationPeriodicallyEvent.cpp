@@ -11,7 +11,7 @@
 
 #include "Core/Config/Config.h"
 #include "Core/Random.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/ClonalParasitePopulation.h"
 #include "Population/ImmuneSystem.h"
@@ -57,7 +57,7 @@ void ImportationPeriodicallyEvent::execute() {
 
   const auto number_of_importation_cases = Model::RANDOM->random_poisson(
       static_cast<double>(number_of_cases_) / duration_);
-  if (Model::DATA_COLLECTOR->popsize_by_location_hoststate()[location_][0]
+  if (Model::MAIN_DATA_COLLECTOR->popsize_by_location_hoststate()[location_][0]
       < number_of_importation_cases) {
     return;
   }

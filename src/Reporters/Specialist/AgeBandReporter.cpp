@@ -6,7 +6,7 @@
 #include "AgeBandReporter.h"
 
 #include "Core/Config/Config.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "easylogging++.h"
 
@@ -87,9 +87,9 @@ void AgeBandReporter::monthly_report() {
 
       // Update the population and case data
       population[district][ac] +=
-          Model::DATA_COLLECTOR->popsize_by_location_age_class()[loc][ac];
+          Model::MAIN_DATA_COLLECTOR->popsize_by_location_age_class()[loc][ac];
       prevalence[district][ac] +=
-          Model::DATA_COLLECTOR
+          Model::MAIN_DATA_COLLECTOR
               ->blood_slide_number_by_location_age_group()[loc][ac];
     }
   }

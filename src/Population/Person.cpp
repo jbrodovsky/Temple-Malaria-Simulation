@@ -30,7 +30,7 @@
 #include "Events/UpdateWhenDrugIsPresentEvent.h"
 #include "Helpers/ObjectHelpers.h"
 #include "ImmuneSystem.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population.h"
 #include "SingleHostClonalParasitePopulations.h"
@@ -108,14 +108,14 @@ int Person::location() const { return location_; }
 void Person::set_location(const int &value) {
   if (location_ != value) {
     all_clonal_parasite_populations_->remove_all_infection_force();
-    if (Model::DATA_COLLECTOR != nullptr) {
+    if (Model::MAIN_DATA_COLLECTOR != nullptr) {
       const auto day_diff =
           (Constants::DAYS_IN_YEAR() - Model::SCHEDULER->current_day_in_year());
       if (location_ != -1) {
-        Model::DATA_COLLECTOR->update_person_days_by_years(location_,
-                                                           -day_diff);
+        Model::MAIN_DATA_COLLECTOR->update_person_days_by_years(location_,
+                                                                -day_diff);
       }
-      Model::DATA_COLLECTOR->update_person_days_by_years(value, day_diff);
+      Model::MAIN_DATA_COLLECTOR->update_person_days_by_years(value, day_diff);
     }
 
     NotifyChange(LOCATION, &location_, &value);
@@ -135,7 +135,7 @@ void Person::set_host_state(const HostStates &value) {
       all_clonal_parasite_populations_->clear();
       clear_events();
 
-      Model::DATA_COLLECTOR->record_1_death(
+      Model::MAIN_DATA_COLLECTOR->record_1_death(
           location_, birthday_, number_of_times_bitten_, age_class_);
     }
 

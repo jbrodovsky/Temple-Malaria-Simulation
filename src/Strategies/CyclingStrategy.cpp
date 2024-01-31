@@ -11,7 +11,7 @@
 #include "Core/Config/Config.h"
 #include "Core/Scheduler.h"
 #include "IStrategy.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Therapies/Therapy.hxx"
 

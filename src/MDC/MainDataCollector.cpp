@@ -1,9 +1,9 @@
 /*
- * ModelDataCollector.cpp
+ * MainDataCollector.cpp
  *
  * Implementation of the model data collector class.
  */
-#include "ModelDataCollector.h"
+#include "MainDataCollector.h"
 
 #include <algorithm>
 #include <cmath>
@@ -34,7 +34,7 @@
 // which is faster than a loop
 #define zero_fill(vector) std::fill(vector.begin(), vector.end(), 0)
 
-ModelDataCollector::ModelDataCollector(Model* model)
+MainDataCollector::MainDataCollector(Model* model)
     : model_(model),
       AMU_per_parasite_pop_(0),
       AMU_per_person_(0),
@@ -46,10 +46,10 @@ ModelDataCollector::ModelDataCollector(Model* model)
       discounted_AFU_(0),
       current_number_of_mutation_events_(0) {}
 
-void ModelDataCollector::initialize() {
-  // TODO Determine if the _age_group_by_5_ variables can be removed or not.
+void MainDataCollector::initialize() {
+  // TODO: Determine if the _age_group_by_5_ variables can be removed or not.
 
-  // TODO Determine if this can ever actually happen for the MDC
+  // TODO: Determine if this can ever actually happen for the MDC
   if (model_ == nullptr) { return; }
 
   births_by_location_ = Vector_by_Locations(IntVector);
@@ -173,7 +173,7 @@ void ModelDataCollector::initialize() {
   number_of_mutation_events_by_year_ = LongVector();
 }
 
-void ModelDataCollector::perform_population_statistic() {
+void MainDataCollector::perform_population_statistic() {
   // Start by zeroing out the population statistics from the previous month
   zero_population_statistics();
 
@@ -298,14 +298,14 @@ void ModelDataCollector::perform_population_statistic() {
   }
 }
 
-void ModelDataCollector::collect_number_of_bites(const int &location,
-                                                 const int &number_of_bites) {
+void MainDataCollector::collect_number_of_bites(const int &location,
+                                                const int &number_of_bites) {
   if (!recording) { return; }
   total_number_of_bites_by_location_[location] += number_of_bites;
   total_number_of_bites_by_location_year_[location] += number_of_bites;
 }
 
-void ModelDataCollector::yearly_update() {
+void MainDataCollector::yearly_update() {
   if (Model::SCHEDULER->current_time()
       == Model::CONFIG->start_collect_data_day()) {
     for (auto loc = 0; loc < Model::CONFIG->number_of_locations(); loc++) {
@@ -340,13 +340,13 @@ void ModelDataCollector::yearly_update() {
   }
 }
 
-void ModelDataCollector::update_person_days_by_years(const int &location,
-                                                     const int &days) {
+void MainDataCollector::update_person_days_by_years(const int &location,
+                                                    const int &days) {
   if (!recording) { return; }
   person_days_by_location_year_[location] += days;
 }
 
-void ModelDataCollector::calculate_eir() {
+void MainDataCollector::calculate_eir() {
   // Check to see if we should be collecting data or not, this will help avoid
   // divide-by-zero errors when determining the total time in year
   if (Model::SCHEDULER->current_time()
@@ -389,8 +389,8 @@ void ModelDataCollector::calculate_eir() {
   }
 }
 
-void ModelDataCollector::collect_1_clinical_episode(const int &location,
-                                                    const int &age_class) {
+void MainDataCollector::collect_1_clinical_episode(const int &location,
+                                                   const int &age_class) {
   if (!recording) { return; }
   cumulative_clinical_episodes_by_location_[location]++;
   monthly_number_of_clinical_episode_by_location_[location]++;
@@ -398,14 +398,13 @@ void ModelDataCollector::collect_1_clinical_episode(const int &location,
                                                            [age_class]++;
 }
 
-void ModelDataCollector::record_1_birth(const int &location) {
+void MainDataCollector::record_1_birth(const int &location) {
   births_by_location_[location]++;
 }
 
-void ModelDataCollector::record_1_death(const int &location,
-                                        const int &birthday,
-                                        const int &number_of_times_bitten,
-                                        const int &age_group) {
+void MainDataCollector::record_1_death(const int &location, const int &birthday,
+                                       const int &number_of_times_bitten,
+                                       const int &age_group) {
   if (!recording) { return; }
   deaths_by_location_[location]++;
   update_person_days_by_years(
@@ -415,19 +414,19 @@ void ModelDataCollector::record_1_death(const int &location,
   number_of_death_by_location_age_group_[location][age_group] += 1;
 }
 
-void ModelDataCollector::record_1_infection(const int &location) {
+void MainDataCollector::record_1_infection(const int &location) {
   if (!recording) { return; }
   monthly_number_of_new_infections_by_location_[location]++;
 }
 
-void ModelDataCollector::record_1_malaria_death(const int &location,
-                                                const int &age_class) {
+void MainDataCollector::record_1_malaria_death(const int &location,
+                                               const int &age_class) {
   if (!recording) { return; }
   malaria_deaths_by_location_[location]++;
   malaria_deaths_by_location_age_class_[location][age_class]++;
 }
 
-void ModelDataCollector::update_average_number_bitten(
+void MainDataCollector::update_average_number_bitten(
     const int &location, const int &birthday,
     const int &number_of_times_bitten) {
   const auto time_living_from_start_collect_data_day =
@@ -442,7 +441,7 @@ void ModelDataCollector::update_average_number_bitten(
   average_number_biten_by_location_person_[location].push_back(average_bites);
 }
 
-void ModelDataCollector::calculate_percentage_bites_on_top_20() {
+void MainDataCollector::calculate_percentage_bites_on_top_20() {
   auto pi =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
   for (auto loc = 0; loc < Model::CONFIG->number_of_locations(); loc++) {
@@ -483,36 +482,36 @@ void ModelDataCollector::calculate_percentage_bites_on_top_20() {
   }
 }
 
-void ModelDataCollector::record_1_non_treated_case(const int &location,
-                                                   const int &age_class) {
+void MainDataCollector::record_1_non_treated_case(const int &location,
+                                                  const int &age_class) {
   if (!recording) { return; }
   monthly_nontreatment_by_location_[location]++;
   monthly_nontreatment_by_location_age_class_[location][age_class]++;
 }
 
-void ModelDataCollector::begin_time_step() {
+void MainDataCollector::begin_time_step() {
   // Set our recording flag for the day, doing this once per simulation day
   // saves a couple cycles
   recording = (Model::SCHEDULER->current_time()
                >= Model::CONFIG->start_collect_data_day());
 }
 
-void ModelDataCollector::record_1_treatment(const int &location,
-                                            const int &age_class,
-                                            const int &therapy_id) {
+void MainDataCollector::record_1_treatment(const int &location,
+                                           const int &age_class,
+                                           const int &therapy_id) {
   if (!recording) { return; }
   monthly_number_of_treatment_by_location_[location] += 1;
   monthly_number_of_treatment_by_location_age_class_[location][age_class] += 1;
   monthly_number_of_treatment_by_location_therapy_[location][therapy_id] += 1;
 }
 
-void ModelDataCollector::record_1_mutation(const int &location) {
+void MainDataCollector::record_1_mutation(const int &location) {
   if (!recording) { return; }
   cumulative_mutants_by_location_[location] += 1;
   current_number_of_mutation_events_ += 1;
 }
 
-void ModelDataCollector::record_1_treatment_failure_by_therapy(
+void MainDataCollector::record_1_treatment_failure_by_therapy(
     const int &location, const int &age_class, const int &therapy_id) {
   if (!recording) { return; }
   monthly_treatment_complete_by_location_therapy_[location][therapy_id]++;
@@ -521,7 +520,7 @@ void ModelDataCollector::record_1_treatment_failure_by_therapy(
   monthly_treatment_failure_by_location_therapy_[location][therapy_id]++;
 }
 
-void ModelDataCollector::record_1_treatment_success_by_therapy(
+void MainDataCollector::record_1_treatment_success_by_therapy(
     const int &location, const int &age_class, const int &therapy_id) {
   if (!recording) { return; }
   monthly_treatment_complete_by_location_therapy_[location][therapy_id]++;
@@ -530,14 +529,14 @@ void ModelDataCollector::record_1_treatment_success_by_therapy(
   monthly_treatment_success_by_location_therapy_[location][therapy_id]++;
 }
 
-void ModelDataCollector::update_after_run() {
+void MainDataCollector::update_after_run() {
   perform_population_statistic();
 
   calculate_eir();
   calculate_percentage_bites_on_top_20();
 }
 
-[[maybe_unused]] void ModelDataCollector::record_AMU_AFU(
+[[maybe_unused]] void MainDataCollector::record_AMU_AFU(
     Person* person, Therapy* therapy,
     ClonalParasitePopulation* clinical_caused_parasite) {
   if (Model::SCHEDULER->current_time()
@@ -607,9 +606,9 @@ void ModelDataCollector::update_after_run() {
   }
 }
 
-double ModelDataCollector::get_blood_slide_prevalence(const int &location,
-                                                      const int &age_from,
-                                                      const int &age_to) {
+double MainDataCollector::get_blood_slide_prevalence(const int &location,
+                                                     const int &age_from,
+                                                     const int &age_to) {
   double blood_slide_numbers = 0;
   double pop_size = 0;
 
@@ -648,7 +647,7 @@ double ModelDataCollector::get_blood_slide_prevalence(const int &location,
 }
 
 // this function is used to reset monthly variables
-void ModelDataCollector::monthly_update() {
+void MainDataCollector::monthly_update() {
   // Clear variables needed by reporters
   zero_fill(births_by_location_);
   zero_fill(deaths_by_location_);
@@ -681,7 +680,7 @@ void ModelDataCollector::monthly_update() {
   }
 }
 
-void ModelDataCollector::zero_population_statistics() {
+void MainDataCollector::zero_population_statistics() {
   // Vectors to be zeroed
   zero_fill(popsize_residence_by_location_);
   zero_fill(blood_slide_prevalence_by_location_);

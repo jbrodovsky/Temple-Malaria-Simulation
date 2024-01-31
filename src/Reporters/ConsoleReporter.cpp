@@ -12,7 +12,7 @@
 #include "Constants.h"
 #include "Core/Config/Config.h"
 #include "Core/Random.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/Population.h"
 #include "Population/Properties/PersonIndexByLocationStateAgeClass.h"
@@ -36,9 +36,9 @@ void report_number_by_state(const int &location,
     //        ac++) {
     //            sum += pi->vPerson()[location][hs][ac].size();
     //        }
-    double v =
-        Model::DATA_COLLECTOR->popsize_by_location_hoststate()[location][hs]
-        * 100 / (double)Model::POPULATION->size(location);
+    double v = Model::MAIN_DATA_COLLECTOR
+                   ->popsize_by_location_hoststate()[location][hs]
+               * 100 / (double)Model::POPULATION->size(location);
     //        double v = sum;
 
     fmt::printf("%.3f\t", v);
@@ -61,7 +61,8 @@ void ConsoleReporter::after_run() {
   std::cout << "EIR by location:" << std::endl;
   for (std::size_t location = 0;
        location < Model::CONFIG->number_of_locations(); location++) {
-    std::cout << Model::DATA_COLLECTOR->EIR_by_location()[location] << "\t";
+    std::cout << Model::MAIN_DATA_COLLECTOR->EIR_by_location()[location]
+              << "\t";
   }
   std::cout << std::endl;
 
@@ -69,16 +70,16 @@ void ConsoleReporter::after_run() {
   std::cout << "Number of infectious bites:" << std::endl;
   for (std::size_t location = 0;
        location < Model::CONFIG->number_of_locations(); location++) {
-    std::cout
-        << Model::DATA_COLLECTOR->total_number_of_bites_by_location()[location]
-        << "\t";
+    std::cout << Model::MAIN_DATA_COLLECTOR
+                     ->total_number_of_bites_by_location()[location]
+              << "\t";
   }
   std::cout << std::endl;
 
   std::cout << "Number of clinical episodes:" << std::endl;
   for (std::size_t location = 0;
        location < Model::CONFIG->number_of_locations(); location++) {
-    std::cout << Model::DATA_COLLECTOR
+    std::cout << Model::MAIN_DATA_COLLECTOR
                      ->cumulative_clinical_episodes_by_location()[location]
               << "\t";
   }
@@ -87,7 +88,7 @@ void ConsoleReporter::after_run() {
   std::cout << "Percentage of bites on top 20% bitten" << std::endl;
   for (std::size_t location = 0;
        location < Model::CONFIG->number_of_locations(); location++) {
-    std::cout << Model::DATA_COLLECTOR
+    std::cout << Model::MAIN_DATA_COLLECTOR
                          ->percentage_bites_on_top_20_by_location()[location]
                      * 100
               << "%"
@@ -98,18 +99,18 @@ void ConsoleReporter::after_run() {
   std::cout << "Number of mutations by location: " << std::endl;
   for (std::size_t location = 0;
        location < Model::CONFIG->number_of_locations(); location++) {
-    std::cout
-        << Model::DATA_COLLECTOR->cumulative_mutants_by_location()[location]
-        << "\t";
+    std::cout << Model::MAIN_DATA_COLLECTOR
+                     ->cumulative_mutants_by_location()[location]
+              << "\t";
   }
   std::cout << std::endl;
 
   std::cout << "AMU per parasite population: "
-            << Model::DATA_COLLECTOR->AMU_per_parasite_pop() << std::endl;
-  std::cout << "AMU per per: " << Model::DATA_COLLECTOR->AMU_per_person()
+            << Model::MAIN_DATA_COLLECTOR->AMU_per_parasite_pop() << std::endl;
+  std::cout << "AMU per per: " << Model::MAIN_DATA_COLLECTOR->AMU_per_person()
             << std::endl;
   std::cout << "EAMU count only clinical caused parasite: "
-            << Model::DATA_COLLECTOR->AMU_for_clinical_caused_parasite()
+            << Model::MAIN_DATA_COLLECTOR->AMU_for_clinical_caused_parasite()
             << std::endl;
 }
 
@@ -129,13 +130,14 @@ void ConsoleReporter::monthly_report() {
          location < Model::CONFIG->number_of_locations(); location++) {
       std::cout << "||\t";
       report_number_by_state(location, pi);
-      std::cout << Model::DATA_COLLECTOR
+      std::cout << Model::MAIN_DATA_COLLECTOR
                            ->blood_slide_prevalence_by_location()[location]
                        * 100
                 << "\t";
-      std::cout << Model::DATA_COLLECTOR->total_immune_by_location()[location]
-                       / Model::POPULATION->size(location)
-                << "\t";
+      std::cout
+          << Model::MAIN_DATA_COLLECTOR->total_immune_by_location()[location]
+                 / Model::POPULATION->size(location)
+          << "\t";
     }
     std::cout << std::endl;
   }

@@ -8,7 +8,7 @@
 #include <pqxx/pqxx>
 
 #include "Core/Config/Config.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Reporters/Utility/PqxxHelpers.h"
 
@@ -37,7 +37,7 @@ void TherapyRecordReporter::initialize(int job_number, std::string path) {
 
 void TherapyRecordReporter::monthly_report() {
   // Return if we are not recording data
-  if (!Model::DATA_COLLECTOR->recording_data()) { return; }
+  if (!Model::MAIN_DATA_COLLECTOR->recording_data()) { return; }
 
   // Start the update by getting the monthlydataid to use
   pqxx::connection* connection = pqxx_db::get_connection();
@@ -62,13 +62,13 @@ void TherapyRecordReporter::monthly_report() {
          therapy++) {
       query.append(fmt::format(
           INSERT_THERAPY_ROW, id, lookup[location], therapy,
-          Model::DATA_COLLECTOR
+          Model::MAIN_DATA_COLLECTOR
               ->monthly_treatment_success_by_location_therapy()[location]
                                                                [therapy],
-          Model::DATA_COLLECTOR
+          Model::MAIN_DATA_COLLECTOR
               ->monthly_treatment_failure_by_location_therapy()[location]
                                                                [therapy],
-          Model::DATA_COLLECTOR
+          Model::MAIN_DATA_COLLECTOR
               ->monthly_treatment_complete_by_location_therapy()[location]
                                                                 [therapy]));
     }
@@ -101,15 +101,15 @@ void TherapyRecordReporter::district_report(int id,
        location++) {
     for (auto therapy = 0; therapy < therapies; therapy++) {
       success[lookup[location]][therapy] +=
-          Model::DATA_COLLECTOR
+          Model::MAIN_DATA_COLLECTOR
               ->monthly_treatment_success_by_location_therapy()[location]
                                                                [therapy];
       failure[lookup[location]][therapy] +=
-          Model::DATA_COLLECTOR
+          Model::MAIN_DATA_COLLECTOR
               ->monthly_treatment_failure_by_location_therapy()[location]
                                                                [therapy];
       complete[lookup[location]][therapy] +=
-          Model::DATA_COLLECTOR
+          Model::MAIN_DATA_COLLECTOR
               ->monthly_treatment_complete_by_location_therapy()[location]
                                                                 [therapy];
     }

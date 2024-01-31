@@ -7,7 +7,7 @@
 #include "ReportTreatmentFailureDeathEvent.h"
 
 #include "Core/Scheduler.h"
-#include "MDC/ModelDataCollector.h"
+#include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/Person.h"
 
@@ -33,6 +33,6 @@ void ReportTreatmentFailureDeathEvent::schedule_event(Scheduler* scheduler,
 }
 
 void ReportTreatmentFailureDeathEvent::execute() {
-  Model::DATA_COLLECTOR->record_1_treatment_failure_by_therapy(
+  Model::MAIN_DATA_COLLECTOR->record_1_treatment_failure_by_therapy(
       location_id(), age_class(), therapy_id());
 }
