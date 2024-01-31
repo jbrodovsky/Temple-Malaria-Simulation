@@ -7,7 +7,7 @@
 #ifndef ANNUALCOVERAGEUPDATEEVENT_HXX
 #define ANNUALCOVERAGEUPDATEEVENT_HXX
 
-#include <math.h>
+#include <cmath>
 
 #include "Core/Config/Config.h"
 #include "Core/Scheduler.h"
@@ -23,8 +23,6 @@ private:
 
   // Execute the annual coverage update event
   void execute() override {
-    // Grab a reference to the location_db to work with
-    auto &location_db = Model::CONFIG->location_db();
     auto &tcm_db = Model::TREATMENT_COVERAGE;
 
     // Iterate though and adjust the rates

@@ -21,8 +21,6 @@ void SQLitePixelReporter::initialize(int job_number, std::string path) {
   VLOG(1)
       << "Using SQLiteDbReporterwith aggregation at the pixel / cell level.";
   SQLiteDbReporter::initialize(job_number, path);
-
-  auto locations = Model::CONFIG->number_of_locations();
 }
 
 // Iterate over all the sites and prepare the query for the site specific genome
@@ -32,7 +30,7 @@ void SQLitePixelReporter::initialize(int job_number, std::string path) {
 // infected individuals, so it MUST
 //         be invoked after monthly_site_data to ensure the data is inserted
 //         correctly.
-void SQLitePixelReporter::monthly_genome_data(int id) {
+void SQLitePixelReporter::monthly_genome_data(int month_id) {
   // Prepare the data structures
   auto genotypes = Model::CONFIG->number_of_parasite_types();
   std::vector<int> individual(genotypes, 0);
@@ -73,26 +71,26 @@ void SQLitePixelReporter::monthly_genome_data(int id) {
         for (auto &person : age_class) {
           // Get the person, press on if they are not infected (i.e., no
           // parasites)
-          auto parasites =
+          auto* parasites =
               person->all_clonal_parasite_populations()->parasites();
           auto size = parasites->size();
           if (size == 0) { continue; }
 
           // Note the age and clinical status of the person
           auto age = person->age();
-          auto clinical =
-              (int)(person->host_state() == Person::HostStates::CLINICAL);
+          auto clinical = static_cast<int>(person->host_state()
+                                           == Person::HostStates::CLINICAL);
 
           // Update count of infected individuals
           infectedIndividuals += 1;
 
           // Count the genotypes present in the individuals
           for (unsigned int ndx = 0; ndx < size; ndx++) {
-            auto parasite_population = (*parasites)[ndx];
+            auto* parasite_population = (*parasites)[ndx];
             auto genotype_id = parasite_population->genotype()->genotype_id();
             occurrences[genotype_id]++;
-            occurrencesZeroToFive[genotype_id] += (age <= 5);
-            occurrencesTwoToTen[genotype_id] += (age >= 2 && age <= 10);
+            occurrencesZeroToFive[genotype_id] += (age <= 5) ? 1 : 0;
+            occurrencesTwoToTen[genotype_id] += (age >= 2 && age <= 10) ? 1 : 0;
             individual[genotype_id]++;
 
             // Count a clinical occurrence if the individual has clinical
@@ -117,7 +115,7 @@ void SQLitePixelReporter::monthly_genome_data(int id) {
         if (weightedOccurrences[genotype] == 0) { continue; }
 
         std::string singleRow = fmt::format(
-            "({}, {}, {}, {}, {}, {}, {}, {})", id, location, genotype,
+            "({}, {}, {}, {}, {}, {}, {}, {})", month_id, location, genotype,
             occurrences[genotype], clinicalOccurrences[genotype],
             occurrencesZeroToFive[genotype], occurrencesTwoToTen[genotype],
             weightedOccurrences[genotype]);
@@ -126,8 +124,8 @@ void SQLitePixelReporter::monthly_genome_data(int id) {
       }
     }
 
-    std::string updateQuery = fmt::format(UPDATE_INFECTED_INDIVIDUALS,
-                                          infectedIndividuals, id, location);
+    std::string updateQuery = fmt::format(
+        UPDATE_INFECTED_INDIVIDUALS, infectedIndividuals, month_id, location);
     db->execute(updateQuery);
   }
 
@@ -137,7 +135,7 @@ void SQLitePixelReporter::monthly_genome_data(int id) {
 }
 
 // Iterate over all the sites and prepare the query for the site specific data
-void SQLitePixelReporter::monthly_site_data(int id) {
+void SQLitePixelReporter::monthly_site_data(int month_id) {
   /* std::cout << "monthly_site_data" << std::endl; */
   auto age_classes = Model::CONFIG->age_structure();
 
@@ -184,8 +182,8 @@ void SQLitePixelReporter::monthly_site_data(int id) {
     }
 
     std::string singleRow = fmt::format(
-        "({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})", id, location,
-        Model::POPULATION->size(location),
+        "({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})", month_id,
+        location, Model::POPULATION->size(location),
         Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_clinical_episode_by_location()[location],
         Model::MAIN_DATA_COLLECTOR
@@ -205,7 +203,7 @@ void SQLitePixelReporter::monthly_site_data(int id) {
 }
 
 // Update the monthly count of infected individuals.
-void SQLitePixelReporter::monthly_infected_individuals(int id) {
+void SQLitePixelReporter::monthly_infected_individuals(int month_id) {
   /* std::cout << "monthly_infected_individuals" << std::endl; */
   // Cache some values
   auto* index =
@@ -233,8 +231,8 @@ void SQLitePixelReporter::monthly_infected_individuals(int id) {
       }
     }
 
-    std::string updateQuery = fmt::format(UPDATE_INFECTED_INDIVIDUALS,
-                                          infected_individuals, id, location);
+    std::string updateQuery = fmt::format(
+        UPDATE_INFECTED_INDIVIDUALS, infected_individuals, month_id, location);
     db->execute(updateQuery);
   }
 }

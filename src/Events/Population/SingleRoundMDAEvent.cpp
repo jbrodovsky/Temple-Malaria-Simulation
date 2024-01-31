@@ -51,10 +51,10 @@ void SingleRoundMDAEvent::execute() {
 
     for (std::size_t p_i = 0; p_i < number_of_individuals_will_receive_mda;
          p_i++) {
-      auto p = all_persons_in_location[p_i];
+      auto* person = all_persons_in_location[p_i];
       // step 2: determine whether person will receive treatment
       const auto prob = Model::RANDOM->random_flat(0.0, 1.0);
-      if (prob < p->prob_present_at_mda()) {
+      if (prob < person->prob_present_at_mda()) {
         // receive MDA
         auto* therapy =
             Model::CONFIG->therapy_db()[Model::CONFIG->mda_therapy_id()];
@@ -62,8 +62,8 @@ void SingleRoundMDAEvent::execute() {
         int days_to_receive_mda_therapy =
             Model::RANDOM->random_uniform(days_to_complete_all_treatments) + 1;
         ReceiveMDATherapyEvent::schedule_event(
-            Model::SCHEDULER, p, therapy,
-            Model::SCHEDULER->current_time() + days_to_complete_all_treatments);
+            Model::SCHEDULER, person, therapy,
+            Model::SCHEDULER->current_time() + days_to_receive_mda_therapy);
       }
     }
   }

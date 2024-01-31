@@ -18,12 +18,12 @@ void SQLiteDbReporter::populate_genotype_table() {
     db->execute("DELETE FROM genotype;");  // Clear the genotype table
 
     // Prepare the bulk query
-    auto stmt = db->prepare(INSERT_GENOTYPE);
+    auto* stmt = db->prepare(INSERT_GENOTYPE);
 
     auto* config = Model::CONFIG;
 
-    for (auto id = 0ul; id < config->number_of_parasite_types(); id++) {
-      auto genotype = (*config->genotype_db())[id];
+    for (auto id = 0; id < config->number_of_parasite_types(); id++) {
+      auto* genotype = (*config->genotype_db())[id];
       // Bind values to the prepared statement
       sqlite3_bind_int(stmt, 1, id);
       sqlite3_bind_text(stmt, 2, genotype->to_string(config).c_str(), -1,
@@ -39,8 +39,7 @@ void SQLiteDbReporter::populate_genotype_table() {
     sqlite3_finalize(stmt);  // Finalize the statement
 
   } catch (const std::exception &ex) {
-    LOG(ERROR) << __FUNCTION__ << "-" << ex.what();
-    exit(1);
+    LOG(FATAL) << __FUNCTION__ << "-" << ex.what();
   }
 }
 
@@ -116,7 +115,7 @@ void SQLiteDbReporter::populate_db_schema() {
 // Initialize the reporter
 // Sets up the database and prepares it for data entry
 void SQLiteDbReporter::initialize(int job_number, std::string path) {
-  VLOG(1) << "Base SQLiteDbReporter initialized." << std::endl;
+  VLOG(1) << "Base SQLiteDbReporter initialized.\n";
 
   // Define the database file path
   auto dbPath = fmt::format("{}monthly_data_{}.db", path, job_number);
@@ -130,10 +129,8 @@ void SQLiteDbReporter::initialize(int job_number, std::string path) {
     }
   } else {
     // The file doesn't exist, so no need to delete it
-    LOG(INFO) << "Database file does not exist. No deletion needed."
-              << std::endl;
+    LOG(INFO) << "Database file does not exist. No deletion needed.\n";
   }
-  int result;
 
   // Open or create the SQLite database file
   db = std::make_unique<SQLiteDatabase>(dbPath);
@@ -151,18 +148,16 @@ void SQLiteDbReporter::monthly_report() {
   auto seasonal_factor = Model::CONFIG->seasonal_info()->get_seasonal_factor(
       Model::SCHEDULER->calendar_date, 0);
 
-  auto id =
+  auto month_id =
       db->insert_data(INSERT_COMMON, days_elapsed, model_time, seasonal_factor);
 
-  std::string query = "";
-  monthly_site_data(id);
   if (Model::CONFIG->record_genome_db()
       && Model::MAIN_DATA_COLLECTOR->recording_data()) {
     // Add the genome information, this will also update infected individuals
-    monthly_genome_data(id);
+    monthly_genome_data(month_id);
   } else {
     // If we aren't recording genome data still update the infected
     // individuals
-    monthly_infected_individuals(id);
+    monthly_infected_individuals(month_id);
   }
 }

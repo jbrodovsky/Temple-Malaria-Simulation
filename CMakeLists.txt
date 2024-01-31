@@ -17,6 +17,8 @@ if(WIN32)
   add_definitions(-D__DISABLE_CRIT_ERR)
 endif()
 
+add_compile_options(-Wunused-variable)
+
 # Include external projects
 set(EXT_PROJECTS_DIR ${PROJECT_SOURCE_DIR}/ext)
 

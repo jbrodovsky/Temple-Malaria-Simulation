@@ -149,7 +149,7 @@ void SQLiteDistrictReporter::monthly_site_data(int id) {
 
 // Collect and store monthly genome data
 // Aggregates and stores data related to the genotypes found in the population
-void SQLiteDistrictReporter::monthly_genome_data(int id) {
+void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
   // Cache some values
   auto genotypes = Model::CONFIG->number_of_parasite_types();
   auto districts = SpatialData::get_instance().get_district_count();
@@ -185,22 +185,22 @@ void SQLiteDistrictReporter::monthly_genome_data(int id) {
         auto age_class = index->vPerson()[location][hs][ac];
         for (auto &person : age_class) {
           // Get the person, press on if they are not infected
-          auto parasites =
+          auto* parasites =
               person->all_clonal_parasite_populations()->parasites();
           auto size = parasites->size();
           if (size == 0) { continue; }
 
           // Note the age and clinical status of the person
           auto age = person->age();
-          auto clinical =
-              (int)(person->host_state() == Person::HostStates::CLINICAL);
+          auto clinical = static_cast<int>(person->host_state()
+                                           == Person::HostStates::CLINICAL);
 
           // Update the count of infected individuals
           infectedIndividuals++;
 
           // Count the genotypes present in the individual
           for (unsigned int ndx = 0; ndx < size; ndx++) {
-            auto parasite_population = (*parasites)[ndx];
+            auto* parasite_population = (*parasites)[ndx];
             auto genotype_id = parasite_population->genotype()->genotype_id();
             occurrences[district][genotype_id]++;
             occurrencesZeroToFive[district][genotype_id] += (age <= 5);
@@ -230,12 +230,13 @@ void SQLiteDistrictReporter::monthly_genome_data(int id) {
   std::vector<std::string> insertValues;
 
   // Iterate over the districts and append the query
-  std::string insert_genotypes, update_infections;
+  std::string insert_genotypes;
+  std::string update_infections;
   for (auto district = 0; district < districts; district++) {
     for (auto genotype = 0; genotype < genotypes; genotype++) {
       if (weightedOccurrences[district][genotype] == 0) { continue; }
       std::string singleRow = fmt::format(
-          "({}, {}, {}, {}, {}, {}, {}, {})", id, district + first_index,
+          "({}, {}, {}, {}, {}, {}, {}, {})", month_id, district + first_index,
           genotype, occurrences[district][genotype],
           clinicalOccurrences[district][genotype],
           occurrencesZeroToFive[district][genotype],
@@ -247,7 +248,7 @@ void SQLiteDistrictReporter::monthly_genome_data(int id) {
 
     std::string updateQuery =
         fmt::format(UPDATE_INFECTED_INDIVIDUALS, infections_district[district],
-                    id, district + first_index);
+                    month_id, district + first_index);
     db->execute(updateQuery);
   }
   if (insertValues.empty()) {
@@ -264,7 +265,7 @@ void SQLiteDistrictReporter::monthly_genome_data(int id) {
 // Update the count of infected individuals in the database
 // Aggregates data on the number of infected individuals per district and
 // updates the database
-void SQLiteDistrictReporter::monthly_infected_individuals(int id) {
+void SQLiteDistrictReporter::monthly_infected_individuals(int month_id) {
   // Cache some values and prepare the data structure
   auto districts = SpatialData::get_instance().get_district_count();
   auto first_index = SpatialData::get_instance().get_first_district();
@@ -294,7 +295,7 @@ void SQLiteDistrictReporter::monthly_infected_individuals(int id) {
   for (auto district = 0; district < districts; district++) {
     std::string updateQuery =
         fmt::format(UPDATE_INFECTED_INDIVIDUALS, infections_district[district],
-                    id, district + first_index);
+                    month_id, district + first_index);
     db->execute(updateQuery);
   }
 }
