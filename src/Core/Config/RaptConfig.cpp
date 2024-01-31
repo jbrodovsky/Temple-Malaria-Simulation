@@ -3,9 +3,8 @@
  *
  * Implement the RaptConfig class.
  */
-#include "rapt_config.h"
-
 #include "Core/Config/Config.h"
+#include "rapt_config.h"
 
 void rapt_config::set_value(const YAML::Node &node) {
   if (node[name_]) {
@@ -17,7 +16,9 @@ void rapt_config::set_value(const YAML::Node &node) {
     value_.age_start = rc_node["age_start"].as<int>();
 
     const auto ymd = rc_node["start_day"].as<date::year_month_day>();
-    value_.start_day = (date::sys_days { ymd } - date::sys_days(config_->starting_date())).count();
+    value_.start_day =
+        (date::sys_days{ymd} - date::sys_days(config_->starting_date()))
+            .count();
   } else {
     value_.isDefined = false;
   }

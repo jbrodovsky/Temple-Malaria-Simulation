@@ -4,8 +4,7 @@
 #include "ITreatmentCoverageModel.h"
 
 class LinearTCM : public ITreatmentCoverageModel {
- public:
-
+public:
   std::vector<double> p_treatment_less_than_5_to;
   std::vector<double> p_treatment_more_than_5_to;
   int end_time{-1};
@@ -15,7 +14,6 @@ class LinearTCM : public ITreatmentCoverageModel {
   void monthly_update() override;
 
   void update_rate_of_change();
-
 };
 
-#endif // LINEARTCM_H
+#endif  // LINEARTCM_H

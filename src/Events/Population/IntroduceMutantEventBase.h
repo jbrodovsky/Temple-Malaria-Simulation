@@ -12,17 +12,17 @@
 #include "Events/Event.h"
 
 class IntroduceMutantEventBase : public Event {
+protected:
+  double fraction_;
+  int locus_;
+  int mutant_allele_;
 
-  protected:
-    double fraction_;
-    int locus_;
-    int mutant_allele_;
+  IntroduceMutantEventBase(const double &fraction, const int &locus,
+                           const int &mutant_allel)
+      : fraction_(fraction), locus_(locus), mutant_allele_(mutant_allel) {}
 
-    IntroduceMutantEventBase(const double& fraction, const int& locus, const int& mutant_allel) :
-      fraction_(fraction), locus_(locus), mutant_allele_(mutant_allel) { }
-
-    double calculate(std::vector<int> &locations) const;
-    int mutate(std::vector<int> &locations, double target_fraction) const;
+  double calculate(std::vector<int> &locations) const;
+  int mutate(std::vector<int> &locations, double target_fraction) const;
 };
 
 #endif

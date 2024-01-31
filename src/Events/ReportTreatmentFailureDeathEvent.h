@@ -1,7 +1,8 @@
 /*
  * ReportTreatmentFailureDeathEvent.h
  *
- * Defines the event that reports that an individual died of malaria following treatment.
+ * Defines the event that reports that an individual died of malaria following
+ * treatment.
  */
 #ifndef REPORTTREATMENTFAILUREDEATHEVENT_H
 #define REPORTTREATMENTFAILUREDEATHEVENT_H
@@ -25,7 +26,8 @@ public:
   ReportTreatmentFailureDeathEvent();
   ~ReportTreatmentFailureDeathEvent() override;
 
-  static void schedule_event(Scheduler *scheduler, Person *person, const int &therapy_id, const int &time);
+  static void schedule_event(Scheduler* scheduler, Person* person,
+                             const int &therapy_id, const int &time);
 
   std::string name() override { return "ReportTreatmentFailureDeathEvent"; }
 

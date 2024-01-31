@@ -1,4 +1,4 @@
-/* 
+/*
  * ClinicalUpdateFunction.h
  *
  * Define the update function for clinical infections.
@@ -12,17 +12,17 @@
 class Model;
 
 class ClinicalUpdateFunction : public ParasiteDensityUpdateFunction {
- DISALLOW_COPY_AND_ASSIGN(ClinicalUpdateFunction)
+  DISALLOW_COPY_AND_ASSIGN(ClinicalUpdateFunction)
 
- POINTER_PROPERTY(Model, model)
+  POINTER_PROPERTY(Model, model)
 
- public:
-  explicit ClinicalUpdateFunction(Model *model = nullptr);
+public:
+  explicit ClinicalUpdateFunction(Model* model = nullptr);
 
   ~ClinicalUpdateFunction() override = default;
 
-  double get_current_parasite_density(ClonalParasitePopulation *parasite, int duration) override;
-
+  double get_current_parasite_density(ClonalParasitePopulation* parasite,
+                                      int duration) override;
 };
 
 #endif

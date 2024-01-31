@@ -3,17 +3,17 @@
  *
  * Implement the equation based seasonal model.
  */
-#include "SeasonalInfo.h"
-
 #include <cmath>
 
-#include "Core/Config/CustomConfigItem.h"
-#include "Core/Config/Config.h"
 #include "Constants.h"
+#include "Core/Config/Config.h"
+#include "Core/Config/CustomConfigItem.h"
 #include "Helpers/TimeHelpers.h"
 #include "Model.h"
+#include "SeasonalInfo.h"
 
-SeasonalEquation* SeasonalEquation::build(const YAML::Node &node, Config* config) {
+SeasonalEquation* SeasonalEquation::build(const YAML::Node &node,
+                                          Config* config) {
   // Prepare the object to be returned
   auto value = new SeasonalEquation();
 
@@ -27,34 +27,47 @@ SeasonalEquation* SeasonalEquation::build(const YAML::Node &node, Config* config
   }
 
   // Check to make sure the nodes exist
-  if (settings["base"].IsNull()  || settings["a"].IsNull() || settings["b"].IsNull() || settings["phi"].IsNull()) {
-    throw std::invalid_argument("One or more of the seasonality equation parameters are missing.");
+  if (settings["base"].IsNull() || settings["a"].IsNull()
+      || settings["b"].IsNull() || settings["phi"].IsNull()) {
+    throw std::invalid_argument(
+        "One or more of the seasonality equation parameters are missing.");
   }
-  if (settings["base"].size() == 0  || settings["a"].size() == 0 || settings["b"].size() == 0 || settings["phi"].size() == 0) {
-    throw std::invalid_argument("One or more of the seasonality equation parameters is an empty array.");
+  if (settings["base"].size() == 0 || settings["a"].size() == 0
+      || settings["b"].size() == 0 || settings["phi"].size() == 0) {
+    throw std::invalid_argument(
+        "One or more of the seasonality equation parameters is an empty "
+        "array.");
   }
 
   // Warn the user if enough nodes were not provided
-  if (settings["a"].size() > 1 && settings["a"].size() < config->number_of_locations()) {
-    LOG(WARNING) << fmt::format("Only {} seasonal  equation settings provided, but {} are needed for all locations", settings["a"].size(), config->number_of_locations());
+  if (settings["a"].size() > 1
+      && settings["a"].size() < config->number_of_locations()) {
+    LOG(WARNING) << fmt::format(
+        "Only {} seasonal  equation settings provided, but {} are needed for "
+        "all locations",
+        settings["a"].size(), config->number_of_locations());
   }
 
   // Set the values from the array and return
   for (auto i = 0ul; i < config->number_of_locations(); i++) {
-    auto input_loc = settings["a"].size() < config->number_of_locations() ? 0 : i;
+    auto input_loc =
+        settings["a"].size() < config->number_of_locations() ? 0 : i;
     value->set_seasonal_period(settings, input_loc);
   }
   return value;
 }
 
-double SeasonalEquation::get_seasonal_factor(const date::sys_days &today, const int &location) {
+double SeasonalEquation::get_seasonal_factor(const date::sys_days &today,
+                                             const int &location) {
   // Note what day of the year it is
   int day = TimeHelpers::day_of_year(today);
 
   // Seasonal factor is determined by the algorithm:
   //
   // multiplier = base + (a * sin⁺(b * pi * (t - phi) / 365))
-  auto multiplier = A[location] * sin(B[location] * M_PI * (day - phi[location]) / Constants::DAYS_IN_YEAR());
+  auto multiplier = A[location]
+                    * sin(B[location] * M_PI * (day - phi[location])
+                          / Constants::DAYS_IN_YEAR());
   multiplier = (multiplier < 0) ? 0 : multiplier;
   multiplier += base[location];
 
@@ -65,9 +78,12 @@ double SeasonalEquation::get_seasonal_factor(const date::sys_days &today, const 
 // Set the values based upon the contents of a raster file.
 void SeasonalEquation::set_from_raster(const YAML::Node &node) {
   // Get the raster data and make sure it is valid
-  AscFile* raster = SpatialData::get_instance().get_raster(SpatialData::SpatialFileType::Ecoclimatic);
+  AscFile* raster = SpatialData::get_instance().get_raster(
+      SpatialData::SpatialFileType::Ecoclimatic);
   if (raster == nullptr) {
-    throw std::invalid_argument("Seasonal equation  raster flag set without eco-climatic raster loaded.");
+    throw std::invalid_argument(
+        "Seasonal equation  raster flag set without eco-climatic raster "
+        "loaded.");
   }
 
   // Prepare to run
@@ -82,8 +98,15 @@ void SeasonalEquation::set_from_raster(const YAML::Node &node) {
 
       // Verify the index
       int index = static_cast<int>(raster->data[row][col]);
-      if (index < 0) { throw std::out_of_range(fmt::format("Raster value at row: {}, col: {} is less than zero.", row, col)); }
-      if (index > (size - 1)) { throw std::out_of_range(fmt::format("Raster value at row: {}, col: {} exceeds bounds of {}.", row, col, size)); }
+      if (index < 0) {
+        throw std::out_of_range(fmt::format(
+            "Raster value at row: {}, col: {} is less than zero.", row, col));
+      }
+      if (index > (size - 1)) {
+        throw std::out_of_range(fmt::format(
+            "Raster value at row: {}, col: {} exceeds bounds of {}.", row, col,
+            size));
+      }
 
       // Set the seasonal period
       set_seasonal_period(node, index);
@@ -92,7 +115,8 @@ void SeasonalEquation::set_from_raster(const YAML::Node &node) {
 }
 
 // Set the period for a single location given the index
-void SeasonalEquation::set_seasonal_period(const YAML::Node &node, unsigned long index) {
+void SeasonalEquation::set_seasonal_period(const YAML::Node &node,
+                                           unsigned long index) {
   base.push_back(node["base"][index].as<double>());
   A.push_back(node["a"][index].as<double>());
   B.push_back(node["b"][index].as<double>());
@@ -108,7 +132,8 @@ void SeasonalEquation::set_seasonal_period(const YAML::Node &node, unsigned long
 // Update the seasonality of the equation from the current to the new one.
 void SeasonalEquation::update_seasonality(int from, int to) {
   for (auto ndx = 0; ndx < base.size(); ndx++) {
-    if (base[ndx] == reference_base[from] && A[ndx] == reference_A[from] && B[ndx] == reference_B[from] && phi[ndx] == reference_phi[from]) {
+    if (base[ndx] == reference_base[from] && A[ndx] == reference_A[from]
+        && B[ndx] == reference_B[from] && phi[ndx] == reference_phi[from]) {
       base[ndx] = reference_base[to];
       A[ndx] = reference_A[to];
       B[ndx] = reference_B[to];

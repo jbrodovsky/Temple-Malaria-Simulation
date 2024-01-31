@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Dispatcher.h
  * Author: nguyentran
  *
@@ -6,7 +6,7 @@
  */
 
 #ifndef DISPATCHER_H
-#define    DISPATCHER_H
+#define DISPATCHER_H
 
 #include "Core/PropertyMacro.h"
 #include "Core/TypeDef.h"
@@ -14,29 +14,27 @@
 class Event;
 
 class Dispatcher {
- DISALLOW_COPY_AND_ASSIGN(Dispatcher)
+  DISALLOW_COPY_AND_ASSIGN(Dispatcher)
 
- POINTER_PROPERTY(EventPtrVector, events)
+  POINTER_PROPERTY(EventPtrVector, events)
 
 private:
   const int INTITAL_ALLOCATION = 32;
 
- public:
+public:
   Dispatcher();
 
   virtual ~Dispatcher();
 
   virtual void init();
 
-  virtual void add(Event *event);
+  virtual void add(Event* event);
 
-  virtual void remove(Event *event);
+  virtual void remove(Event* event);
 
   virtual void update();
 
   virtual void clear_events();
-
 };
 
 #endif
-

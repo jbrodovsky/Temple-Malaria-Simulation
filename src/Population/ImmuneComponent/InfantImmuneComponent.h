@@ -1,4 +1,4 @@
-/* 
+/*
  * InfantImmuneComponent.h
  *
  * Define the immune component for individuals that are infants.
@@ -9,11 +9,10 @@
 #include "ImmuneComponent.h"
 
 class InfantImmuneComponent : public ImmuneComponent {
+  DISALLOW_COPY_AND_ASSIGN(InfantImmuneComponent)
 
- DISALLOW_COPY_AND_ASSIGN(InfantImmuneComponent)
-
- public:
-  explicit InfantImmuneComponent(ImmuneSystem *immune_system = nullptr);
+public:
+  explicit InfantImmuneComponent(ImmuneSystem* immune_system = nullptr);
 
   ~InfantImmuneComponent() override = default;
 
@@ -22,7 +21,6 @@ class InfantImmuneComponent : public ImmuneComponent {
   [[nodiscard]] double get_acquire_rate(const int &age) const override;
 
   double get_current_value() override;
-
 };
 
 #endif

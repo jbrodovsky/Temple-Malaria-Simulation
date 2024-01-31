@@ -1,4 +1,4 @@
-/* 
+/*
  * CirculateToTargetLocationNextDayEvent.cpp
  *
  * Implement the event to move the individual to the next location.
@@ -14,10 +14,11 @@
 
 OBJECTPOOL_IMPL(CirculateToTargetLocationNextDayEvent)
 
-void CirculateToTargetLocationNextDayEvent::schedule_event(Scheduler *scheduler, Person *p, const int &target_location,
-                                                           const int &time) {
-  if (scheduler!=nullptr) {
-    auto *e = new CirculateToTargetLocationNextDayEvent();
+void CirculateToTargetLocationNextDayEvent::schedule_event(
+    Scheduler* scheduler, Person* p, const int &target_location,
+    const int &time) {
+  if (scheduler != nullptr) {
+    auto* e = new CirculateToTargetLocationNextDayEvent();
     e->dispatcher = p;
     e->set_target_location(target_location);
     e->time = time;
@@ -33,7 +34,7 @@ std::string CirculateToTargetLocationNextDayEvent::name() {
 
 void CirculateToTargetLocationNextDayEvent::execute() {
   // Get the person and perform the movement
-  auto *person = dynamic_cast<Person *>(dispatcher);
+  auto* person = dynamic_cast<Person*>(dispatcher);
   auto source_location = person->location();
   person->set_location(target_location_);
 
@@ -50,13 +51,15 @@ void CirculateToTargetLocationNextDayEvent::execute() {
   // If the person already ahs a return trip scheduled then we can return
   if (person->has_return_to_residence_event()) { return; }
 
-  // Since a return is not scheduled, we need to create a return event based upon a gamma distribution
+  // Since a return is not scheduled, we need to create a return event based
+  // upon a gamma distribution
   auto length_of_trip = 0;
   while (length_of_trip < 1) {
-    length_of_trip = static_cast<int>(
-            std::round(Model::RANDOM->random_gamma(
-                    Model::CONFIG->circulation_info().length_of_stay_theta,
-                    Model::CONFIG->circulation_info().length_of_stay_k)));
+    length_of_trip = static_cast<int>(std::round(Model::RANDOM->random_gamma(
+        Model::CONFIG->circulation_info().length_of_stay_theta,
+        Model::CONFIG->circulation_info().length_of_stay_k)));
   }
-  ReturnToResidenceEvent::schedule_event(Model::SCHEDULER, person,Model::SCHEDULER->current_time() + length_of_trip);
+  ReturnToResidenceEvent::schedule_event(
+      Model::SCHEDULER, person,
+      Model::SCHEDULER->current_time() + length_of_trip);
 }

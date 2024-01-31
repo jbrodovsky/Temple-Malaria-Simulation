@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Random.h
  * Author: nguyentran
  *
@@ -6,24 +6,28 @@
  */
 
 #ifndef RANDOM_H
-#define    RANDOM_H
+#define RANDOM_H
 
 #include <gsl/gsl_rng.h>
+
+#include <cstddef>
+
 #include "PropertyMacro.h"
 
 class Model;
 
 class Random {
- DISALLOW_COPY_AND_ASSIGN(Random)
+  DISALLOW_COPY_AND_ASSIGN(Random)
 
- DISALLOW_MOVE(Random)
+  DISALLOW_MOVE(Random)
 
- VIRTUAL_PROPERTY(unsigned long, seed)
+  VIRTUAL_PROPERTY(unsigned long, seed)
 
- public:
-  gsl_rng *G_RNG;
+private:
+  gsl_rng* G_RNG;
 
-  explicit Random(gsl_rng *g_rng = nullptr);
+public:
+  explicit Random(gsl_rng* g_rng = nullptr);
 
   virtual ~Random();
 
@@ -35,7 +39,8 @@ class Random {
 
   virtual unsigned long random_uniform(unsigned long range);
 
-  virtual unsigned long random_uniform_int(const unsigned long &from, const unsigned long &to);
+  virtual unsigned long random_uniform_int(const unsigned long &from,
+                                           const unsigned long &to);
 
   virtual double random_uniform_double(const double &from, const double &to);
 
@@ -56,21 +61,26 @@ class Random {
 
   virtual double random_gamma(const double &shape, const double &scale);
 
-  virtual double cdf_gamma_distribution(const double &x, const double &alpha, const double &beta);
+  virtual double cdf_gamma_distribution(const double &x, const double &alpha,
+                                        const double &beta);
 
-  virtual double cdf_gamma_distribution_inverse(const double &p, const double &alpha, const double &beta);
+  virtual double cdf_gamma_distribution_inverse(const double &p,
+                                                const double &alpha,
+                                                const double &beta);
 
   virtual double random_flat(const double &from, const double &to);
 
-  virtual void random_multinomial(const size_t &K, const unsigned &N, double p[], unsigned n[]);
+  virtual void random_multinomial(const std::size_t &K, const unsigned &N,
+                                  double p[], unsigned n[]);
 
-  virtual void random_shuffle(void *base, size_t base_length, size_t size_of_type);
+  virtual void random_shuffle(void* base, std::size_t base_length,
+                              std::size_t size_of_type);
 
   virtual double cdf_standard_normal_distribution(const double &p);
 
   virtual int random_binomial(const double &p, const unsigned int &n);
 
-  void shuffle(void *base, const size_t &n, const size_t &size) const;
+  void shuffle(void* base, const std::size_t &n, const std::size_t &size) const;
 };
 
-#endif    /* RANDOM_H */
+#endif /* RANDOM_H */

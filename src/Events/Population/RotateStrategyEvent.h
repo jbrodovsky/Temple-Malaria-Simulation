@@ -21,7 +21,8 @@ private:
 public:
   inline static const std::string EventName = "rotate_treatment_strategy_event";
 
-  RotateStrategyEvent(int at_time, int years, int current_strategy_id, int next_strategy_id);
+  RotateStrategyEvent(int at_time, int years, int current_strategy_id,
+                      int next_strategy_id);
   ~RotateStrategyEvent() override = default;
 
   std::string name() override { return EventName; }

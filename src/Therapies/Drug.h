@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Drug.h
  * Author: Merlin
  *
@@ -6,35 +6,35 @@
  */
 
 #ifndef DRUG_H
-#define    DRUG_H
+#define DRUG_H
 
-#include "Core/PropertyMacro.h"
 #include "Core/ObjectPool.h"
+#include "Core/PropertyMacro.h"
 #include "Population/DrugsInBlood.h"
 
 class Drug {
- OBJECTPOOL(Drug)
+  OBJECTPOOL(Drug)
 
- DISALLOW_COPY_AND_ASSIGN(Drug)
+  DISALLOW_COPY_AND_ASSIGN(Drug)
 
- PROPERTY_REF(int, dosing_days)
+  PROPERTY_REF(int, dosing_days)
 
- PROPERTY_REF(int, start_time)
+  PROPERTY_REF(int, start_time)
 
- PROPERTY_REF(int, end_time)
+  PROPERTY_REF(int, end_time)
 
- PROPERTY_REF(double, last_update_value)
+  PROPERTY_REF(double, last_update_value)
 
- PROPERTY_REF(int, last_update_time)
+  PROPERTY_REF(int, last_update_time)
 
- PROPERTY_REF(double, starting_value)
+  PROPERTY_REF(double, starting_value)
 
- POINTER_PROPERTY(DrugType, drug_type)
+  POINTER_PROPERTY(DrugType, drug_type)
 
- POINTER_PROPERTY(DrugsInBlood, person_drugs)
+  POINTER_PROPERTY(DrugsInBlood, person_drugs)
 
- public:
-  explicit Drug(DrugType *drug_type = nullptr);
+public:
+  explicit Drug(DrugType* drug_type = nullptr);
 
   //    Drug(const Drug& orig);
   virtual ~Drug();
@@ -52,4 +52,4 @@ class Drug {
   double get_parasite_killing_rate(int &genotype_id) const;
 };
 
-#endif    /* DRUG_H */
+#endif /* DRUG_H */

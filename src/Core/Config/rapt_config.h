@@ -1,9 +1,10 @@
 /*
  * RaptConfig.h
  *
- * Define the RaptConfig class and the RaptConfigEntry struct, these are used for the assessment of the regular
- * administration of prophylactic therapy (RAPT) which requires some deep linkages with the underlying simulation
- * to run correctly.
+ * Define the RaptConfig class and the RaptConfigEntry struct, these are used
+ * for the assessment of the regular administration of prophylactic therapy
+ * (RAPT) which requires some deep linkages with the underlying simulation to
+ * run correctly.
  */
 #pragma once
 
@@ -26,8 +27,9 @@ public:
   rapt_config &operator=(const rapt_config &) = delete;
 
 public:
-  explicit rapt_config(const std::string &name, RaptConfigEntry default_value, Config *config = nullptr)
-      : IConfigItem(config, name), value_ { default_value } {}
+  explicit rapt_config(const std::string &name, RaptConfigEntry default_value,
+                       Config* config = nullptr)
+      : IConfigItem(config, name), value_{default_value} {}
 
   ~rapt_config() override = default;
 

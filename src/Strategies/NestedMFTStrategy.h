@@ -4,28 +4,27 @@
 #include "IStrategy.h"
 
 class NestedMFTStrategy : public IStrategy {
- DISALLOW_COPY_AND_ASSIGN(NestedMFTStrategy)
+  DISALLOW_COPY_AND_ASSIGN(NestedMFTStrategy)
 
- DISALLOW_MOVE(NestedMFTStrategy)
+  DISALLOW_MOVE(NestedMFTStrategy)
 
- public:
-  std::vector<IStrategy *> strategy_list;
+public:
+  std::vector<IStrategy*> strategy_list;
   std::vector<double> distribution;
   std::vector<double> start_distribution;
   std::vector<double> peak_distribution;
   int starting_time{0};
   int peak_after{0};
 
-  NestedMFTStrategy()
-      : IStrategy("NestedMFTStrategy", NestedMFT) {}
+  NestedMFTStrategy() : IStrategy("NestedMFTStrategy", NestedMFT) {}
 
   virtual ~NestedMFTStrategy() = default;
 
-  virtual void add_strategy(IStrategy *strategy);
+  virtual void add_strategy(IStrategy* strategy);
 
-  void add_therapy(Therapy *therapy) override;
+  void add_therapy(Therapy* therapy) override;
 
-  Therapy *get_therapy(Person *person) override;
+  Therapy* get_therapy(Person* person) override;
 
   std::string to_string() const override;
 
@@ -38,4 +37,4 @@ class NestedMFTStrategy : public IStrategy {
   void adjust_distribution(const int &time);
 };
 
-#endif // NESTEDMFTSTRATEGY_H
+#endif  // NESTEDMFTSTRATEGY_H

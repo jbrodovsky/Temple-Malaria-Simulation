@@ -1,4 +1,4 @@
-/* 
+/*
  * ImmuneComponent.h
  *
  * Define the immune component class, this class is responsible for
@@ -12,15 +12,14 @@ class ImmuneSystem;
 class Model;
 
 class ImmuneComponent {
+  DISALLOW_COPY_AND_ASSIGN(ImmuneComponent)
 
- DISALLOW_COPY_AND_ASSIGN(ImmuneComponent)
+  POINTER_PROPERTY(ImmuneSystem, immune_system)
 
- POINTER_PROPERTY(ImmuneSystem, immune_system)
+  PROPERTY_REF(double, latest_value)
 
- PROPERTY_REF(double, latest_value)
-
- public:
-  explicit ImmuneComponent(ImmuneSystem *immune_system = nullptr);
+public:
+  explicit ImmuneComponent(ImmuneSystem* immune_system = nullptr);
 
   virtual ~ImmuneComponent();
 
@@ -33,7 +32,6 @@ class ImmuneComponent {
   [[nodiscard]] virtual double get_decay_rate(const int &age) const = 0;
 
   [[nodiscard]] virtual double get_acquire_rate(const int &age) const = 0;
-
 };
 
 #endif

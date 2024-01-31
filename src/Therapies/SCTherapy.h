@@ -1,4 +1,4 @@
-/* 
+/*
  * SCTherapy.hxx
  *
  * Define and implement the single compound therapy (SCT) class.
@@ -11,9 +11,9 @@
 class DrugType;
 
 class SCTherapy : public Therapy {
-DISALLOW_COPY_AND_ASSIGN(SCTherapy)
+  DISALLOW_COPY_AND_ASSIGN(SCTherapy)
 
-PROPERTY(bool, full_compliance)
+  PROPERTY(bool, full_compliance)
 
 private:
   int max_dosing_day;
@@ -23,8 +23,12 @@ public:
   std::vector<int> dosing_day;
   std::vector<double> pr_completed_days;
 
-  SCTherapy() : Therapy(),
-    dosing_day{}, artemisinin_id{-1}, full_compliance_{false}, max_dosing_day{-1} {};
+  SCTherapy()
+      : Therapy(),
+        dosing_day{},
+        artemisinin_id{-1},
+        full_compliance_{false},
+        max_dosing_day{-1} {};
   ~SCTherapy() override = default;
 
   // Add the drug, note if it is artemisinin or not.
@@ -39,7 +43,7 @@ public:
   // Return the maximum dosing day
   int get_max_dosing_day() const;
 
-  void print(std::ostream& os) const override;
+  void print(std::ostream &os) const override;
 };
 
-#endif 
+#endif

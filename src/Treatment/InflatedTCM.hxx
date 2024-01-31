@@ -9,7 +9,7 @@
 #include "ITreatmentCoverageModel.h"
 
 class InflatedTCM : public ITreatmentCoverageModel {
- public:
+public:
   double monthly_inflation_rate{0};
 
   InflatedTCM() = default;
@@ -19,9 +19,12 @@ class InflatedTCM : public ITreatmentCoverageModel {
       p_treatment_less_than_5[loc] *= (1 + monthly_inflation_rate);
       p_treatment_more_than_5[loc] *= (1 + monthly_inflation_rate);
 
-      p_treatment_less_than_5[loc] = p_treatment_less_than_5[loc] > 1.0 ? 1.0 : p_treatment_less_than_5[loc];
-      p_treatment_more_than_5[loc] = p_treatment_more_than_5[loc] > 1.0 ? 1.0 : p_treatment_more_than_5[loc];
-
+      p_treatment_less_than_5[loc] = p_treatment_less_than_5[loc] > 1.0
+                                         ? 1.0
+                                         : p_treatment_less_than_5[loc];
+      p_treatment_more_than_5[loc] = p_treatment_more_than_5[loc] > 1.0
+                                         ? 1.0
+                                         : p_treatment_more_than_5[loc];
     }
   }
 };

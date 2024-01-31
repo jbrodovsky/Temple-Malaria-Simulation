@@ -11,18 +11,16 @@
 class Therapy;
 
 class TherapyBuilder {
-
- public:
+public:
   TherapyBuilder() = default;
   TherapyBuilder(const TherapyBuilder &orig) = default;
   virtual ~TherapyBuilder() = default;
 
-  static Therapy *build(const YAML::Node &ns, const int &t_id);
+  static Therapy* build(const YAML::Node &ns, const int &t_id);
 
- private:
-    static Therapy *create_simple(const YAML::Node &ns, const int &t_id);
-    static Therapy *create_complex(const YAML::Node &ns, const int &t_id);
+private:
+  static Therapy* create_simple(const YAML::Node &ns, const int &t_id);
+  static Therapy* create_complex(const YAML::Node &ns, const int &t_id);
 };
 
 #endif
-

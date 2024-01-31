@@ -6,29 +6,30 @@
 #define SPATIAL_COORDINATE_H
 
 #include <ostream>
+
 #include "Core/PropertyMacro.h"
 
 namespace Spatial {
 class Coordinate {
- DISALLOW_COPY_AND_ASSIGN(Coordinate)
+  DISALLOW_COPY_AND_ASSIGN(Coordinate)
 
- public:
+public:
   float latitude;
   float longitude;
 
- public:
-
+public:
   Coordinate(float latitude = 0, float longitude = 0);
 
   virtual ~Coordinate();
 
- public:
-  static double calculate_distance_in_km(const Coordinate &from, const Coordinate &to);
+public:
+  static double calculate_distance_in_km(const Coordinate &from,
+                                         const Coordinate &to);
 
-  friend std::ostream &operator<<(std::ostream &os, const Coordinate &coordinate);
-
+  friend std::ostream &operator<<(std::ostream &os,
+                                  const Coordinate &coordinate);
 };
 
-}
+}  // namespace Spatial
 
-#endif //SPATIAL_COORDINATE_H
+#endif  // SPATIAL_COORDINATE_H

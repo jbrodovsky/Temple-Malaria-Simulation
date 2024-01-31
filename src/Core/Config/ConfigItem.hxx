@@ -6,29 +6,33 @@
 #ifndef CONFIGITEM_H
 #define CONFIGITEM_H
 
-#include "IConfigItem.h"
-#include "YamlConverter.hxx"
-#include "easylogging++.h"
-#include <yaml-cpp/yaml.h>
 #include <fmt/format.h>
+#include <yaml-cpp/yaml.h>
+
 #include <utility>
 #include <vector>
 
-#define CONFIG_ITEM(name, type, default_value)\
-  ConfigItem<type> name{#name,default_value, this};
+#include "IConfigItem.h"
+#include "YamlConverter.hxx"
+#include "easylogging++.h"
 
-#define CUSTOM_CONFIG_ITEM(name, default_value)\
-  ::name name{#name,default_value, this};
+#define CONFIG_ITEM(name, type, default_value) \
+  ConfigItem<type> name{#name, default_value, this};
+
+#define CUSTOM_CONFIG_ITEM(name, default_value) \
+  ::name name{#name, default_value, this};
 
 class Config;
 
-template<typename T>
+template <typename T>
 class ConfigItem : public IConfigItem {
- protected:
+protected:
   T value_{};
- public:
-  //constructor
-  explicit ConfigItem(const std::string &name, T default_value, Config* config = nullptr);
+
+public:
+  // constructor
+  explicit ConfigItem(const std::string &name, T default_value,
+                      Config* config = nullptr);
 
   // destructor
   ~ConfigItem() override = default;
@@ -51,17 +55,17 @@ class ConfigItem : public IConfigItem {
   void set_value(const YAML::Node &node) override;
 };
 
-template<typename T>
-ConfigItem<T>::ConfigItem(const std::string &name, T default_value, Config* config) : IConfigItem(config, name),
-                                                                                      value_{std::move(default_value)} {
-}
+template <typename T>
+ConfigItem<T>::ConfigItem(const std::string &name, T default_value,
+                          Config* config)
+    : IConfigItem(config, name), value_{std::move(default_value)} {}
 
-template<typename T>
+template <typename T>
 T &ConfigItem<T>::operator()() {
   return value_;
 };
 
-template<typename T>
+template <typename T>
 void ConfigItem<T>::set_value(const YAML::Node &node) {
   // Store the value if there is one
   if (node[name_]) {
@@ -78,7 +82,7 @@ void ConfigItem<T>::set_value(const YAML::Node &node) {
   }
 }
 
-template<class T>
+template <class T>
 inline std::ostream &operator<<(std::ostream &os, const std::vector<T> &v) {
   std::string sep;
   os << "[";
@@ -90,13 +94,15 @@ inline std::ostream &operator<<(std::ostream &os, const std::vector<T> &v) {
   return os;
 }
 
-template<typename T>
+template <typename T>
 class ConfigItem<std::vector<T>> : public IConfigItem {
- protected:
+protected:
   std::vector<T> value_{};
- public:
-  //constructor
-  explicit ConfigItem(std::string name, std::vector<T> default_value, Config* config = nullptr);
+
+public:
+  // constructor
+  explicit ConfigItem(std::string name, std::vector<T> default_value,
+                      Config* config = nullptr);
 
   // destructor
   ~ConfigItem() override = default;
@@ -118,21 +124,21 @@ class ConfigItem<std::vector<T>> : public IConfigItem {
   void set_value(const YAML::Node &node) override;
 };
 
-template<typename T>
-ConfigItem<std::vector<T>>::
-ConfigItem(std::string name, std::vector<T> default_value, Config* config): IConfigItem(config, name),
-                                                                            value_{std::move(default_value)} {
+template <typename T>
+ConfigItem<std::vector<T>>::ConfigItem(std::string name,
+                                       std::vector<T> default_value,
+                                       Config* config)
+    : IConfigItem(config, name), value_{std::move(default_value)} {
   // ReSharper disable once CppClassIsIncomplete
 }
 
-template<typename T>
+template <typename T>
 std::vector<T> &ConfigItem<std::vector<T>>::operator()() {
   return value_;
 }
 
-template<typename T>
+template <typename T>
 void ConfigItem<std::vector<T>>::set_value(const YAML::Node &node) {
-
   // Are we looking at the location_db type?
   if (typeid(T) == typeid(Spatial::Location) && this->value_.size() != 0) {
     LOG(INFO) << "location_db appears to have been set by raster_db";
@@ -151,8 +157,9 @@ void ConfigItem<std::vector<T>>::set_value(const YAML::Node &node) {
       sep = " , ";
     }
     ss << "]";
-    LOG(WARNING) << fmt::format("{} used default value of {}", this->name_, ss.str());
+    LOG(WARNING) << fmt::format("{} used default value of {}", this->name_,
+                                ss.str());
   }
 }
 
-#endif // CONFIGITEM_H
+#endif  // CONFIGITEM_H

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ConsoleReporter.h
  * Author: Merlin
  *
@@ -6,20 +6,20 @@
  */
 
 #ifndef CONSOLEREPORTER_H
-#define    CONSOLEREPORTER_H
+#define CONSOLEREPORTER_H
 
 #include "Reporter.h"
 
 class ConsoleReporter : public Reporter {
- DISALLOW_COPY_AND_ASSIGN(ConsoleReporter)
+  DISALLOW_COPY_AND_ASSIGN(ConsoleReporter)
 
- public:
+public:
   ConsoleReporter();
 
   //    ConsoleReporter(const ConsoleReporter& orig);
   virtual ~ConsoleReporter();
 
-  virtual void initialize(int job_number, std::string path) { }
+  virtual void initialize(int job_number, std::string path) {}
 
   virtual void before_run();
 
@@ -29,9 +29,7 @@ class ConsoleReporter : public Reporter {
 
   virtual void monthly_report();
 
- private:
-
+private:
 };
 
-#endif    /* CONSOLEREPORTER_H */
-
+#endif /* CONSOLEREPORTER_H */

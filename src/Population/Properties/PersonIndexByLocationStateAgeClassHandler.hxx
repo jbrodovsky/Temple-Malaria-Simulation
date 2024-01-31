@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   PersonIndexByLocationStateAgeClassHandler.h
  * Author: nguyentran
  *
@@ -12,15 +12,12 @@
 #include "IndexHandler.hxx"
 
 class PersonIndexByLocationStateAgeClassHandler : public IndexHandler {
+  DISALLOW_COPY_AND_ASSIGN(PersonIndexByLocationStateAgeClassHandler)
 
- DISALLOW_COPY_AND_ASSIGN(PersonIndexByLocationStateAgeClassHandler)
+public:
+  PersonIndexByLocationStateAgeClassHandler() {}
 
- public:
-  PersonIndexByLocationStateAgeClassHandler() { }
-
-  virtual ~PersonIndexByLocationStateAgeClassHandler() { }
-
+  virtual ~PersonIndexByLocationStateAgeClassHandler() {}
 };
 
 #endif
-

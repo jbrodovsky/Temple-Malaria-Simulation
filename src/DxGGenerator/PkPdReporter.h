@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   PkPdReporter.h
  * Author: Merlin
  *
@@ -6,18 +6,18 @@
  */
 
 #ifndef PKPDREPORTER_H
-#define    PKPDREPORTER_H
+#define PKPDREPORTER_H
 
 #include "Core/PropertyMacro.h"
 #include "Core/TypeDef.h"
 #include "Reporters/Reporter.h"
 
 class PkPdReporter : public Reporter {
- DISALLOW_COPY_AND_ASSIGN(PkPdReporter)
+  DISALLOW_COPY_AND_ASSIGN(PkPdReporter)
 
- PROPERTY_REF(DoubleVector, yesterday_density)
+  PROPERTY_REF(DoubleVector, yesterday_density)
 
- public:
+public:
   PkPdReporter();
 
   //    PkPdReporter(const PkPdReporter& orig);
@@ -35,8 +35,7 @@ class PkPdReporter : public Reporter {
 
   void monthly_report() override;
 
- private:
-
+private:
 };
 
-#endif    /* PKPDREPORTER_H */
+#endif /* PKPDREPORTER_H */

@@ -7,8 +7,6 @@
 
 #include <pqxx/pqxx>
 
-#include "easylogging++.h"
-
 #include "Core/Config/Config.h"
 #include "MDC/ModelDataCollector.h"
 #include "Model.h"
@@ -16,6 +14,7 @@
 #include "Population/Population.h"
 #include "Population/Properties/PersonIndexByLocationStateAgeClass.h"
 #include "Reporters/Utility/PqxxHelpers.h"
+#include "easylogging++.h"
 
 void GenotypeCarriersReporter::initialize(int job_number, std::string path) {
   // Query to verify that the database has been properly configured
@@ -25,7 +24,9 @@ void GenotypeCarriersReporter::initialize(int job_number, std::string path) {
 
   // If nothing was returned, throw an error
   if (result.empty()) {
-    LOG(ERROR) << "Database not configured correctly for Genotype Carriers Reporter, missing \'sim.monthlysitedata.genotypecarriers\'";
+    LOG(ERROR) << "Database not configured correctly for Genotype Carriers "
+                  "Reporter, missing "
+                  "\'sim.monthlysitedata.genotypecarriers\'";
     throw std::runtime_error("Missing Genotype Carriers Reporter column");
   }
 
@@ -41,9 +42,12 @@ void GenotypeCarriersReporter::initialize(int job_number, std::string path) {
   delete connection;
 
   // Inform the user that we are running, note the genotype
-  LOG(INFO) << fmt::format("Absolute count of carriers of {} (locus {}, allele {}) is being recorded to database.",
-                           GENOTYPE, LOCUS, ALLELE);
-  VLOG(1) << "Replicate: " << Model::MODEL->replicate() << ", Aggregation: " << aggregation;
+  LOG(INFO) << fmt::format(
+      "Absolute count of carriers of {} (locus {}, allele {}) is being "
+      "recorded to database.",
+      GENOTYPE, LOCUS, ALLELE);
+  VLOG(1) << "Replicate: " << Model::MODEL->replicate()
+          << ", Aggregation: " << aggregation;
 }
 
 void GenotypeCarriersReporter::monthly_report() {
@@ -51,12 +55,12 @@ void GenotypeCarriersReporter::monthly_report() {
   std::vector<int> genotype_count(lookup_allocation);
 
   // Cache relevant data
-  auto* index = Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
+  auto* index =
+      Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
   auto age_classes = index->vPerson()[0][0].size();
 
   // Iterate over all the locations and states
   for (auto location = 0; location < index->vPerson().size(); location++) {
-
     // Reset the count for this location
     int count = 0;
 
@@ -66,15 +70,18 @@ void GenotypeCarriersReporter::monthly_report() {
         auto age_class = index->vPerson()[location][hs][ac];
         for (auto &person : age_class) {
           // Pass if the person is not infected
-          auto parasites = person->all_clonal_parasite_populations()->parasites();
+          auto parasites =
+              person->all_clonal_parasite_populations()->parasites();
           auto size = parasites->size();
           if (size == 0) { continue; }
 
-          // Check for the genotype interest, since we are tracking the absolute count of infected individuals once one
-          // clone that matches has been found we can press on to the next person
+          // Check for the genotype interest, since we are tracking the absolute
+          // count of infected individuals once one clone that matches has been
+          // found we can press on to the next person
           for (unsigned int infection = 0; infection < size; infection++) {
             auto parasite_population = (*parasites)[infection];
-            if (parasite_population->genotype()->gene_expression()[LOCUS] == ALLELE) {
+            if (parasite_population->genotype()->gene_expression()[LOCUS]
+                == ALLELE) {
               count++;
               continue;
             }
@@ -90,16 +97,20 @@ void GenotypeCarriersReporter::monthly_report() {
   // Counting is complete, start the update by getting the monthlydataid to use
   pqxx::connection* connection = pqxx_db::get_connection();
   pqxx::work db(*connection);
-  pqxx::result results = db.exec(fmt::format(SELECT_MONTHLYDATAID, Model::MODEL->replicate()));
+  pqxx::result results =
+      db.exec(fmt::format(SELECT_MONTHLYDATAID, Model::MODEL->replicate()));
   auto id = results[0][0].as<int>();
 
   // Determine the offset to use for the updates
-  auto offset = (aggregation == "D") ? SpatialData::get_instance().get_first_district() : 0;
+  auto offset = (aggregation == "D")
+                    ? SpatialData::get_instance().get_first_district()
+                    : 0;
 
   // Now prepare the query with the count updates
   std::string query;
   for (auto ndx = 0; ndx < genotype_count.size(); ndx++) {
-    query.append(fmt::format(UPDATE_GENOTYPES, genotype_count[ndx], id, ndx + offset));
+    query.append(
+        fmt::format(UPDATE_GENOTYPES, genotype_count[ndx], id, ndx + offset));
   }
 
   // Update the database, and clean up before returning
