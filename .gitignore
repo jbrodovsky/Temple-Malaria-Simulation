@@ -26,3 +26,5 @@ out
 monthly_data\.txt
 reporter\.txt
 
+# Ignore temporary Excel files
+~$*.xlsx

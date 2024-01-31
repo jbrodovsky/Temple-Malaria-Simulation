@@ -137,12 +137,12 @@ These data sets are *unconstrained* meaning the processing does not attempt to r
 
 Note that each of these data sets have a resolution of arc seconds, which are 1/60th of a nautical mile or 30.87 meters are the equator. However, it is important to remember that  arc seconds of longitude decrease mathematically as one moves toward the Earth's poles. As such, it is important to remember that distortion **will** occur when projecting data that is originally supplied in degrees.
 
-Here we are going to use second option of processing an unconstrained national mosaic of the population at 30 arc seconds (about 1 km at the equator). Start by dragging the raster on to the map, when the pop-up dialog to build pyramids (used to improve the performance of displaying the raster) and statistics appears, make sure both `Build` and `Calculate` are checked and click `OK`. After the calculations are complete, the raster should appear on the map (see Figure \@ref(fig:gisinitialpopraster-png)).
+Here we are going to use second option of processing an unconstrained national mosaic of the population at 30 arc seconds (about 1 km at the equator). Start by dragging the raster on to the map, when the pop-up dialog to build pyramids (used to improve the performance of displaying the raster) and statistics appears, make sure both `Build` and `Calculate` are checked and click `OK`. After the calculations are complete, the raster should appear on the map (see Figure \@ref(fig:gispopraster2020-png)).
 
 At this point it is recommended to create a new Group Layer for the raster data (e.g., "Raster Data") and to adjust the symbology of the raster to make it easier to see. Here the raster has been updated so the color scheme is inverted and the "Stretch Type" is set to "Standard Deviation" (see Figure \@ref(fig:gispopvisualupdates-png)).
 
-```{r gisinitialpopraster-png, fig.cap="The population raster after it has been initially loaded by ArcGIS. Note that much of the map appears to be black, suggesting a population of zero.", out.width="450px", echo = FALSE }
-knitr::include_graphics("figures/gis/initial_pop_raster.png")
+```{r gispopraster2020-png, fig.cap="The population raster after it has been initially loaded by ArcGIS. Note that much of the map appears to be black, suggesting a population of zero.", out.width="450px", echo = FALSE }
+knitr::include_graphics("figures/gis/pop_raster_2020.png")
 ```
 
 ```{r gispopvisualupdates-png, fig.cap="The population raster after it has been moved to a new Group Layer and the symbology is adjusted.", out.width="450px", echo = FALSE }
@@ -190,6 +190,35 @@ knitr::include_graphics("figures/gis/population_raster.png")
 ```
 
 \newpage
+
+### Preparing the Initial Population Raster
+
+Once the population raster has been prepared for the target calibration year, a derived raster can be created that will be used as the initial population raster in the simulation. Since the simulation assumes a fixed birth rate, the initial population raster is used to instantiate the simulation as opposed to the historical population in the equivalent year of the simulation. 
+
+Start by first determining the crude birth rate in the calibration year (i.e., the same year as the previous population data).^[ For Kenya we are assuming a crude birth rate of 28 per 1,000 inhabited based upon data in [Statista](https://www.statista.com/statistics/976967/crude-birth-rate-in-kenya/)] Next we calculate $p'$, representing the adjusted population in the initial year of the simulation as such: 
+
+$$p' = \frac{1000}{\left( 1 + \frac{cbr}{1000}\right) ^n}$$
+
+Where $cbr$ is the crude birth rate and $n$ is the number of years from model initialization to to the calibration year.^[ Typically this will be able eleven years to account for model burn-in.] The value of 1,000 is used as a proxy population for the calculation. Using Excel for the calculation gives us a rounded value of 738.03, which we then use in the following:
+
+$$multiplier = 1 - \left( \frac{1000 - p'}{1000} \right)$$
+The resulting $multiplier$ is the value that will be used in ArcGIS, with four digits of precision typically being sufficient. An Excel workbook is also included in the simulation repository under `manual/tools/Population-Multiplier.xlsx`, see Figure \@ref(fig:exampleexcelcalculation-png).
+
+Once the $multiplier$ has been calculated, the `Raster Calculator` can be used to produce a new raster using the formula:
+
+```
+ RoundUp("Simulation Rasters\ken_ppp_2020_5km"*multiplier)
+```
+
+Where the path is adjusted to the 25 km^2^ population raster that was created and $multiplier$ is replaced with the calculated value, see Figure \@ref(fig:initialpopraster-png). Note that `RoundUp` is used to ensure that all decimals are rounded up to the nearest whole number.
+
+```{r exampleexcelcalculation-png, fig.cap="Example of the population calculation in Excel.", echo = FALSE}
+knitr::include_graphics("figures/gis/example_excel_calculation.png")
+```
+
+```{r initialpopraster-png, fig.cap="The intial popuation raster produced by the `Raster Calculator` with updated symbology. Note the highest cell value is lower than in the orginal 2020 population raster..", out.width="450px", echo = FALSE}
+knitr::include_graphics("figures/gis/initial_pop_raster.png")
+```
 
 ## Preparing the Prevelence Raster
 
@@ -240,8 +269,6 @@ knitr::include_graphics("figures/gis/kenya_pfpr_masked.png")
 knitr::include_graphics("figures/gis/kenya_pfpr_raster.png")
 ```
 
-\newpage
-
 ## Preparing the Treatment Coverage Raster
 
 Now that we have the administrative regions, population, and *Pf*PR~2-10~ rasters prepared, the last required raster for the simulation is the under-5 and over-5 treatment seeking behavior. The typical source for this data is the Malaria Indicator Survey (MIS) from the Demographic and Health Surveys (DHS) Program, run by USAID.^[ https://dhsprogram.com/] In this example we will be using the 2020 MIS data for Kenya [@division_of_national_malaria_programme_dnmp_kenya_kenya_2021].^[ Note that due to the survey process there is typically a lag between when the survey is conducted, when the results are released. At the time of writing, the 2020 MIS data is the most recent for Kenya.]
@@ -272,7 +299,9 @@ Visual inspection of the map suggests that the majority of the admin two distric
 
 Start by selecting the `Select By Attributes` tool under the `Map` on the ribbon menu, the `Select By Attributes` dialog will appear. Make sure the MIS regions shapefile is selected for `Input Rows`, select `DHSREGEN` for the start of the `Where` clause and then select `Lake Endemic` when the values appear.^[ As you might suspect, functionally what ArcGIS is doing is preparing a SQL query against the data set.] Click `Apply` and the dialog will not close, but the regions will be selected (see Figure \@ref(fig:mislakeendemicselected-png)). This is so you can verify the query results, if the Lake Endemic region is highlighted, click `OK` to close the dialog.
 
-Next, right click on the MIS region layer and select `Selection` then `Make Layer From Selected Features` from the sub-menu that appears. This will create a new *temporary* layer as shown in Figure \@ref(fig:mistemplayer-png). Here *temporary* means that the layer has not been saved as a new shapefile or in a geodatabase, and is instead a subset of the original layer and is associated with the map itself. So if you close ArcGIS the layer will still be present, but any changes to the temporary layer will be applied to the original layer as well. Additionally, note that features are selected by ArcGIS, click the `Clear` button on the ribbon bar under `Map`, this will clear any selected features. Since some of the ArcGIS tools operate on selected features, it is important to make sure selections are cleared as soon as work is done with them.^[ As you get more comfortable with ArcGIS this is actually a very useful feature since you technically do not need to create a temporary layer to update the labels. However, since different symbology can be applied to temporary layers, they are easier to work with when visually assessing data.]
+Next, right click on the MIS region layer and select `Selection` then `Make Layer From Selected Features` from the sub-menu that appears. This will create a new *temporary* layer as shown in Figure \@ref(fig:mistemplayer-png). Here *temporary* means that the layer has not been saved as a new shapefile or in a geodatabase, but as part of the map itself. So if you close ArcGIS the layer will still be present. This is potentially a source of errors (or confusion) since any changes to the temporary layer will be applied to the original layer as well. Additionally, if you create a raster from a temporary layer it will preserve the extents of the original layer as `NODATA` as opposed to clipping the raster to the extents of the polygons. This will result in more rows or columns than expected.
+
+Note that features are selected by ArcGIS, click the `Clear` button on the ribbon bar under `Map`, this will clear any selected features. Since some of the ArcGIS tools operate on selected features, it is important to make sure selections are cleared as soon as work is done with them.^[ As you get more comfortable with ArcGIS this is actually a very useful feature since you technically do not need to create a temporary layer to update the labels. However, since different symbology can be applied to temporary layers, they are easier to work with when visually assessing data.]
 
 ```{r mislakeendemicselected-png, fig.cap="Previewing the selection of the Lake Endemic features before closing the Select By Attributes dialog.", out.width="450px", echo = FALSE}
 knitr::include_graphics("figures/gis/mis_lake_endemic_selected.png")
