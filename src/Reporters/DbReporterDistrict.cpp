@@ -217,7 +217,8 @@ void DbReporterDistrict::monthly_site_data(int id, std::string &query) {
         Model::MAIN_DATA_COLLECTOR
             ->monthly_treatment_failure_by_location()[location];
     nontreatment[district] +=
-        Model::MAIN_DATA_COLLECTOR->monthly_nontreatment_by_location()[location];
+        Model::MAIN_DATA_COLLECTOR
+            ->monthly_nontreatment_by_location()[location];
 
     // Collect the treatment by age class, following the 0-59 month convention
     // for under-5
@@ -242,16 +243,20 @@ void DbReporterDistrict::monthly_site_data(int id, std::string &query) {
       auto eir_location =
           Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[location].empty()
               ? 0
-              : Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[location].back();
+              : Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[location]
+                    .back();
       eir[district] += (eir_location * location_population);
       pfpr_under5[district] +=
-          (Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 0, 5)
+          (Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 0,
+                                                                  5)
            * location_population);
       pfpr_2to10[district] +=
-          (Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 2, 10)
+          (Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 2,
+                                                                  10)
            * location_population);
       pfpr_all[district] +=
-          (Model::MAIN_DATA_COLLECTOR->blood_slide_prevalence_by_location()[location]
+          (Model::MAIN_DATA_COLLECTOR
+               ->blood_slide_prevalence_by_location()[location]
            * location_population);
     }
   }

@@ -11,7 +11,7 @@
 
 namespace Spatial {
 class Coordinate {
-  DISALLOW_COPY_AND_ASSIGN(Coordinate)
+  DELETE_COPY_AND_MOVE(Coordinate)
 
 public:
   float latitude;

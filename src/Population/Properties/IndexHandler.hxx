@@ -13,7 +13,7 @@
 #include "Core/PropertyMacro.h"
 
 class IndexHandler {
-  DISALLOW_COPY_AND_ASSIGN(IndexHandler)
+  DELETE_COPY_AND_MOVE(IndexHandler)
 
   PROPERTY_REF(std::size_t, index)
 

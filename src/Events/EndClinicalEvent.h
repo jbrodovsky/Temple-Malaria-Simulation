@@ -19,7 +19,7 @@ class Scheduler;
 class Person;
 
 class EndClinicalEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(EndClinicalEvent);
+  DELETE_COPY_AND_MOVE(EndClinicalEvent);
   OBJECTPOOL(EndClinicalEvent)
 
   POINTER_PROPERTY(ClonalParasitePopulation, clinical_caused_parasite)

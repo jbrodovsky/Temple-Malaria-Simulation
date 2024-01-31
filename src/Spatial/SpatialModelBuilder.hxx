@@ -17,7 +17,7 @@
 
 namespace Spatial {
 class SpatialModelBuilder {
-  DISALLOW_COPY_AND_ASSIGN(SpatialModelBuilder)
+  DELETE_COPY_AND_MOVE(SpatialModelBuilder)
 
 public:
   SpatialModelBuilder() = default;

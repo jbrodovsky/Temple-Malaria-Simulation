@@ -13,7 +13,7 @@
 #include "Reporters/Reporter.h"
 
 class PkPdReporter : public Reporter {
-  DISALLOW_COPY_AND_ASSIGN(PkPdReporter)
+  DELETE_COPY_AND_MOVE(PkPdReporter)
 
   PROPERTY_REF(DoubleVector, yesterday_density)
 

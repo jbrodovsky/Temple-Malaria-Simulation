@@ -19,7 +19,7 @@ class Scheduler;
 class Person;
 
 class EndClinicalDueToDrugResistanceEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(EndClinicalDueToDrugResistanceEvent)
+  DELETE_COPY_AND_MOVE(EndClinicalDueToDrugResistanceEvent)
 
   OBJECTPOOL(EndClinicalDueToDrugResistanceEvent)
 

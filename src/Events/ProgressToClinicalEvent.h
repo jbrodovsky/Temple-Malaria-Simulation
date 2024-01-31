@@ -22,9 +22,7 @@ class ClonalParasitePopulation;
 class ProgressToClinicalEvent : public Event {
   OBJECTPOOL(ProgressToClinicalEvent)
 
-  DISALLOW_COPY_AND_ASSIGN(ProgressToClinicalEvent)
-
-  DISALLOW_MOVE(ProgressToClinicalEvent)
+  DELETE_COPY_AND_MOVE(ProgressToClinicalEvent)
 
   POINTER_PROPERTY(ClonalParasitePopulation, clinical_caused_parasite)
 

@@ -10,7 +10,7 @@
 #include "ImmuneComponent.h"
 
 class NonInfantImmuneComponent : public ImmuneComponent {
-  DISALLOW_COPY_AND_ASSIGN(NonInfantImmuneComponent)
+  DELETE_COPY_AND_MOVE(NonInfantImmuneComponent)
 
 public:
   explicit NonInfantImmuneComponent(ImmuneSystem* immune_system = nullptr);

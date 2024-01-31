@@ -76,9 +76,7 @@ public:
 
   OBJECTPOOL(Person)
 
-  DISALLOW_COPY_AND_ASSIGN(Person)
-
-  DISALLOW_MOVE(Person)
+  DELETE_COPY_AND_MOVE(Person)
 
   POINTER_PROPERTY(Population, population)
 

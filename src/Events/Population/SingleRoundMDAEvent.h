@@ -7,9 +7,7 @@
 #include "Events/Event.h"
 
 class SingleRoundMDAEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(SingleRoundMDAEvent)
-
-  DISALLOW_MOVE(SingleRoundMDAEvent)
+  DELETE_COPY_AND_MOVE(SingleRoundMDAEvent)
 
 public:
   std::vector<double> fraction_population_targeted;

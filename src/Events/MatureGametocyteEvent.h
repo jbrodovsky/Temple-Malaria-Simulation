@@ -19,7 +19,7 @@ class Scheduler;
 class Person;
 
 class MatureGametocyteEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(MatureGametocyteEvent);
+  DELETE_COPY_AND_MOVE(MatureGametocyteEvent);
   OBJECTPOOL(MatureGametocyteEvent)
 
   POINTER_PROPERTY(ClonalParasitePopulation, blood_parasite)

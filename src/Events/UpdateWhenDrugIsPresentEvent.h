@@ -21,7 +21,7 @@ class Scheduler;
 class Person;
 
 class UpdateWhenDrugIsPresentEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(UpdateWhenDrugIsPresentEvent)
+  DELETE_COPY_AND_MOVE(UpdateWhenDrugIsPresentEvent)
 
   OBJECTPOOL(UpdateWhenDrugIsPresentEvent)
 

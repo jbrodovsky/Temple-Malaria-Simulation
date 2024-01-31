@@ -18,7 +18,7 @@ class Person;
 class BirthdayEvent : public Event {
   OBJECTPOOL(BirthdayEvent)
 
-  DISALLOW_COPY_AND_ASSIGN(BirthdayEvent)
+  DELETE_COPY_AND_MOVE(BirthdayEvent)
 
 public:
   BirthdayEvent();

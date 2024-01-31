@@ -17,9 +17,7 @@ class Person;
 class DrugsInBlood {
   OBJECTPOOL(DrugsInBlood)
 
-  DISALLOW_COPY_AND_ASSIGN(DrugsInBlood)
-
-  DISALLOW_MOVE(DrugsInBlood)
+  DELETE_COPY_AND_MOVE(DrugsInBlood)
 
   POINTER_PROPERTY(Person, person)
 

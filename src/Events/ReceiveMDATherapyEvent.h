@@ -20,9 +20,7 @@ class Person;
 class Therapy;
 
 class ReceiveMDATherapyEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(ReceiveMDATherapyEvent)
-
-  DISALLOW_MOVE(ReceiveMDATherapyEvent)
+  DELETE_COPY_AND_MOVE(ReceiveMDATherapyEvent)
 
   POINTER_PROPERTY(Therapy, received_therapy)
 

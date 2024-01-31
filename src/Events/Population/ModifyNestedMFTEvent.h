@@ -7,9 +7,7 @@
 #include "Events/Event.h"
 
 class ModifyNestedMFTEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(ModifyNestedMFTEvent)
-
-  DISALLOW_MOVE(ModifyNestedMFTEvent)
+  DELETE_COPY_AND_MOVE(ModifyNestedMFTEvent)
 
 public:
   int strategy_id{-1};

@@ -22,9 +22,7 @@ typedef std::map<ul, Genotype*> GenotypePtrMap;
 typedef std::vector<std::vector<std::vector<double>>> MatingMatrix;
 
 class GenotypeDatabase : public GenotypePtrMap {
-  DISALLOW_COPY_AND_ASSIGN(GenotypeDatabase)
-
-  DISALLOW_MOVE(GenotypeDatabase)
+  DELETE_COPY_AND_MOVE(GenotypeDatabase)
 
   VIRTUAL_PROPERTY_REF(IntVector, weight)
 

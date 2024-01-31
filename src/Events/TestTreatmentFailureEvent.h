@@ -18,7 +18,7 @@ class Scheduler;
 class Person;
 
 class TestTreatmentFailureEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(TestTreatmentFailureEvent)
+  DELETE_COPY_AND_MOVE(TestTreatmentFailureEvent)
   OBJECTPOOL(TestTreatmentFailureEvent)
   POINTER_PROPERTY(ClonalParasitePopulation, clinical_caused_parasite)
   PROPERTY_REF(int, therapyId)

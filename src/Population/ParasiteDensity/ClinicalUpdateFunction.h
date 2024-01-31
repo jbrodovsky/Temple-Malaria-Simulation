@@ -12,7 +12,7 @@
 class Model;
 
 class ClinicalUpdateFunction : public ParasiteDensityUpdateFunction {
-  DISALLOW_COPY_AND_ASSIGN(ClinicalUpdateFunction)
+  DELETE_COPY_AND_MOVE(ClinicalUpdateFunction)
 
   POINTER_PROPERTY(Model, model)
 

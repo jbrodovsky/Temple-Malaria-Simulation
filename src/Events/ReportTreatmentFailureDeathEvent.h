@@ -15,7 +15,7 @@ class Person;
 class Scheduler;
 
 class ReportTreatmentFailureDeathEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(ReportTreatmentFailureDeathEvent)
+  DELETE_COPY_AND_MOVE(ReportTreatmentFailureDeathEvent)
   OBJECTPOOL(ReportTreatmentFailureDeathEvent)
 
   PROPERTY_REF(int, age_class)

@@ -18,7 +18,7 @@ class Therapy;
 class Person;
 
 class IStrategy {
-  DISALLOW_COPY_AND_ASSIGN(IStrategy)
+  DELETE_COPY_AND_MOVE(IStrategy)
 
 public:
   // Define the various types, note that the numbers are odd since legacy code

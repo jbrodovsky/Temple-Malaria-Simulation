@@ -65,21 +65,10 @@ private:                                                         \
 public:                                                          \
   property_type* property_name() const { return property_name##_; }
 
-#define DISALLOW_ASSIGN_(type) \
-public:                        \
-  void operator=(type const &) = delete;
-
-#define DISALLOW_COPY_(type) \
-public:                      \
-  type(type const &) = delete;
-
-#define DISALLOW_COPY_AND_ASSIGN(type) \
-  DISALLOW_COPY_(type)                 \
-  DISALLOW_ASSIGN_(type)
-
-#define DISALLOW_MOVE(type) \
-public:                     \
-  type(type &&) = delete;   \
+#define DELETE_COPY_AND_MOVE(type)       \
+  type(type const &) = delete;           \
+  void operator=(type const &) = delete; \
+  type(type &&) = delete;                \
   type &operator=(type &&) = delete;
 
 #define PROPERTY_HEADER(property_type, property_name) \

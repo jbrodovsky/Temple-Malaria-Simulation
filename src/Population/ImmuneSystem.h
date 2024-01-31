@@ -18,7 +18,7 @@ class Person;
 class ImmuneSystem {
   OBJECTPOOL(ImmuneSystem)
 
-  DISALLOW_COPY_AND_ASSIGN(ImmuneSystem)
+  DELETE_COPY_AND_MOVE(ImmuneSystem)
 
   POINTER_PROPERTY(Person, person)
 

@@ -16,8 +16,7 @@
 #include "Core/PropertyMacro.h"
 
 class ITreatmentCoverageModel {
-  DISALLOW_COPY_AND_ASSIGN(ITreatmentCoverageModel)
-  DISALLOW_MOVE(ITreatmentCoverageModel)
+  DELETE_COPY_AND_MOVE(ITreatmentCoverageModel)
 
   PROPERTY(int, starting_time)
 

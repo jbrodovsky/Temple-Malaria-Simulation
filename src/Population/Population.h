@@ -24,7 +24,7 @@ class PersonIndexByLocationBitingLevel;
  * all person object when it is deleted all person index will do nothing.
  */
 class Population : public Dispatcher {
-  DISALLOW_COPY_AND_ASSIGN(Population)
+  DELETE_COPY_AND_MOVE(Population)
 
   POINTER_PROPERTY(Model, model);
 

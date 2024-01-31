@@ -12,7 +12,7 @@
 class Model;
 
 class ImmunityClearanceUpdateFunction : public ParasiteDensityUpdateFunction {
-  DISALLOW_COPY_AND_ASSIGN(ImmunityClearanceUpdateFunction)
+  DELETE_COPY_AND_MOVE(ImmunityClearanceUpdateFunction)
 
   POINTER_PROPERTY(Model, model)
 

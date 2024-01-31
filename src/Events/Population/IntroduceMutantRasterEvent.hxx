@@ -13,8 +13,7 @@
 #include "IntroduceMutantEventBase.h"
 
 class IntroduceMutantRasterEvent : public IntroduceMutantEventBase {
-  DISALLOW_COPY_AND_ASSIGN(IntroduceMutantRasterEvent)
-  DISALLOW_MOVE(IntroduceMutantRasterEvent)
+  DELETE_COPY_AND_MOVE(IntroduceMutantRasterEvent)
 
 private:
   std::vector<int> locations_;

@@ -11,7 +11,7 @@
 #include "IStrategy.h"
 
 class CyclingStrategy : public IStrategy {
-  DISALLOW_COPY_AND_ASSIGN(CyclingStrategy)
+  DELETE_COPY_AND_MOVE(CyclingStrategy)
 
 public:
   std::vector<Therapy*> therapy_list;

@@ -14,8 +14,8 @@ class Person;
 class Scheduler;
 
 class CirculateToTargetLocationNextDayEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(CirculateToTargetLocationNextDayEvent)
-  DISALLOW_MOVE(CirculateToTargetLocationNextDayEvent)
+  DELETE_COPY_AND_MOVE(CirculateToTargetLocationNextDayEvent)
+
   OBJECTPOOL(CirculateToTargetLocationNextDayEvent)
   PROPERTY_REF(int, target_location)
 

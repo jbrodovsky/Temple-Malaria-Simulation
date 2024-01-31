@@ -16,7 +16,7 @@
 
 namespace Spatial {
 class MarshallSM : public SpatialModel {
-  DISALLOW_COPY_AND_ASSIGN(MarshallSM)
+  DELETE_COPY_AND_MOVE(MarshallSM)
 
   VIRTUAL_PROPERTY_REF(double, tau)
   VIRTUAL_PROPERTY_REF(double, alpha)

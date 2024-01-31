@@ -25,9 +25,7 @@
 class Model;
 
 class Config {
-  DISALLOW_COPY_AND_ASSIGN(Config)
-
-  DISALLOW_MOVE(Config)
+  DELETE_COPY_AND_MOVE(Config)
 
 public:
   POINTER_PROPERTY(Model, model)

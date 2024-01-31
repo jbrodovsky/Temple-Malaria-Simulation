@@ -12,9 +12,7 @@
 #include "IStrategy.h"
 
 class SFTStrategy : public IStrategy {
-  DISALLOW_COPY_AND_ASSIGN(SFTStrategy)
-
-  DISALLOW_MOVE(SFTStrategy)
+  DELETE_COPY_AND_MOVE(SFTStrategy)
 
   VIRTUAL_PROPERTY_REF(std::vector<Therapy*>, therapy_list)
 

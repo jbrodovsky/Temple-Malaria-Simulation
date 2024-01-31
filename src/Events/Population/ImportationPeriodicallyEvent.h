@@ -13,7 +13,7 @@
 #include "Events/Event.h"
 
 class ImportationPeriodicallyEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(ImportationPeriodicallyEvent)
+  DELETE_COPY_AND_MOVE(ImportationPeriodicallyEvent)
 
   OBJECTPOOL(ImportationPeriodicallyEvent)
 

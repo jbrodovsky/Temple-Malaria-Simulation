@@ -15,9 +15,7 @@
 #include "Events/Event.h"
 
 class ImportationEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(ImportationEvent)
-
-  DISALLOW_MOVE(ImportationEvent)
+  DELETE_COPY_AND_MOVE(ImportationEvent)
 
   OBJECTPOOL(ImportationEvent)
 

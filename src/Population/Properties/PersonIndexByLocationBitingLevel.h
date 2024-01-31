@@ -12,7 +12,7 @@
 #include "Population/Person.h"
 
 class PersonIndexByLocationBitingLevel : public PersonIndex {
-  DISALLOW_COPY_AND_ASSIGN(PersonIndexByLocationBitingLevel);
+  DELETE_COPY_AND_MOVE(PersonIndexByLocationBitingLevel);
   PROPERTY_REF(PersonPtrVector3, vPerson);
 
 public:

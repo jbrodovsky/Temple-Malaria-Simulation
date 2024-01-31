@@ -19,7 +19,7 @@ class Scheduler;
 class Person;
 
 class EndClinicalByNoTreatmentEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(EndClinicalByNoTreatmentEvent)
+  DELETE_COPY_AND_MOVE(EndClinicalByNoTreatmentEvent)
 
   OBJECTPOOL(EndClinicalByNoTreatmentEvent)
 

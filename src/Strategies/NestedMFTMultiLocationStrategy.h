@@ -11,9 +11,7 @@
 class Config;
 
 class NestedMFTMultiLocationStrategy : public IStrategy {
-  DISALLOW_COPY_AND_ASSIGN(NestedMFTMultiLocationStrategy)
-
-  DISALLOW_MOVE(NestedMFTMultiLocationStrategy)
+  DELETE_COPY_AND_MOVE(NestedMFTMultiLocationStrategy)
 
 public:
   std::vector<IStrategy*> strategy_list;

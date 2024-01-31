@@ -15,7 +15,7 @@
 #include "Reporters/Reporter.h"
 
 class IndividualsFileReporter : public Reporter {
-  DISALLOW_COPY_AND_ASSIGN(IndividualsFileReporter)
+  DELETE_COPY_AND_MOVE(IndividualsFileReporter)
 
   std::fstream fs_;
   std::string file_name_;

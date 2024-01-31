@@ -12,9 +12,7 @@
 #include "Events/Event.h"
 
 class IntroducePlas2CopyParasiteEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(IntroducePlas2CopyParasiteEvent)
-
-  DISALLOW_MOVE(IntroducePlas2CopyParasiteEvent)
+  DELETE_COPY_AND_MOVE(IntroducePlas2CopyParasiteEvent)
 
   OBJECTPOOL(IntroducePlas2CopyParasiteEvent)
 

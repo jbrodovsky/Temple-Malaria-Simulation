@@ -30,9 +30,7 @@ const std::string extension = "csv";
 }  // namespace Csv
 
 class Reporter {
-  DISALLOW_COPY_AND_ASSIGN(Reporter)
-
-  DISALLOW_MOVE(Reporter)
+  DELETE_COPY_AND_MOVE(Reporter)
 
   POINTER_PROPERTY(Model, model)
 

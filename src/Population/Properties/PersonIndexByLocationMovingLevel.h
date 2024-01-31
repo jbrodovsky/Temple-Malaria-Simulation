@@ -14,7 +14,7 @@
 #include "Population/Person.h"
 
 class PersonIndexByLocationMovingLevel : public PersonIndex {
-  DISALLOW_COPY_AND_ASSIGN(PersonIndexByLocationMovingLevel);
+  DELETE_COPY_AND_MOVE(PersonIndexByLocationMovingLevel);
   PROPERTY_REF(PersonPtrVector3, vPerson);
 
 public:

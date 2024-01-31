@@ -21,7 +21,7 @@ class Therapy;
 class ClonalParasitePopulation : public IndexHandler {
   OBJECTPOOL(ClonalParasitePopulation);
 
-  DISALLOW_COPY_AND_ASSIGN(ClonalParasitePopulation)
+  DELETE_COPY_AND_MOVE(ClonalParasitePopulation)
 
   PROPERTY_HEADER(double, last_update_log10_parasite_density)
 

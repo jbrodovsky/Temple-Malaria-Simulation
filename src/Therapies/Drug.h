@@ -15,7 +15,7 @@
 class Drug {
   OBJECTPOOL(Drug)
 
-  DISALLOW_COPY_AND_ASSIGN(Drug)
+  DELETE_COPY_AND_MOVE(Drug)
 
   PROPERTY_REF(int, dosing_days)
 

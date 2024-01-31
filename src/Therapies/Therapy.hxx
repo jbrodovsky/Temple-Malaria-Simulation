@@ -14,7 +14,7 @@
 class DrugType;
 
 class Therapy {
-  DISALLOW_COPY_AND_ASSIGN(Therapy)
+  DELETE_COPY_AND_MOVE(Therapy)
 
   VIRTUAL_PROPERTY_REF(int, id)
 

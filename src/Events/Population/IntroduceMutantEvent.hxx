@@ -20,8 +20,7 @@
 #include "easylogging++.h"
 
 class IntroduceMutantEvent : public IntroduceMutantEventBase {
-  DISALLOW_COPY_AND_ASSIGN(IntroduceMutantEvent)
-  DISALLOW_MOVE(IntroduceMutantEvent)
+  DELETE_COPY_AND_MOVE(IntroduceMutantEvent)
 
 private:
   int district_;

@@ -4,9 +4,7 @@
 #include "IStrategy.h"
 
 class NestedMFTStrategy : public IStrategy {
-  DISALLOW_COPY_AND_ASSIGN(NestedMFTStrategy)
-
-  DISALLOW_MOVE(NestedMFTStrategy)
+  DELETE_COPY_AND_MOVE(NestedMFTStrategy)
 
 public:
   std::vector<IStrategy*> strategy_list;

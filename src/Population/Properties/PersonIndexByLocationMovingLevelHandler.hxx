@@ -12,7 +12,7 @@
 #include "IndexHandler.hxx"
 
 class PersonIndexByLocationMovingLevelHandler : public IndexHandler {
-  DISALLOW_COPY_AND_ASSIGN(PersonIndexByLocationMovingLevelHandler)
+  DELETE_COPY_AND_MOVE(PersonIndexByLocationMovingLevelHandler)
 
 public:
   PersonIndexByLocationMovingLevelHandler() {}

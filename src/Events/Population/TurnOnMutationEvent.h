@@ -7,9 +7,7 @@
 #include "Events/Event.h"
 
 class TurnOnMutationEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(TurnOnMutationEvent)
-
-  DISALLOW_MOVE(TurnOnMutationEvent)
+  DELETE_COPY_AND_MOVE(TurnOnMutationEvent)
 
   double mutation_probability = 0.0;
   int drug_id = -1;

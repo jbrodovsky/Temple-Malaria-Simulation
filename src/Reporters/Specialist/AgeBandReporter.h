@@ -13,8 +13,7 @@
 #include "Reporters/Reporter.h"
 
 class AgeBandReporter : public Reporter {
-  DISALLOW_COPY_AND_ASSIGN(AgeBandReporter)
-  DISALLOW_MOVE(AgeBandReporter)
+  DELETE_COPY_AND_MOVE(AgeBandReporter)
 
 private:
   // When to start logging the data

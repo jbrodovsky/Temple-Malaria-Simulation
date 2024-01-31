@@ -12,7 +12,7 @@
 #include "IndexHandler.hxx"
 
 class PersonIndexByLocationStateAgeClassHandler : public IndexHandler {
-  DISALLOW_COPY_AND_ASSIGN(PersonIndexByLocationStateAgeClassHandler)
+  DELETE_COPY_AND_MOVE(PersonIndexByLocationStateAgeClassHandler)
 
 public:
   PersonIndexByLocationStateAgeClassHandler() {}

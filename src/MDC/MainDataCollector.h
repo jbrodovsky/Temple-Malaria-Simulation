@@ -26,7 +26,7 @@ class Therapy;
 class ClonalParasitePopulation;
 
 class MainDataCollector {
-  DISALLOW_COPY_AND_ASSIGN(MainDataCollector)
+  DELETE_COPY_AND_MOVE(MainDataCollector)
 
   POINTER_PROPERTY(Model, model)
 

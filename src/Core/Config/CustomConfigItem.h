@@ -70,8 +70,7 @@ public:
 // This class allows for the seasonal information object to be loaded based upon
 // the configuration
 class seasonal_info : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(seasonal_info)
-  DISALLOW_MOVE(seasonal_info)
+  DELETE_COPY_AND_MOVE(seasonal_info)
 
 private:
   ISeasonalInfo* value_{nullptr};
@@ -93,9 +92,7 @@ class SpatialModel;
 }
 
 class spatial_model : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(spatial_model)
-
-  DISALLOW_MOVE(spatial_model)
+  DELETE_COPY_AND_MOVE(spatial_model)
 
 public:
   Spatial::SpatialModel* value_{nullptr};
@@ -116,9 +113,7 @@ public:
 };
 
 class immune_system_information : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(immune_system_information)
-
-  DISALLOW_MOVE(immune_system_information)
+  DELETE_COPY_AND_MOVE(immune_system_information)
 
 public:
   ImmuneSystemInformation value_;
@@ -139,9 +134,7 @@ public:
 };
 
 class genotype_db : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(genotype_db)
-
-  DISALLOW_MOVE(genotype_db)
+  DELETE_COPY_AND_MOVE(genotype_db)
 
 public:
   GenotypeDatabase* value_;
@@ -170,9 +163,7 @@ public:
 };
 
 class drug_db : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(drug_db)
-
-  DISALLOW_MOVE(drug_db)
+  DELETE_COPY_AND_MOVE(drug_db)
 
 public:
   DrugDatabase* value_;
@@ -192,9 +183,7 @@ public:
 };
 
 class EC50_power_n_table : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(EC50_power_n_table)
-
-  DISALLOW_MOVE(EC50_power_n_table)
+  DELETE_COPY_AND_MOVE(EC50_power_n_table)
 
 public:
   DoubleVector2 value_;
@@ -215,9 +204,7 @@ public:
 };
 
 class circulation_info : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(circulation_info)
-
-  DISALLOW_MOVE(circulation_info)
+  DELETE_COPY_AND_MOVE(circulation_info)
 
 public:
   RelativeMovingInformation value_;
@@ -238,9 +225,7 @@ public:
 };
 
 class relative_bitting_info : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(relative_bitting_info)
-
-  DISALLOW_MOVE(relative_bitting_info)
+  DELETE_COPY_AND_MOVE(relative_bitting_info)
 
 public:
   RelativeBittingInformation value_;
@@ -261,9 +246,7 @@ public:
 };
 
 class therapy_db : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(therapy_db)
-
-  DISALLOW_MOVE(therapy_db)
+  DELETE_COPY_AND_MOVE(therapy_db)
 
 public:
   TherapyPtrVector value_;
@@ -283,9 +266,7 @@ public:
 };
 
 class strategy_db : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(strategy_db)
-
-  DISALLOW_MOVE(strategy_db)
+  DELETE_COPY_AND_MOVE(strategy_db)
 
 public:
   StrategyPtrVector value_;
@@ -305,9 +286,7 @@ public:
 };
 
 class initial_parasite_info : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(initial_parasite_info)
-
-  DISALLOW_MOVE(initial_parasite_info)
+  DELETE_COPY_AND_MOVE(initial_parasite_info)
 
 public:
   std::vector<InitialParasiteInfo> value_;
@@ -328,9 +307,7 @@ public:
 };
 
 class bitting_level_generator : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(bitting_level_generator)
-
-  DISALLOW_MOVE(bitting_level_generator)
+  DELETE_COPY_AND_MOVE(bitting_level_generator)
 
 public:
   MultinomialDistributionGenerator value_;
@@ -351,9 +328,7 @@ public:
 };
 
 class moving_level_generator : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(moving_level_generator)
-
-  DISALLOW_MOVE(moving_level_generator)
+  DELETE_COPY_AND_MOVE(moving_level_generator)
 
 public:
   MultinomialDistributionGenerator value_;
@@ -388,9 +363,7 @@ struct beta_distribution_params {
 };
 
 class prob_individual_present_at_mda_distribution : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(prob_individual_present_at_mda_distribution)
-
-  DISALLOW_MOVE(prob_individual_present_at_mda_distribution)
+  DELETE_COPY_AND_MOVE(prob_individual_present_at_mda_distribution)
 
 public:
   std::vector<beta_distribution_params> value_;

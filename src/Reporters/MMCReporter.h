@@ -7,9 +7,7 @@
 #include "Reporter.h"
 
 class MMCReporter : public Reporter {
-  DISALLOW_COPY_AND_ASSIGN(MMCReporter)
-
-  DISALLOW_MOVE(MMCReporter)
+  DELETE_COPY_AND_MOVE(MMCReporter)
 
 public:
   MMCReporter();

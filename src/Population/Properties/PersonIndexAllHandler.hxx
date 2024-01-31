@@ -12,7 +12,7 @@
 #include "IndexHandler.hxx"
 
 class PersonIndexAllHandler : public IndexHandler {
-  DISALLOW_COPY_AND_ASSIGN(PersonIndexAllHandler)
+  DELETE_COPY_AND_MOVE(PersonIndexAllHandler)
 
 public:
   PersonIndexAllHandler() {}

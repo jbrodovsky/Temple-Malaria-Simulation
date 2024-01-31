@@ -7,9 +7,7 @@
 #include "Events/Event.h"
 
 class TurnOffMutationEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(TurnOffMutationEvent)
-
-  DISALLOW_MOVE(TurnOffMutationEvent)
+  DELETE_COPY_AND_MOVE(TurnOffMutationEvent)
 
 public:
   explicit TurnOffMutationEvent(const int &at_time);

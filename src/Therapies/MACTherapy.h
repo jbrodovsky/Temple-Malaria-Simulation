@@ -14,7 +14,7 @@
 #include "Therapies/Therapy.hxx"
 
 class MACTherapy : public Therapy {
-  DISALLOW_COPY_AND_ASSIGN(MACTherapy)
+  DELETE_COPY_AND_MOVE(MACTherapy)
 
   VIRTUAL_PROPERTY_REF(std::vector<int>, therapy_ids)
 

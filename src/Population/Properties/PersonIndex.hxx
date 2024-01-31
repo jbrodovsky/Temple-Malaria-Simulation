@@ -12,7 +12,7 @@
 #include "Population/Person.h"
 
 class PersonIndex {
-  DISALLOW_COPY_AND_ASSIGN(PersonIndex)
+  DELETE_COPY_AND_MOVE(PersonIndex)
 
 public:
   PersonIndex() = default;

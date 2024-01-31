@@ -17,7 +17,7 @@ class Genotype;
 
 class DrugType {
 public:
-  DISALLOW_COPY_AND_ASSIGN(DrugType)
+  DELETE_COPY_AND_MOVE(DrugType)
 
   VIRTUAL_PROPERTY_REF(int, id)
 

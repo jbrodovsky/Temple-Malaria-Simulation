@@ -23,9 +23,7 @@ class Person;
 class Genotype;
 
 class MoveParasiteToBloodEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(MoveParasiteToBloodEvent)
-
-  DISALLOW_MOVE(MoveParasiteToBloodEvent)
+  DELETE_COPY_AND_MOVE(MoveParasiteToBloodEvent)
 
   OBJECTPOOL(MoveParasiteToBloodEvent)
 

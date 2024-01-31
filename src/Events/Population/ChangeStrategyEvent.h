@@ -7,9 +7,7 @@
 #include "Events/Event.h"
 
 class ChangeStrategyEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(ChangeStrategyEvent)
-
-  DISALLOW_MOVE(ChangeStrategyEvent)
+  DELETE_COPY_AND_MOVE(ChangeStrategyEvent)
 
 public:
   int strategy_id{-1};

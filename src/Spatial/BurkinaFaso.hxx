@@ -19,7 +19,7 @@
 
 namespace Spatial {
 class BurkinaFaso : public SpatialModel {
-  DISALLOW_COPY_AND_ASSIGN(BurkinaFaso)
+  DELETE_COPY_AND_MOVE(BurkinaFaso)
 
   VIRTUAL_PROPERTY_REF(double, tau)
   VIRTUAL_PROPERTY_REF(double, alpha)

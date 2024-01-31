@@ -11,7 +11,7 @@
 class ClonalParasitePopulation;
 
 class ParasiteDensityUpdateFunction {
-  DISALLOW_COPY_AND_ASSIGN(ParasiteDensityUpdateFunction)
+  DELETE_COPY_AND_MOVE(ParasiteDensityUpdateFunction)
 
 public:
   ParasiteDensityUpdateFunction() = default;

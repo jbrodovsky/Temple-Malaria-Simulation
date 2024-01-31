@@ -12,7 +12,7 @@ class ImmuneSystem;
 class Model;
 
 class ImmuneComponent {
-  DISALLOW_COPY_AND_ASSIGN(ImmuneComponent)
+  DELETE_COPY_AND_MOVE(ImmuneComponent)
 
   POINTER_PROPERTY(ImmuneSystem, immune_system)
 

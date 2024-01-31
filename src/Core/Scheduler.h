@@ -16,9 +16,7 @@
 class Model;
 
 class Scheduler {
-  DISALLOW_COPY_AND_ASSIGN(Scheduler)
-
-  DISALLOW_MOVE(Scheduler)
+  DELETE_COPY_AND_MOVE(Scheduler)
 
   PROPERTY_REF(int, current_time)
 

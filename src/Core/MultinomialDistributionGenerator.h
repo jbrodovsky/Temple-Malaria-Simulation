@@ -13,8 +13,8 @@
 class Random;
 
 class MultinomialDistributionGenerator {
-  // DISALLOW_COPY_AND_ASSIGN(MultinomialDistributionGenerator)
-  // DISALLOW_MOVE(MultinomialDistributionGenerator)
+  // DELETE_COPY_AND_MOVE(MultinomialDistributionGenerator)
+  //
 
 public:
   UIntVector data;

@@ -20,7 +20,7 @@ class DrugType;
 class Therapy;
 
 class Genotype {
-  DISALLOW_COPY_AND_ASSIGN(Genotype)
+  DELETE_COPY_AND_MOVE(Genotype)
 
   PROPERTY_REF(int, genotype_id)
 

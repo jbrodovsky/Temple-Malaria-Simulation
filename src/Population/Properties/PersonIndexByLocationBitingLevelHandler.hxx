@@ -11,7 +11,7 @@
 #include "IndexHandler.hxx"
 
 class PersonIndexByLocationBitingLevelHandler : public IndexHandler {
-  DISALLOW_COPY_AND_ASSIGN(PersonIndexByLocationBitingLevelHandler)
+  DELETE_COPY_AND_MOVE(PersonIndexByLocationBitingLevelHandler)
 
 public:
   PersonIndexByLocationBitingLevelHandler() = default;

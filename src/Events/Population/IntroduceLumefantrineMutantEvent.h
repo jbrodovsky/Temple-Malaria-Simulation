@@ -7,9 +7,7 @@
 #include "Events/Event.h"
 
 class IntroduceLumefantrineMutantEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(IntroduceLumefantrineMutantEvent)
-
-  DISALLOW_MOVE(IntroduceLumefantrineMutantEvent)
+  DELETE_COPY_AND_MOVE(IntroduceLumefantrineMutantEvent)
 
   OBJECTPOOL(IntroduceLumefantrineMutantEvent)
 

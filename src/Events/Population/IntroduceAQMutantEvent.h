@@ -7,9 +7,7 @@
 #include "Events/Event.h"
 
 class IntroduceAQMutantEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(IntroduceAQMutantEvent)
-
-  DISALLOW_MOVE(IntroduceAQMutantEvent)
+  DELETE_COPY_AND_MOVE(IntroduceAQMutantEvent)
 
   OBJECTPOOL(IntroduceAQMutantEvent)
 

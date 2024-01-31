@@ -11,7 +11,7 @@
 #include "Reporter.h"
 
 class ConsoleReporter : public Reporter {
-  DISALLOW_COPY_AND_ASSIGN(ConsoleReporter)
+  DELETE_COPY_AND_MOVE(ConsoleReporter)
 
 public:
   ConsoleReporter();

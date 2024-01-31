@@ -23,8 +23,7 @@ class Reporter;
 class MovementReporter;
 
 class Model {
-  DISALLOW_COPY_AND_ASSIGN(Model)
-  DISALLOW_MOVE(Model)
+  DELETE_COPY_AND_MOVE(Model)
 
   POINTER_PROPERTY(Config, config)
   POINTER_PROPERTY(Scheduler, scheduler)
@@ -60,7 +59,6 @@ public:
   static Scheduler* SCHEDULER;
   static MainDataCollector* MAIN_DATA_COLLECTOR;
   static Population* POPULATION;
-
   static IStrategy* TREATMENT_STRATEGY;
   static ITreatmentCoverageModel* TREATMENT_COVERAGE;
 

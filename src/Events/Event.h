@@ -18,9 +18,7 @@ class Dispatcher;
 class Scheduler;
 
 class Event : public IndexHandler {
-  DISALLOW_COPY_AND_ASSIGN(Event)
-
-  DISALLOW_MOVE(Event)
+  DELETE_COPY_AND_MOVE(Event)
 
 public:
   Scheduler* scheduler{nullptr};

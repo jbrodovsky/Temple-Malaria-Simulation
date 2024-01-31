@@ -15,7 +15,7 @@
 class Person;
 
 class UpdateEveryKDaysEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(UpdateEveryKDaysEvent)
+  DELETE_COPY_AND_MOVE(UpdateEveryKDaysEvent)
 
   OBJECTPOOL(UpdateEveryKDaysEvent)
 

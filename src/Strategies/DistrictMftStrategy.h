@@ -10,8 +10,7 @@
 #include "IStrategy.h"
 
 class DistrictMftStrategy : public IStrategy {
-  DISALLOW_COPY_AND_ASSIGN(DistrictMftStrategy)
-  DISALLOW_MOVE(DistrictMftStrategy)
+  DELETE_COPY_AND_MOVE(DistrictMftStrategy)
 
 public:
   // The basic structure of an MFT

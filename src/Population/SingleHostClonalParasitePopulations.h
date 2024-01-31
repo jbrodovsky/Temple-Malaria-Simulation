@@ -23,7 +23,7 @@ class Person;
 class SingleHostClonalParasitePopulations {
   OBJECTPOOL(SingleHostClonalParasitePopulations)
 
-  DISALLOW_COPY_AND_ASSIGN(SingleHostClonalParasitePopulations)
+  DELETE_COPY_AND_MOVE(SingleHostClonalParasitePopulations)
 
   POINTER_PROPERTY(Person, person)
 

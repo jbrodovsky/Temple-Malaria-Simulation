@@ -13,7 +13,7 @@
 #include "PersonIndex.hxx"
 
 class PersonIndexAll : public PersonIndex {
-  DISALLOW_COPY_AND_ASSIGN(PersonIndexAll)
+  DELETE_COPY_AND_MOVE(PersonIndexAll)
 
   PROPERTY_REF(PersonPtrVector, vPerson)
 

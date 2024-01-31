@@ -16,9 +16,7 @@ class Random;
 class Therapy;
 
 class MFTStrategy : public IStrategy {
-  DISALLOW_COPY_AND_ASSIGN(MFTStrategy)
-
-  DISALLOW_MOVE(MFTStrategy)
+  DELETE_COPY_AND_MOVE(MFTStrategy)
 
 public:
   std::vector<Therapy*> therapy_list;

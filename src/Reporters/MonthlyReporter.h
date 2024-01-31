@@ -10,9 +10,7 @@
 #include "Reporter.h"
 
 class MonthlyReporter : public Reporter {
-  DISALLOW_COPY_AND_ASSIGN(MonthlyReporter)
-
-  DISALLOW_MOVE(MonthlyReporter)
+  DELETE_COPY_AND_MOVE(MonthlyReporter)
 
 public:
   MonthlyReporter();

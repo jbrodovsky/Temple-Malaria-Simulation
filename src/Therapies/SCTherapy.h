@@ -11,7 +11,7 @@
 class DrugType;
 
 class SCTherapy : public Therapy {
-  DISALLOW_COPY_AND_ASSIGN(SCTherapy)
+  DELETE_COPY_AND_MOVE(SCTherapy)
 
   PROPERTY(bool, full_compliance)
 

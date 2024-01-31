@@ -13,7 +13,7 @@
 
 namespace Spatial {
 class SpatialModel {
-  DISALLOW_COPY_AND_ASSIGN(SpatialModel)
+  DELETE_COPY_AND_MOVE(SpatialModel)
 
 protected:
   // Prepare the travel raster for the movement model

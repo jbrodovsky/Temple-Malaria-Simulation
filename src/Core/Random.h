@@ -17,9 +17,7 @@
 class Model;
 
 class Random {
-  DISALLOW_COPY_AND_ASSIGN(Random)
-
-  DISALLOW_MOVE(Random)
+  DELETE_COPY_AND_MOVE(Random)
 
   VIRTUAL_PROPERTY(unsigned long, seed)
 

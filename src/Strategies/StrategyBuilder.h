@@ -16,7 +16,7 @@ class IStrategy;
 class Config;
 
 class StrategyBuilder {
-  DISALLOW_COPY_AND_ASSIGN(StrategyBuilder)
+  DELETE_COPY_AND_MOVE(StrategyBuilder)
 
 public:
   StrategyBuilder();

@@ -16,7 +16,7 @@
 
 namespace Spatial {
 class WesolowskiSM : public SpatialModel {
-  DISALLOW_COPY_AND_ASSIGN(WesolowskiSM)
+  DELETE_COPY_AND_MOVE(WesolowskiSM)
 
   VIRTUAL_PROPERTY_REF(double, kappa)
   VIRTUAL_PROPERTY_REF(double, alpha)

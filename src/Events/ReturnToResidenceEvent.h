@@ -15,8 +15,8 @@ class Person;
 class Scheduler;
 
 class ReturnToResidenceEvent : public Event {
-  DISALLOW_COPY_AND_ASSIGN(ReturnToResidenceEvent)
-  DISALLOW_MOVE(ReturnToResidenceEvent)
+  DELETE_COPY_AND_MOVE(ReturnToResidenceEvent)
+
   OBJECTPOOL(ReturnToResidenceEvent)
 
 public:

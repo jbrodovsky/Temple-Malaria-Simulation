@@ -12,8 +12,7 @@
 #include "Events/Population/PopulationEventBuilder.h"
 
 class PreconfigEvents : public IConfigItem {
-  DISALLOW_COPY_AND_ASSIGN(PreconfigEvents)
-  DISALLOW_MOVE(PreconfigEvents)
+  DELETE_COPY_AND_MOVE(PreconfigEvents)
 
 public:
   std::vector<Event*> value_;

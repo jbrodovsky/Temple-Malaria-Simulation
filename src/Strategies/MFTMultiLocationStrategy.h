@@ -9,9 +9,7 @@
 #include "IStrategy.h"
 
 class MFTMultiLocationStrategy : public IStrategy {
-  DISALLOW_COPY_AND_ASSIGN(MFTMultiLocationStrategy)
-
-  DISALLOW_MOVE(MFTMultiLocationStrategy)
+  DELETE_COPY_AND_MOVE(MFTMultiLocationStrategy)
 
 public:
   std::vector<Therapy*> therapy_list;
