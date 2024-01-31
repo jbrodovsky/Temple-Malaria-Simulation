@@ -56,15 +56,17 @@ Person::Person()
       liver_parasite_type_(nullptr),
       number_of_times_bitten_(0),
       number_of_trips_taken_(0),
-      last_therapy_id_(0) {
-  population_ = nullptr;
-  immune_system_ = nullptr;
-  all_clonal_parasite_populations_ = nullptr;
-  drugs_in_blood_ = nullptr;
-
-  today_infections_ = nullptr;
-  today_target_locations_ = nullptr;
-  latest_update_time_ = -1;
+      last_therapy_id_(0),
+      population_(nullptr),
+      immune_system_(nullptr),
+      all_clonal_parasite_populations_(nullptr),
+      drugs_in_blood_(nullptr),
+      today_infections_(nullptr),
+#ifdef ENABLE_TRAVEL_TRACKING
+      day_that_last_trip_was_initiated_(-1),
+      day_that_last_trip_outside_district_was_initiated_(-1),
+#endif
+      today_target_locations_(nullptr) {
 }
 
 void Person::init() {
@@ -693,25 +695,45 @@ void Person::randomly_choose_target_location() {
     // already chose
     return;
   }
-
-  int target_location;
-  if (today_target_locations_->size() == 1) {
-    target_location = today_target_locations_->at(0);
-  } else {
-    const int index_random_location =
-        (int)Model::RANDOM->random_uniform(today_target_locations_->size());
-    target_location = today_target_locations_->at(index_random_location);
-  }
+  int target_location =
+      today_target_locations_->size() == 1
+          ? today_target_locations_->front()
+          : today_target_locations_->at(static_cast<int>(
+              Model::RANDOM->random_uniform(today_target_locations_->size())));
 
   // Report the movement if need be
   if (Model::MODEL->report_movement()) {
-    auto id = static_cast<int>(PersonIndexAllHandler::index());
-    MovementValidation::add_move(id, location_, target_location);
+    auto person_index = static_cast<int>(PersonIndexAllHandler::index());
+    MovementValidation::add_move(person_index, location_, target_location);
   }
 
   schedule_move_to_target_location_next_day_event(target_location);
-
   today_target_locations_->clear();
+
+#ifdef ENABLE_TRAVEL_TRACKING
+  // Update the day of the last initiated trip to the next day from current
+  // time.
+  day_that_last_trip_was_initiated_ = Model::SCHEDULER->current_time() + 1;
+
+  // Check for district raster data availability for spatial analysis.
+  if (SpatialData::get_instance().has_raster(
+          SpatialData::SpatialFileType::Districts)) {
+    auto &spatial_data = SpatialData::get_instance();
+
+    // Determine the source and destination districts for the current trip.
+    int source_district = spatial_data.district_lookup()[location_];
+    int destination_district = spatial_data.district_lookup()[target_location];
+
+    // If the trip crosses district boundaries, update the day of the last
+    // outside-district trip to the next day from current time.
+    if (source_district != destination_district) {
+      day_that_last_trip_outside_district_was_initiated_ =
+          Model::SCHEDULER->current_time() + 1;
+    }
+    /* fmt::print("Person {} moved from district {} to district {}\n", _uid, */
+    /*            source_district, destination_district); */
+  }
+#endif
 }
 
 void Person::schedule_move_to_target_location_next_day_event(
@@ -722,8 +744,10 @@ void Person::schedule_move_to_target_location_next_day_event(
 }
 
 bool Person::has_return_to_residence_event() const {
-  for (Event* e : *events()) {
-    if (dynamic_cast<ReturnToResidenceEvent*>(e) != nullptr) { return true; }
+  for (Event* event : *events()) {
+    if (dynamic_cast<ReturnToResidenceEvent*>(event) != nullptr) {
+      return true;
+    }
   }
   return false;
 }

@@ -27,7 +27,7 @@ class ImmuneSystem {
   POINTER_PROPERTY_HEADER(ImmuneComponent, immune_component)
 
 public:
-  explicit ImmuneSystem(Person* p = nullptr);
+  explicit ImmuneSystem(Person* person = nullptr);
 
   virtual ~ImmuneSystem();
 

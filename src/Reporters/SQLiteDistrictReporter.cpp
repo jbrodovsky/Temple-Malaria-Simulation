@@ -21,16 +21,13 @@ void SQLiteDistrictReporter::initialize(int job_number, std::string path) {
   }
 
   SQLiteDbReporter::initialize(job_number, path);
-
-  // Build a lookup for location to district
-  for (auto loc = 0; loc < Model::CONFIG->number_of_locations(); loc++) {
-    district_lookup.emplace_back(SpatialData::get_instance().get_district(loc));
-  }
 }
 // Collect and store monthly site data
 // Aggregates data related to various site metrics and stores them in the
 // database
-void SQLiteDistrictReporter::monthly_site_data(int id) {
+void SQLiteDistrictReporter::monthly_site_data(int month_id) {
+  auto &district_lookup = SpatialData::get_instance().district_lookup();
+
   // Prepare the data structures
   auto age_classes = Model::CONFIG->age_structure();
   auto districts = SpatialData::get_instance().get_district_count();
@@ -133,7 +130,7 @@ void SQLiteDistrictReporter::monthly_site_data(int id) {
             : 0;
 
     std::string singleRow = fmt::format(
-        "({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})", id,
+        "({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})", month_id,
         district + first_index, population[district],
         clinical_episodes[district], treatments[district], calculatedEir,
         calculatedPfprUnder5, calculatedPfpr2to10, calculatedPfprAll,
@@ -150,6 +147,8 @@ void SQLiteDistrictReporter::monthly_site_data(int id) {
 // Collect and store monthly genome data
 // Aggregates and stores data related to the genotypes found in the population
 void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
+  auto &district_lookup = SpatialData::get_instance().district_lookup();
+
   // Cache some values
   auto genotypes = Model::CONFIG->number_of_parasite_types();
   auto districts = SpatialData::get_instance().get_district_count();
@@ -266,6 +265,7 @@ void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
 // Aggregates data on the number of infected individuals per district and
 // updates the database
 void SQLiteDistrictReporter::monthly_infected_individuals(int month_id) {
+  auto &district_lookup = SpatialData::get_instance().district_lookup();
   // Cache some values and prepare the data structure
   auto districts = SpatialData::get_instance().get_district_count();
   auto first_index = SpatialData::get_instance().get_first_district();

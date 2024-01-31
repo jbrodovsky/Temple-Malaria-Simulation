@@ -151,6 +151,7 @@ void SQLiteDbReporter::monthly_report() {
   auto month_id =
       db->insert_data(INSERT_COMMON, days_elapsed, model_time, seasonal_factor);
 
+  monthly_site_data(month_id);
   if (Model::CONFIG->record_genome_db()
       && Model::MAIN_DATA_COLLECTOR->recording_data()) {
     // Add the genome information, this will also update infected individuals

@@ -8,12 +8,16 @@ BUILD_TYPE ?= Release
 DEFAULT_APP_EXECUTABLE := build/bin/MaSim
 # Capture the second word in MAKECMDGOALS (if it exists)
 APP_EXECUTABLE ?= $(or $(word 2,$(MAKECMDGOALS)),$(DEFAULT_APP_EXECUTABLE))
+BUILD_CLUSTER ?= OFF
+ENABLE_TRAVEL_TRACKING ?= OFF
+BUILD_TESTS ?= OFF
 
 .PHONY: all build b clean setup-vcpkg install-deps generate g generate-no-test help test t run r
 
 all: build
 
 build b:
+	@echo "Building the project..."
 	cmake --build build --config $(BUILD_TYPE) -j 6
 
 test t: build
@@ -25,45 +29,40 @@ run r: build
 clean:
 	rm -rf build
 
-setup-vcpkg:
+setup_vcpkg:
 	if [ -n "$(VCPKG_BASE)" ] && [ ! -x "$(VCPKG_EXEC)" ]; then \
 		git submodule update --init; \
 		$(VCPKG_BASE)/bootstrap-vcpkg.sh; \
 	fi
 
-install-deps: setup-vcpkg
+install_deps: setup-vcpkg
 	[ -z "$(VCPKG_BASE)" ] || $(VCPKG_EXEC) install gsl yaml-cpp fmt libpq libpqxx sqlite3 date args cli11 gtest catch easyloggingpp
 
 generate g:
-	cmake -Bbuild -DCMAKE_EXPORT_COMPILE_COMMANDS=1 $(TOOLCHAIN_ARG) .
+	cmake -Bbuild -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DBUILD_CLUSTER=$(BUILD_CLUSTER) -DENABLE_TRAVEL_TRACKING=$(ENABLE_TRAVEL_TRACKING) -DBUILD_TESTS=$(BUILD_TESTS) $(TOOLCHAIN_ARG) .
 	cp $(PWD)build/compile_commands.json $(PWD)
 
 generate_cluster gc:
-	cmake -Bbuild -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCLUSTER_BUILD=1 $(TOOLCHAIN_ARG) .
-	cp $(PWD)build/compile_commands.json $(PWD)
+	@$(MAKE) generate BUILD_CLUSTER=ON
 
 generate_test gt:
-	cmake -Bbuild -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DBUILD_TESTS=1 $(TOOLCHAIN_ARG) .
-	cp $(PWD)build/compile_commands.json $(PWD)
-
-generate-no-test:
-	cmake -Bbuild -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DWITH_TESTS=0 . $(TOOLCHAIN_ARG)
-	cp $(PWD)build/compile_commands.json $(PWD)
+	@$(MAKE) generate BUILD_TESTS=ON
 
 format f:
 	fd "\.(h|cpp|hxx)$$" src -x clang-format -i
 
 help h:
 	@echo "Available targets:"
-	@echo "  all             : Default target, builds the project."
-	@echo "  build (b)       : Build the project with specified BUILD_TYPE (default: Release)."
-	@echo "  format (f)      : Format the source code using clang-format."
-	@echo "  test            : Rebuild and run tests."
-	@echo "  run [path]      : Rebuild and run the executable. Provide path to override default."
-	@echo "  clean           : Remove the build directory."
-	@echo "  setup-vcpkg     : Setup vcpkg if specified by VCPKG_BASE."
-	@echo "  install-deps    : Install dependencies using vcpkg."
-	@echo "  generate (g)    : Generate the build system files with optional vcpkg toolchain."
-	@echo "  generate-no-test: Generate the build system without tests."
-	@echo "  help            : Show this help message."
+	@echo "  all                  : Default target, builds the project."
+	@echo "  build (b)            : Build the project with specified BUILD_TYPE (default: Release)."
+	@echo "  format (f)           : Format the source code using clang-format."
+	@echo "  test                 : Rebuild and run tests."
+	@echo "  run [path]           : Rebuild and run the executable. Provide path to override default."
+	@echo "  clean                : Remove the build directory."
+	@echo "  setup_vcpkg          : Setup vcpkg if specified by VCPKG_BASE."
+	@echo "  install_deps         : Install dependencies using vcpkg."
+	@echo "  generate (g)         : Generate the build system. Can specify BUILD_CLUSTER, ENABLE_TRAVEL_TRACKING, BUILD_TEST (e.g., make generate BUILD_CLUSTER=ON ENABLE_TRAVEL_TRACKING=ON)."
+	@echo "  generate_cluster (gc): Generate the build system for cluster build."
+	@echo "  generate_test (gt)   : Generate the build system with tests."
+	@echo "  help                 : Show this help message."
 

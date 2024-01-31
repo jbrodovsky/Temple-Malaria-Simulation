@@ -127,7 +127,7 @@ void Model::build_initial_treatment_coverage() {
 /**
  * Prepare the model to be run.
  */
-void Model::initialize(int job_number, const std::string &std) {
+void Model::initialize(int job_number, const std::string &path) {
   LOG(INFO) << "Model initializing...";
 
   // Read the configuration and check to make sure it is valid
@@ -158,7 +158,14 @@ void Model::initialize(int job_number, const std::string &std) {
         }
       }
     }
-    for (auto* reporter : reporters_) { reporter->initialize(job_number, std); }
+
+#ifdef ENABLE_TRAVEL_TRACKING
+    add_reporter(Reporter::MakeReport(Reporter::TRAVEL_TRACKING_REPORTER));
+#endif
+
+    for (auto* reporter : reporters_) {
+      reporter->initialize(job_number, path);
+    }
   } catch (std::invalid_argument &ex) {
     LOG(ERROR) << "Initialing reporter generated exception: " << ex.what();
     exit(EXIT_FAILURE);
@@ -205,7 +212,7 @@ void Model::initialize(int job_number, const std::string &std) {
     Reporter* reporter =
         Reporter::MakeReport(Reporter::ReportType::MOVEMENT_REPORTER);
     add_reporter(reporter);
-    reporter->initialize(job_number, std);
+    reporter->initialize(job_number, path);
 
     // Get the validator and prepare it for the run
     auto &validator = MovementValidation::get_instance();

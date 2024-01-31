@@ -22,7 +22,6 @@
 #define OBJECTPOOL_H
 
 #include <cassert>
-#include <exception>
 #include <iostream>
 #include <stdexcept>
 #include <typeinfo>
@@ -86,7 +85,7 @@ ObjectPool<T>::ObjectPool(const std::size_t &size /*= EXPANSION_SIZE*/) {
 }
 
 template <class T>
-ObjectPool<T>::~ObjectPool(void) {
+ObjectPool<T>::~ObjectPool() {
   // std::cout << typeid (T).name() << "\tall: " << allObjects.size() *
   // expansionSize << "\tfree: " << freeList.size()
   // << std::endl;
@@ -100,7 +99,7 @@ ObjectPool<T>::~ObjectPool(void) {
 
   // TODO: Investigate why? Infant and NonInfantImmune delete segmentation dump
 
-  for (int i = 0; i < (int)allObjects.size(); i++) {
+  for (int i = 0; i < allObjects.size(); i++) {
     //        std::cout << typeid (T).name() << ": delete " << i << "-" <<
     //        allObjects.size() << std::endl;
     delete[] allObjects[i];

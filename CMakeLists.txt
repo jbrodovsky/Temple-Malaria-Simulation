@@ -7,7 +7,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Enable if building on the cluster
 # the command line use -DBUILD_CLUSTER=1
-set(BUILD_CLUSTER false CACHE BOOL "Enable for builds on the cluster")
+option(BUILD_CLUSTER "Enable for builds on the cluster" OFF)
+option(ENABLE_TRAVEL_TRACKING "Enable tracking of individual travel data and generating travel reports" OFF)
+
+if(ENABLE_TRAVEL_TRACKING)
+    message(STATUS "Travel tracking feature is enabled")
+    # Add definitions or configurations specific to the travel tracking feature
+    add_definitions(-DENABLE_TRAVEL_TRACKING)
+endif()
 
 if(WIN32)
   set(CMAKE_CXX_FLAGS_RELEASE "-DNOMINMAX ${CMAKE_CXX_FLAGS_RELEASE} /MT")

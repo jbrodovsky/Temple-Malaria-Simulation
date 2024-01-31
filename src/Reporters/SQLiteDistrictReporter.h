@@ -11,19 +11,18 @@
 #include "Reporters/SQLiteDbReporter.h"
 
 class SQLiteDistrictReporter : public SQLiteDbReporter {
-private:
-  std::vector<int> district_lookup;
+  DELETE_COPY_AND_MOVE(SQLiteDistrictReporter);
 
 private:
   // Get the genotype level (specific to district level in this case)
   char get_genotype_level() override { return 'D'; }
-  void monthly_genome_data(int id) override;
-  void monthly_infected_individuals(int id) override;
-  void monthly_site_data(int id) override;
+  void monthly_genome_data(int month_id) override;
+  void monthly_infected_individuals(int month_id) override;
+  void monthly_site_data(int month_id) override;
 
 public:
   SQLiteDistrictReporter() = default;
-  virtual ~SQLiteDistrictReporter() override = default;
+  ~SQLiteDistrictReporter() override = default;
 
   // Initialize the reporter with job number and path
   void initialize(int job_number, std::string path) override;

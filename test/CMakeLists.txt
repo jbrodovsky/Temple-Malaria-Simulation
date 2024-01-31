@@ -8,6 +8,7 @@ set(TEST_SRC_FILES
     main.cpp
     sample_catch_test.cpp
     sample_yaml_cpp_test.cpp
+    person_test.cpp
     #SimpleFakeItTest.cpp
     #Spatial/CoordinateTest.cpp
     #Spatial/LocationTest.cpp

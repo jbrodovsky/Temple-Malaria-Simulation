@@ -472,6 +472,15 @@ bool SpatialData::parse(const YAML::Node &node) {
     }
   }
 
+  if (has_raster(SpatialData::SpatialFileType::Districts)) {
+    district_lookup_.clear();
+    for (auto loc = 0; loc < Model::CONFIG->number_of_locations(); loc++) {
+      district_lookup_.emplace_back(
+          SpatialData::get_instance().get_district(loc));
+    }
+    LOG(INFO) << fmt::format("District_lookup loaded with {} pixels",
+                             district_lookup_.size());
+  }
   // Load completed successfully
   parse_complete();
   return true;

@@ -64,6 +64,7 @@ public:
     SQLITE_DISTRICT_REPORTER,
     SQLITE_PIXEL_REPORTER,
 
+    TRAVEL_TRACKING_REPORTER,
     // Null reporter used when the model needs to be initialized for access to
     // functionality
     NULL_REPORTER

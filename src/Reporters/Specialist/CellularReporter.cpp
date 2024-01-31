@@ -124,7 +124,6 @@ void CellularReporter::monthly_report() {
 
         // Examine genotypes of the parasites present and tabulate when 580Y is
         // expressed
-        int count = 0;
         for (std::size_t infection = 0; infection < size; infection++) {
           auto parasite_population = (*parasites)[infection];
 
@@ -213,7 +212,6 @@ void CellularReporter::blood_density_report() {
   PersonIndexByLocationStateAgeClass* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
   auto dayselapsed = Model::SCHEDULER->current_time();
-  auto genotypes = Model::CONFIG->genotype_db()->size();
 
   // Iterate over the population
   for (auto hs = 0; hs < Person::NUMBER_OF_STATE - 1; hs++) {

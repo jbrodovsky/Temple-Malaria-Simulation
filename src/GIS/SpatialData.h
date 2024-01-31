@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "AscFile.h"
+#include "Core/PropertyMacro.h"
 
 class SpatialData {
 public:
@@ -65,6 +66,8 @@ public:
     // The size of the cell, typically in meters
     double cellsize = NOT_SET;
   };
+
+  PROPERTY_REF(std::vector<int>, district_lookup)
 
 private:
   const std::string BETA_RASTER = "beta_raster";

@@ -13,6 +13,7 @@
 #include "Model.h"
 #include "MonthlyReporter.h"
 #include "Reporters/SQLitePixelReporter.h"
+#include "Reporters/TravelTrackingReporter.h"
 #include "SQLiteDistrictReporter.h"
 #include "Specialist/AgeBandReporter.h"
 #include "Specialist/CellularReporter.h"
@@ -39,6 +40,7 @@ std::map<std::string, Reporter::ReportType> Reporter::ReportTypeMap{
     {"TherapyRecord", THERAPY_RECORD_REPORTER},
     {"SQLiteDistrictReporter", SQLITE_DISTRICT_REPORTER},
     {"SQLitePixelReporter", SQLITE_PIXEL_REPORTER},
+    {"TravelTrackingReporter", TRAVEL_TRACKING_REPORTER},
     {"Null", NULL_REPORTER}};
 
 Reporter* Reporter::MakeReport(ReportType report_type) {
@@ -71,6 +73,8 @@ Reporter* Reporter::MakeReport(ReportType report_type) {
       return new SQLiteDistrictReporter();
     case SQLITE_PIXEL_REPORTER:
       return new SQLitePixelReporter();
+    case TRAVEL_TRACKING_REPORTER:
+      return new TravelTrackingReporter();
     case NULL_REPORTER:
       return new NullReporter();
     default:

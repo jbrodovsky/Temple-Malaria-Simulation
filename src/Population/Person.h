@@ -122,6 +122,11 @@ public:
 
   PROPERTY_REF(std::vector<double>, prob_present_at_mda_by_age)
 
+#ifdef ENABLE_TRAVEL_TRACKING
+  PROPERTY_REF(int, day_that_last_trip_was_initiated)
+  PROPERTY_REF(int, day_that_last_trip_outside_district_was_initiated)
+#endif
+
 private:
   // The UID is generated each time the person is initialized
   ul_uid _uid = -1;

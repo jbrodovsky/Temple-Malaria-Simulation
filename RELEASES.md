@@ -26,6 +26,22 @@ and includes the following updates:
 3. Removal of last-change error handler in `main.cpp` for Linux platforms (will find a better solution later)
 4. Add clang-format to the project to enforce code style.
 5. Add clang-tidy to the project to enforce code quality.
+6. Add TravelTracking feature to keep track and report the percentage of population travels in the past 30, 60, or 90 days.
+
+- Two new attributes to the `Person` class to track the initiation days of the last trip and the last trip outside the district: `day_that_last_trip_was_initiated` and `day_that_last_trip_outside_district_was_initiated`.
+- Compile-time flag `ENABLE_TRAVEL_TRACKING` to toggle the new travel tracking feature, allowing it to be enabled or disabled at compile time for performance considerations.
+- Added TravelTrackingReporter to report (by district) the percentages of the population that have traveled in the past 30, 60, or 90 days to csv file named `travel_tracking_{job_id}.csv`
+- Noted that, if a person traveled in the past 30 days, he will also be counted as traveled in the past 60 days and 90 days.
+
+#### Usage
+
+To turn on the `TravelTracking` feature, you need to specify the `-DENABLE_TRAVEL_TRACKING=ON` option to `cmake` when building the simulation:
+
+```sh
+# Generate the build folder with cmake and turn on the `TravelTracking` feature
+make generate ENABLE_TRAVEL_TRACKING=ON
+make build
+```
 
 To use this `SQLiteDistrictReporter` reporter, you need to specify the `-r SQLiteDistrictReporter` option when running the simulation:
 
