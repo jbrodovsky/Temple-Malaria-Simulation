@@ -7,6 +7,7 @@
 #ifndef THERAPY_HXX
 #define THERAPY_HXX
 
+#include <iostream>
 #include <vector>
 
 #include "Core/PropertyMacro.h"

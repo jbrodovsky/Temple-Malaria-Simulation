@@ -7,11 +7,12 @@ set(BUILD_WARNINGS false CACHE BOOL "Enable for build warnings")
 find_package(GSL REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
-find_package(libpqxx CONFIG REQUIRED)
-find_package(PostgreSQL REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
 find_package(date CONFIG REQUIRED)
 find_package(args CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
+#find_package(PostgreSQL REQUIRED) # Not needed (it will duplicate the libs)
+find_package(libpqxx CONFIG REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
@@ -56,30 +57,30 @@ set(SRC_FILES ${SOURCE} ${LIBRARY})
 add_library(MaSimCore STATIC ${SRC_FILES})
 target_compile_features(MaSimCore PRIVATE cxx_std_17)
 
-find_library(PQXX_LIB pqxx)
-find_library(PQ_LIB pq)
 find_library(EASYLOGGINGPP_LIB easyloggingpp)
 
 if(BUILD_CLUSTER)
   find_package(SQLite3 REQUIRED)
   set(SQLITE_LIB SQLite::SQLite3)
 else()
-  set(SQLITE_LIB unofficial::sqlite3::sqlite3)
   find_package(unofficial-sqlite3 CONFIG REQUIRED)
+  set(SQLITE_LIB unofficial::sqlite3::sqlite3)
 endif()
 
 target_link_libraries(MaSimCore PUBLIC
         yaml-cpp::yaml-cpp
         GSL::gsl GSL::gslcblas
         fmt::fmt fmt::fmt-header-only
-        PostgreSQL::PostgreSQL
         ${SQLITE_LIB}
         CLI11::CLI11
         date::date
         date::date-tz
         taywee::args
-        ${PQXX_LIB} ${PQ_LIB}
         ${EASYLOGGINGPP_LIB}
+        PRIVATE libpqxx::pqxx
+        PRIVATE PostgreSQL::PostgreSQL
+        PRIVATE OpenSSL::SSL
+        PRIVATE OpenSSL::Crypto
 )
 
 # Enable warnings when building debug
