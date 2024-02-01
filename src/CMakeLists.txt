@@ -61,7 +61,7 @@ find_library(PQ_LIB pq)
 find_library(EASYLOGGINGPP_LIB easyloggingpp)
 
 if(BUILD_CLUSTER)
-  find_package(SQLite3 CONFIG REQUIRED)
+  find_package(SQLite3 REQUIRED)
   set(SQLITE_LIB SQLite::SQLite3)
 else()
   set(SQLITE_LIB unofficial::sqlite3::sqlite3)
