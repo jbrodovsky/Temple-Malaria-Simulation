@@ -47,9 +47,9 @@ file(GLOB SOURCE *.cpp
 )
 
 
-if(ENABLE_TRAVEL_TRACKING==OFF)
+if(NOT ENABLE_TRAVEL_TRACKING)
   # remve the travel tracking files
-  list(REMOVE_ITEM SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Reporters/TravelTrackingReporter.cpp)
+  list(REMOVE_ITEM SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/Reporters/TravelTrackingReporter.cpp")
 endif()
 
 # Set the source files
