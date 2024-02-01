@@ -45,6 +45,12 @@ file(GLOB SOURCE *.cpp
         Validation/*.cpp
 )
 
+
+if(ENABLE_TRAVEL_TRACKING==OFF)
+  # remve the travel tracking files
+  list(REMOVE_ITEM SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Reporters/TravelTrackingReporter.cpp)
+endif()
+
 # Set the source files
 set(SRC_FILES ${SOURCE} ${LIBRARY})
 add_library(MaSimCore STATIC ${SRC_FILES})
@@ -54,11 +60,11 @@ find_library(PQXX_LIB pqxx)
 find_library(PQ_LIB pq)
 find_library(EASYLOGGINGPP_LIB easyloggingpp)
 
-set(SQLITE_LIB unofficial::sqlite3::sqlite3)
-
 if(BUILD_CLUSTER)
+  find_package(SQLite3 CONFIG REQUIRED)
   set(SQLITE_LIB SQLite::SQLite3)
 else()
+  set(SQLITE_LIB unofficial::sqlite3::sqlite3)
   find_package(unofficial-sqlite3 CONFIG REQUIRED)
 endif()
 

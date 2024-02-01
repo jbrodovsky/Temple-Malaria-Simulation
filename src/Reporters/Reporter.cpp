@@ -13,7 +13,6 @@
 #include "Model.h"
 #include "MonthlyReporter.h"
 #include "Reporters/SQLitePixelReporter.h"
-#include "Reporters/TravelTrackingReporter.h"
 #include "SQLiteDistrictReporter.h"
 #include "Specialist/AgeBandReporter.h"
 #include "Specialist/CellularReporter.h"
@@ -24,6 +23,10 @@
 #include "Specialist/SeasonalImmunity.h"
 #include "Specialist/TherapyRecordReporter.h"
 #include "easylogging++.h"
+
+#ifdef ENABLE_TRAVEL_TRACKING
+#include "Reporters/TravelTrackingReporter.h"
+#endif
 
 std::map<std::string, Reporter::ReportType> Reporter::ReportTypeMap{
     {"Console", CONSOLE},
@@ -40,7 +43,9 @@ std::map<std::string, Reporter::ReportType> Reporter::ReportTypeMap{
     {"TherapyRecord", THERAPY_RECORD_REPORTER},
     {"SQLiteDistrictReporter", SQLITE_DISTRICT_REPORTER},
     {"SQLitePixelReporter", SQLITE_PIXEL_REPORTER},
+#ifdef ENABLE_TRAVEL_TRACKING
     {"TravelTrackingReporter", TRAVEL_TRACKING_REPORTER},
+#endif
     {"Null", NULL_REPORTER}};
 
 Reporter* Reporter::MakeReport(ReportType report_type) {
@@ -73,8 +78,10 @@ Reporter* Reporter::MakeReport(ReportType report_type) {
       return new SQLiteDistrictReporter();
     case SQLITE_PIXEL_REPORTER:
       return new SQLitePixelReporter();
+#ifdef ENABLE_TRAVEL_TRACKING
     case TRAVEL_TRACKING_REPORTER:
       return new TravelTrackingReporter();
+#endif
     case NULL_REPORTER:
       return new NullReporter();
     default:
