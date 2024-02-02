@@ -33,6 +33,8 @@ and includes the following updates:
 - Added TravelTrackingReporter to report (by district) the percentages of the population that have traveled in the past 30, 60, or 90 days to csv file named `travel_tracking_{job_id}.csv`
 - Noted that, if a person traveled in the past 30 days, he will also be counted as traveled in the past 60 days and 90 days.
 
+7. SQLiteDistrictReporter and SQLitePixelReporter report clinical episodes by age group (the structure of age group defined in the input file)
+
 #### Usage
 
 To turn on the `TravelTracking` feature, you need to specify the `-DENABLE_TRAVEL_TRACKING=ON` option to `cmake` when building the simulation:

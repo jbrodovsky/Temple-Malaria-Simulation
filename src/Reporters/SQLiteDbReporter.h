@@ -15,17 +15,15 @@ class SQLiteDbReporter : public Reporter {
 protected:
   std::unique_ptr<SQLiteDatabase> db;
 
-protected:
   const std::string INSERT_COMMON = R""""(
   INSERT INTO MonthlyData (DaysElapsed, ModelTime, SeasonalFactor)
   VALUES (?, ?, ?)
   RETURNING id;
   )"""";
 
-  const std::string INSERT_SITE_PREFIX = R""""(
-    INSERT INTO MonthlySiteData (MonthlyDataId, LocationId, Population, ClinicalEpisodes, Treatments, EIR, PfPrUnder5, PfPr2to10, PfPrAll, TreatmentFailures, NonTreatment, Under5Treatment, Over5Treatment) 
-    VALUES 
-  )"""";
+  // this query must be created in the initialize function (after the config is
+  // initialized)
+  std::string INSERT_SITE_PREFIX = "";
 
   const std::string INSERT_GENOTYPE_PREFIX = R"""(
     INSERT INTO MonthlyGenomeData 
@@ -46,9 +44,9 @@ protected:
   // Return the character code that indicates the level of genotype records (c:
   // cell, d: district)
   virtual char get_genotype_level() = 0;
-  virtual void monthly_genome_data(int id) = 0;
-  virtual void monthly_infected_individuals(int id) = 0;
-  virtual void monthly_site_data(int id) = 0;
+  virtual void monthly_genome_data(int month_id) = 0;
+  virtual void monthly_infected_individuals(int month_id) = 0;
+  virtual void monthly_site_data(int month_id) = 0;
 
 public:
   // Constructor and destructor

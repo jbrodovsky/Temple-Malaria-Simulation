@@ -137,7 +137,7 @@ void SQLitePixelReporter::monthly_genome_data(int month_id) {
 // Iterate over all the sites and prepare the query for the site specific data
 void SQLitePixelReporter::monthly_site_data(int month_id) {
   /* std::cout << "monthly_site_data" << std::endl; */
-  auto age_classes = Model::CONFIG->age_structure();
+  auto &age_classes = Model::CONFIG->age_structure();
 
   // collect data
   std::vector<std::string> values;
@@ -182,18 +182,29 @@ void SQLitePixelReporter::monthly_site_data(int month_id) {
     }
 
     std::string singleRow = fmt::format(
-        "({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})", month_id,
-        location, Model::POPULATION->size(location),
+        "({}, {}, {}, {}", month_id, location,
+        Model::POPULATION->size(location),
         Model::MAIN_DATA_COLLECTOR
-            ->monthly_number_of_clinical_episode_by_location()[location],
-        Model::MAIN_DATA_COLLECTOR
-            ->monthly_number_of_treatment_by_location()[location],
-        eir, pfpr_under5, pfpr_2to10, pfpr_all,
-        Model::MAIN_DATA_COLLECTOR
-            ->monthly_treatment_failure_by_location()[location],
-        Model::MAIN_DATA_COLLECTOR
-            ->monthly_nontreatment_by_location()[location],
-        treatments_under5, treatments_over5);
+            ->monthly_number_of_clinical_episode_by_location()[location]);
+
+    for (const auto &episodes :
+         Model::MAIN_DATA_COLLECTOR
+             ->monthly_number_of_clinical_episode_by_location_age_class()
+                 [location]) {
+      singleRow += fmt::format(", {}", episodes);
+    }
+
+    singleRow +=
+        fmt::format(", {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                    Model::MAIN_DATA_COLLECTOR
+                        ->monthly_number_of_treatment_by_location()[location],
+                    eir, pfpr_under5, pfpr_2to10, pfpr_all,
+                    Model::MAIN_DATA_COLLECTOR
+                        ->monthly_treatment_failure_by_location()[location],
+                    Model::MAIN_DATA_COLLECTOR
+                        ->monthly_nontreatment_by_location()[location],
+                    treatments_under5, treatments_over5);
+
     values.push_back(singleRow);
   }
 

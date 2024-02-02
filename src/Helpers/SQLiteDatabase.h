@@ -13,17 +13,16 @@
 // database connection.
 class SQLiteDatabase {
 private:
-  sqlite3* db;  // Pointer to the SQLite database
-private:
+  sqlite3* db = nullptr;  // Pointer to the SQLite database
   // Base case for bind_values. Does nothing and is used to handle the case
   // where no arguments are provided.
-  void bind_values(sqlite3_stmt*) {}
+  void bind_values(sqlite3_stmt* stmt) {}
 
   // Binds an integer value to the first placeholder in the prepared SQL
   // statement.
   // stmt: Pointer to the prepared SQL statement.
   // value: Integer value to bind.
-  void bind_values(sqlite3_stmt* stmt, int value) {
+  static void bind_values(sqlite3_stmt* stmt, int value) {
     sqlite3_bind_int(stmt, 1, value);
   }
 
@@ -33,7 +32,7 @@ private:
   // timestamps).
   // stmt: Pointer to the prepared SQL statement.
   // value: time_t value to bind.
-  void bind_values(sqlite3_stmt* stmt, const std::time_t &value) {
+  static void bind_values(sqlite3_stmt* stmt, const std::time_t &value) {
     sqlite3_bind_int64(stmt, 2, static_cast<sqlite3_int64>(value));
   }
 
@@ -42,7 +41,7 @@ private:
   // This is typically used for binding floating-point numbers.
   // stmt: Pointer to the prepared SQL statement.
   // value: Double value to bind.
-  void bind_values(sqlite3_stmt* stmt, double value) {
+  static void bind_values(sqlite3_stmt* stmt, double value) {
     sqlite3_bind_double(stmt, 3, value);
   }
 
@@ -60,10 +59,14 @@ private:
   }
 
 public:
+  SQLiteDatabase(const SQLiteDatabase &) = default;
+  SQLiteDatabase(SQLiteDatabase &&) = delete;
+  SQLiteDatabase &operator=(const SQLiteDatabase &) = default;
+  SQLiteDatabase &operator=(SQLiteDatabase &&) = delete;
   // Constructor: Opens a connection to the SQLite database at the specified
   // path.
   // Throws a runtime_error if the database cannot be opened.
-  SQLiteDatabase(const std::string &path) {
+  explicit SQLiteDatabase(const std::string &path) {
     if (sqlite3_open_v2(path.c_str(), &db,
                         SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)
         != SQLITE_OK) {
@@ -73,7 +76,7 @@ public:
 
   // Destructor: Closes the database connection.
   ~SQLiteDatabase() {
-    if (db) { sqlite3_close(db); }
+    if (db != nullptr) { sqlite3_close(db); }
   }
 
   // Executes a given SQL statement without expecting a return value.
@@ -93,7 +96,7 @@ public:
   // prepared statement. Throws a runtime_error if the statement preparation
   // fails.
   sqlite3_stmt* prepare(const std::string &sql) {
-    sqlite3_stmt* stmt;
+    sqlite3_stmt* stmt = nullptr;
     if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
       /* throw std::runtime_error("Error preparing statement: " + */
       /*                          std::string(sqlite3_errmsg(db))); */

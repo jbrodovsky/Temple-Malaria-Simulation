@@ -53,8 +53,8 @@ if(NOT ENABLE_TRAVEL_TRACKING)
 endif()
 
 # Set the source files
-set(SRC_FILES ${SOURCE} ${LIBRARY})
-add_library(MaSimCore STATIC ${SRC_FILES})
+# set(SRC_FILES ${SOURCE} ${LIBRARY})
+add_library(MaSimCore STATIC ${SOURCE})
 target_compile_features(MaSimCore PRIVATE cxx_std_17)
 
 find_library(EASYLOGGINGPP_LIB easyloggingpp)

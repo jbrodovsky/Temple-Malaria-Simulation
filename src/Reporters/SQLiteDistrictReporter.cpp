@@ -1,5 +1,7 @@
 #include "SQLiteDistrictReporter.h"
 
+#include <fmt/printf.h>
+
 #include "Core/Config/Config.h"
 #include "GIS/SpatialData.h"
 #include "Helpers/StringHelpers.h"
@@ -29,7 +31,7 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
   auto &district_lookup = SpatialData::get_instance().district_lookup();
 
   // Prepare the data structures
-  auto age_classes = Model::CONFIG->age_structure();
+  auto &age_classes = Model::CONFIG->age_structure();
   auto districts = SpatialData::get_instance().get_district_count();
   auto first_index = SpatialData::get_instance().get_first_district();
   std::vector<double> eir(districts, 0);
@@ -38,6 +40,8 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
   std::vector<double> pfpr_all(districts, 0);
   std::vector<int> population(districts, 0);
   std::vector<int> clinical_episodes(districts, 0);
+  std::vector<std::vector<int>> clinical_episodes_by_age_class(
+      districts, std::vector<int>(age_classes.size(), 0));
   std::vector<int> treatments(districts, 0);
   std::vector<int> treatment_failures(districts, 0);
   std::vector<int> nontreatment(districts, 0);
@@ -60,6 +64,7 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
     clinical_episodes[district] +=
         Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_clinical_episode_by_location()[location];
+
     treatments[district] +=
         Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_treatment_by_location()[location];
@@ -70,9 +75,9 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
         Model::MAIN_DATA_COLLECTOR
             ->monthly_nontreatment_by_location()[location];
 
-    // Collect the treatment by age class, following the 0-59 month convention
-    // for under-5
     for (auto ndx = 0; ndx < age_classes.size(); ndx++) {
+      // Collect the treatment by age class, following the 0-59 month convention
+      // for under-5
       if (age_classes[ndx] < 5) {
         treatments_under5[district] +=
             Model::MAIN_DATA_COLLECTOR
@@ -84,6 +89,12 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
                 ->monthly_number_of_treatment_by_location_age_class()[location]
                                                                      [ndx];
       }
+
+      // collect the clinical episodes by age class
+      clinical_episodes_by_age_class[district][ndx] +=
+          Model::MAIN_DATA_COLLECTOR
+              ->monthly_number_of_clinical_episode_by_location_age_class()
+                  [location][ndx];
     }
 
     // EIR and PfPR is a bit more complicated since it could be an invalid value
@@ -129,13 +140,21 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
             ? (pfpr_all[district] / population[district]) * 100.0
             : 0;
 
-    std::string singleRow = fmt::format(
-        "({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})", month_id,
-        district + first_index, population[district],
-        clinical_episodes[district], treatments[district], calculatedEir,
-        calculatedPfprUnder5, calculatedPfpr2to10, calculatedPfprAll,
-        treatment_failures[district], nontreatment[district],
+    std::string singleRow =
+        fmt::format("({}, {}, {}, {}", month_id, district + first_index,
+                    population[district], clinical_episodes[district]);
+
+    // Append clinical episodes by age class
+    for (const auto &episodes : clinical_episodes_by_age_class[district]) {
+      singleRow += fmt::format(", {}", episodes);
+    }
+
+    singleRow += fmt::format(
+        ", {}, {}, {}, {}, {}, {}, {}, {}, {})", treatments[district],
+        calculatedEir, calculatedPfprUnder5, calculatedPfpr2to10,
+        calculatedPfprAll, treatment_failures[district], nontreatment[district],
         treatments_under5[district], treatments_over5[district]);
+
     values.push_back(singleRow);
   }
 

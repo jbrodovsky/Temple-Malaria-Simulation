@@ -56,12 +56,23 @@ void SQLiteDbReporter::populate_db_schema() {
     );
   )"""";
 
-  const std::string createMonthlySiteData = R""""(
+  std::string age_class_columns;
+  for (auto ndx = 0; ndx < Model::CONFIG->age_structure().size(); ndx++) {
+    auto ag_from = ndx == 0 ? 0 : Model::CONFIG->age_structure()[ndx - 1];
+    auto ag_to = Model::CONFIG->age_structure()[ndx];
+    age_class_columns +=
+        fmt::format("clinicalepisodes_by_age_class_{}_{}, ", ag_from, ag_to);
+  }
+
+  const std::string createMonthlySiteData =
+      R""""(
     CREATE TABLE IF NOT EXISTS monthlysitedata (
         monthlydataid INTEGER NOT NULL,
         locationid INTEGER NOT NULL,
         population INTEGER NOT NULL,
-        clinicalepisodes INTEGER NOT NULL,
+        clinicalepisodes INTEGER NOT NULL, )""""
+      + age_class_columns +
+      R""""(
         treatments INTEGER NOT NULL,
         treatmentfailures INTEGER NOT NULL,
         eir REAL NOT NULL,
@@ -138,6 +149,21 @@ void SQLiteDbReporter::initialize(int job_number, std::string path) {
   populate_db_schema();
   // populate the genotype table
   populate_genotype_table();
+
+  std::string age_class_columns;
+  for (auto ndx = 0; ndx < Model::CONFIG->age_structure().size(); ndx++) {
+    auto ag_from = ndx == 0 ? 0 : Model::CONFIG->age_structure()[ndx - 1];
+    auto ag_to = Model::CONFIG->age_structure()[ndx];
+    age_class_columns +=
+        fmt::format("clinicalepisodes_by_age_class_{}_{}, ", ag_from, ag_to);
+  }
+
+  // craete insert query based on the age class config
+  INSERT_SITE_PREFIX = " INSERT INTO MonthlySiteData (MonthlyDataId, LocationId, "
+    "Population, ClinicalEpisodes, " 
+    + age_class_columns + 
+    " Treatments, EIR, PfPrUnder5, PfPr2to10, PfPrAll, TreatmentFailures,"
+    " NonTreatment, Under5Treatment, Over5Treatment) VALUES";
 }
 
 void SQLiteDbReporter::monthly_report() {
