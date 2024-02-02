@@ -142,7 +142,9 @@ void SpatialData::generate_locations() {
           << " locations";
 }
 
-int SpatialData::get_district(int location) {
+// NOTE: this function return distrct_id in NON_ZERO based index given a
+// location
+int SpatialData::get_raster_district(int location) {
   // Throw an error if there are no districts
   if (data[SpatialFileType::Districts] == nullptr) {
     throw std::runtime_error(
@@ -159,70 +161,24 @@ int SpatialData::get_district(int location) {
   return district;
 }
 
-int SpatialData::get_district_count() {
-  // This can be called without throwing an error
-  if (data[SpatialFileType::Districts] == nullptr) { return -1; }
-
-  // Do we already have a count?
-  if (district_count != 0) { return district_count; }
-
-  // Perform a consistency check on the districts by first loading all the
-  // district IDs while noting the highest value
-  std::list<int> districts;
-  for (auto ndx = 0; ndx < data[SpatialFileType::Districts]->NROWS; ndx++) {
-    for (auto ndy = 0; ndy < data[SpatialFileType::Districts]->NCOLS; ndy++) {
-      auto value = data[SpatialFileType::Districts]->data[ndx][ndy];
-      if (value == data[SpatialFileType::Districts]->NODATA_VALUE) { continue; }
-
-      districts.emplace_back(value);
-      if (value > static_cast<float>(district_count)) {
-        district_count = static_cast<int>(value);
-      }
-    }
+int SpatialData::get_district(int location) {
+  // Throw an error if there are no districts
+  if (data[SpatialFileType::Districts] == nullptr) {
+    throw std::runtime_error(
+        fmt::format("{} called without district data loaded", __FUNCTION__));
   }
 
-  // Sort the districts and only keep the unique ones, we should have a list
-  // from [0, 1] to n with a step of one
-  districts.sort();
-  districts.unique();
+  // Get the coordinate of the location
+  auto &coordinate = Model::CONFIG->location_db()[location].coordinate;
 
-  // Ensure the first value is a zero or one and verify the largest district ID
-  // is consistent with the indexing. This check prevents errors when there are
-  // gaps in the numbering of the districts or when a one-indexed file contains
-  // zeros.
-  if (districts.front() == 0) {
-    if ((districts.size() - 1) != district_count
-        || (districts.size() - 1) != districts.back()) {
-      LOG(ERROR) << "Highest district ID is inconsistent with a zero-based "
-                    "index, array size: "
-                 << districts.size() << ", last ID value: " << districts.back();
-      throw std::invalid_argument(
-          "District raster inconsistently numbered, or contains invalid data.");
-    }
-    // Add a notice to the file since zero-based indexing for ASC files would be
-    // unusual
-    LOG(INFO) << "File suggests zero-based district numbering.";
-    first_district = 0;
-  } else if (districts.front() == 1) {
-    if (districts.size() != district_count
-        || districts.size() != districts.back()) {
-      LOG(ERROR) << "Highest district ID is inconsistent with a one-based "
-                    "index, expected "
-                 << districts.size() << ", got " << districts.back();
-      throw std::invalid_argument(
-          "District raster inconsistently numbered, or contains invalid data.");
-    }
-    first_district = 1;
-  } else {
-    LOG(ERROR) << "Index of first district must be zero or one, found "
-               << districts.front();
-    throw std::invalid_argument(
-        "District raster must be zero-based or one-based.");
-  }
-
-  // Return the result
-  return district_count;
+  // Use the x, y to get the district id
+  auto district =
+      static_cast<int>(data[SpatialFileType::Districts]->data[static_cast<int>(
+          coordinate->latitude)][static_cast<int>(coordinate->longitude)]);
+  return district - get_first_district();
 }
+
+int SpatialData::get_district_count() { return district_count; }
 
 std::vector<int> SpatialData::get_district_locations(int district) {
   // Throw an error if there are no districts
@@ -253,14 +209,7 @@ std::vector<int> SpatialData::get_district_locations(int district) {
   return locations;
 }
 
-int SpatialData::get_first_district() {
-  // Do we already have a value, implied by a district count
-  if (district_count != 0) { return first_district; }
-
-  // Generate the district count and first district index
-  get_district_count();
-  return first_district;
-}
+int SpatialData::get_first_district() { return first_district; }
 
 SpatialData::RasterInformation SpatialData::get_raster_header() {
   RasterInformation results;
@@ -471,19 +420,88 @@ bool SpatialData::parse(const YAML::Node &node) {
           node["population_size_by_location"][input_loc].as<int>();
     }
   }
-
-  if (has_raster(SpatialData::SpatialFileType::Districts)) {
-    district_lookup_.clear();
-    for (auto loc = 0; loc < Model::CONFIG->number_of_locations(); loc++) {
-      district_lookup_.emplace_back(
-          SpatialData::get_instance().get_district(loc));
-    }
-    LOG(INFO) << fmt::format("District_lookup loaded with {} pixels",
-                             district_lookup_.size());
-  }
   // Load completed successfully
   parse_complete();
+  populate_dependent_data();
   return true;
+}
+
+void SpatialData::populate_dependent_data() {
+  // populate the district lookup
+  if (!has_raster(SpatialData::SpatialFileType::Districts)) {
+    district_lookup_.clear();
+    district_count = -1;
+    first_district = -1;
+    return;
+  }
+  // populate the district count and first district
+
+  // Perform a consistency check on the districts by first loading all the
+  // district IDs while noting the highest value
+  std::list<int> districts;
+  for (auto ndx = 0; ndx < data[SpatialFileType::Districts]->NROWS; ndx++) {
+    for (auto ndy = 0; ndy < data[SpatialFileType::Districts]->NCOLS; ndy++) {
+      auto value = data[SpatialFileType::Districts]->data[ndx][ndy];
+      if (value == data[SpatialFileType::Districts]->NODATA_VALUE) { continue; }
+
+      districts.emplace_back(value);
+      if (value > static_cast<float>(district_count)) {
+        district_count = static_cast<int>(value);
+      }
+    }
+  }
+  LOG(INFO) << fmt::format("Districts loaded with {} districs", district_count);
+
+  // Sort the districts and only keep the unique ones, we should have a list
+  // from [0, 1] to n with a step of one
+  districts.sort();
+  districts.unique();
+
+  // Ensure the first value is a zero or one and verify the largest district
+  // ID is consistent with the indexing. This check prevents errors when there
+  // are gaps in the numbering of the districts or when a one-indexed file
+  // contains zeros.
+  if (districts.front() == 0) {
+    if ((districts.size() - 1) != district_count
+        || (districts.size() - 1) != districts.back()) {
+      LOG(ERROR) << "Highest district ID is inconsistent with a zero-based "
+                    "index, array size: "
+                 << districts.size() << ", last ID value: " << districts.back();
+      throw std::invalid_argument(
+          "District raster inconsistently numbered, or contains invalid "
+          "data.");
+    }
+    // Add a notice to the file since zero-based indexing for ASC files would
+    // be unusual
+    LOG(INFO) << "File suggests zero-based district numbering.";
+    first_district = 0;
+  } else if (districts.front() == 1) {
+    if (districts.size() != district_count
+        || districts.size() != districts.back()) {
+      LOG(ERROR) << "Highest district ID is inconsistent with a one-based "
+                    "index, expected "
+                 << districts.size() << ", got " << districts.back();
+      throw std::invalid_argument(
+          "District raster inconsistently numbered, or contains invalid "
+          "data.");
+    }
+    first_district = 1;
+  } else {
+    LOG(ERROR) << "Index of first district must be zero or one, found "
+               << districts.front();
+    throw std::invalid_argument(
+        "District raster must be zero-based or one-based.");
+  }
+
+  // district_loookup must be populate after populate the first_district and
+  // district_count
+  district_lookup_.clear();
+  for (auto loc = 0; loc < Model::CONFIG->number_of_locations(); loc++) {
+    district_lookup_.emplace_back(
+        SpatialData::get_instance().get_district(loc));
+  }
+  LOG(INFO) << fmt::format("District_lookup loaded with {} pixels",
+                           district_lookup_.size());
 }
 
 void SpatialData::parse_complete() {

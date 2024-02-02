@@ -34,7 +34,8 @@ void DistrictMftStrategy::assign_mft(int district, MftStrategy* mft) {
 
 Therapy* DistrictMftStrategy::get_therapy(Person* person) {
   // Resolve the MFT for this district
-  auto district = SpatialData::get_instance().get_district(person->location());
+  auto district =
+      SpatialData::get_instance().get_raster_district(person->location());
   auto mft = district_strategies[district];
 
   // Select the therapy to give the individual

@@ -33,7 +33,6 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
   // Prepare the data structures
   auto &age_classes = Model::CONFIG->age_structure();
   auto districts = SpatialData::get_instance().get_district_count();
-  auto first_index = SpatialData::get_instance().get_first_district();
   std::vector<double> eir(districts, 0);
   std::vector<double> pfpr_under5(districts, 0);
   std::vector<double> pfpr_2to10(districts, 0);
@@ -56,8 +55,7 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
         static_cast<int>(Model::POPULATION->size(location));
     if (location_population == 0) { continue; }
 
-    // Note the district we are in, make sure things are zero indexed
-    auto district = district_lookup[location] - first_index;
+    auto district = district_lookup[location];
 
     // Collect the simple data
     population[district] += location_population;
@@ -123,7 +121,6 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
   }
 
   std::vector<std::string> values;
-
   for (auto district = 0; district < districts; district++) {
     double calculatedEir =
         (eir[district] != 0) ? (eir[district] / population[district]) : 0;
@@ -140,9 +137,11 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
             ? (pfpr_all[district] / population[district]) * 100.0
             : 0;
 
-    std::string singleRow =
-        fmt::format("({}, {}, {}, {}", month_id, district + first_index,
-                    population[district], clinical_episodes[district]);
+    std::string singleRow = fmt::format(
+        "({}, {}, {}, {}", month_id,
+        SpatialData::get_instance().adjust_simulation_district_to_raster_index(
+            district),
+        population[district], clinical_episodes[district]);
 
     // Append clinical episodes by age class
     for (const auto &episodes : clinical_episodes_by_age_class[district]) {
@@ -171,7 +170,6 @@ void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
   // Cache some values
   auto genotypes = Model::CONFIG->number_of_parasite_types();
   auto districts = SpatialData::get_instance().get_district_count();
-  auto first_index = SpatialData::get_instance().get_first_district();
   auto* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
   auto age_classes = index->vPerson()[0][0].size();
@@ -193,7 +191,7 @@ void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
   // Iterate over all the possible states
   for (auto location = 0; location < index->vPerson().size(); location++) {
     // Get the current index and apply the off set, so we are zero aligned
-    auto district = district_lookup[location] - first_index;
+    auto district = district_lookup[location];
     int infectedIndividuals = 0;
 
     for (auto hs = 0; hs < Person::NUMBER_OF_STATE - 1; hs++) {
@@ -246,27 +244,29 @@ void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
   }
 
   std::vector<std::string> insertValues;
-
   // Iterate over the districts and append the query
   std::string insert_genotypes;
   std::string update_infections;
   for (auto district = 0; district < districts; district++) {
     for (auto genotype = 0; genotype < genotypes; genotype++) {
       if (weightedOccurrences[district][genotype] == 0) { continue; }
-      std::string singleRow = fmt::format(
-          "({}, {}, {}, {}, {}, {}, {}, {})", month_id, district + first_index,
-          genotype, occurrences[district][genotype],
-          clinicalOccurrences[district][genotype],
-          occurrencesZeroToFive[district][genotype],
-          occurrencesTwoToTen[district][genotype],
-          weightedOccurrences[district][genotype]);
+      std::string singleRow =
+          fmt::format("({}, {}, {}, {}, {}, {}, {}, {})", month_id,
+                      SpatialData::get_instance()
+                          .adjust_simulation_district_to_raster_index(district),
+                      genotype, occurrences[district][genotype],
+                      clinicalOccurrences[district][genotype],
+                      occurrencesZeroToFive[district][genotype],
+                      occurrencesTwoToTen[district][genotype],
+                      weightedOccurrences[district][genotype]);
 
       insertValues.push_back(singleRow);
     }
 
-    std::string updateQuery =
-        fmt::format(UPDATE_INFECTED_INDIVIDUALS, infections_district[district],
-                    month_id, district + first_index);
+    std::string updateQuery = fmt::format(
+        UPDATE_INFECTED_INDIVIDUALS, infections_district[district], month_id,
+        SpatialData::get_instance().adjust_simulation_district_to_raster_index(
+            district));
     db->execute(updateQuery);
   }
   if (insertValues.empty()) {
@@ -287,7 +287,6 @@ void SQLiteDistrictReporter::monthly_infected_individuals(int month_id) {
   auto &district_lookup = SpatialData::get_instance().district_lookup();
   // Cache some values and prepare the data structure
   auto districts = SpatialData::get_instance().get_district_count();
-  auto first_index = SpatialData::get_instance().get_first_district();
   auto* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
   auto age_classes = index->vPerson()[0][0].size();
@@ -304,17 +303,20 @@ void SQLiteDistrictReporter::monthly_infected_individuals(int month_id) {
           }
 
           // Calculate the correct index and update the count
-          auto district = district_lookup[location] - first_index;
+          auto district = district_lookup[location];
           infections_district[district]++;
         }
       }
     }
   }
+
+  // realign with based 1 from ARCGIS
   // Iterate over the districts and append the query
   for (auto district = 0; district < districts; district++) {
-    std::string updateQuery =
-        fmt::format(UPDATE_INFECTED_INDIVIDUALS, infections_district[district],
-                    month_id, district + first_index);
+    std::string updateQuery = fmt::format(
+        UPDATE_INFECTED_INDIVIDUALS, infections_district[district], month_id,
+        SpatialData::get_instance().adjust_simulation_district_to_raster_index(
+            district));
     db->execute(updateQuery);
   }
 }

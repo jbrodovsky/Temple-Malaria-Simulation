@@ -67,6 +67,18 @@ public:
     double cellsize = NOT_SET;
   };
 
+  /**
+   * @brief This property holds a pre-populated map from location to district
+   * using a 0-based index.
+   *
+   * The vector contains indices where each element represents a specific
+   * location, and the value at each index corresponds to the district that
+   * location belongs to. This mapping is essential for quickly determining the
+   * district of any given location within the simulation. It is assumed that
+   * the mapping is set up during the initialization phase (in
+   * SpatialData::parse()) and remains constant throughout the
+   * simulation, facilitating efficient spatial queries and analyses.
+   */
   PROPERTY_REF(std::vector<int>, district_lookup)
 
 private:
@@ -148,8 +160,55 @@ public:
   // Generate the Euclidean distances for the location_db
   void generate_distances() const;
 
-  // Get the district id that corresponds to the cell id
+  /**
+   * @brief Retrieves the district ID as defined in raster files, corresponding
+   * to a given location ID.
+   *
+   * This function maps a location ID to its corresponding district ID, as
+   * defined within the raster files used by the simulation. This mapping is
+   * crucial for spatial analyses and operations that require understanding the
+   * geographical district a specific location belongs to.
+   *
+   * @param location The location ID for which the district ID is requested.
+   * @return The district ID matching the location ID, as defined in the raster
+   * files.
+   */
+  int get_raster_district(int location);
+
+  /**
+   * @brief Retrieves the 0-based district ID in the simulation, corresponding
+   * to a given location ID.
+   *
+   * This function translates a location ID into a simulation-internal, 0-based
+   * district ID. It is used primarily for internal simulation operations where
+   * districts are handled with 0-based indexing.
+   *
+   * @param location The location ID for which the 0-based district ID is
+   * requested.
+   * @return The 0-based district ID corresponding to the given location ID.
+   */
   int get_district(int location);
+
+  /**
+   * @brief Returns the adjusted district index matching the definition in
+   * raster files, for external storage.
+   *
+   * This function adjusts an internal simulation district index to match the
+   * district indexing as defined in the raster files. The adjusted index is
+   * suitable for external references, such as database entries, ensuring
+   * consistency between the simulation's internal data representation and
+   * external data stores.
+   *
+   * @param simulationDistrict The internal simulation district index that needs
+   * adjustment for external use.
+   * @return The adjusted district index that matches the raster file
+   * definitions, suitable for external references.
+   */
+  int adjust_simulation_district_to_raster_index(int simulationDistrict) {
+    // Assuming get_first_district() returns the necessary adjustment. Adjust as
+    // per your actual logic.
+    return simulationDistrict + get_first_district();
+  }
 
   // Get the count of districts loaded, or -1 if they have not been loaded
   int get_district_count();
@@ -159,8 +218,8 @@ public:
   std::vector<int> get_district_locations(int district);
 
   // Returns the index of the first district.
-  // Note that the index may be one (ArcGIS default) or zero; however, a delayed
-  // error is generated if the value is not one of the two.
+  // Note that the index may be one (ArcGIS default) or zero; however, a
+  // delayed error is generated if the value is not one of the two.
   int get_first_district();
 
   // Get a reference to the AscFile raster, may be a nullptr
@@ -169,6 +228,38 @@ public:
   // Parse the YAML node provided to extract all the relevant information for
   // the simulation
   bool parse(const YAML::Node &node);
+
+  /**
+   * @brief Populates dependent data structures after input data and raster
+   * files have been processed.
+   *
+   * This function is designed to run once all necessary input data and raster
+   * files have been read and processed. It performs the crucial step of
+   * populating several dependent data structures that are essential for the
+   * simulation's operation. These include caching the total count of districts,
+   * determining the first district index based on the spatial data, and
+   * creating the district lookup table. The function ensures that these
+   * components are correctly initialized before the simulation proceeds,
+   * guaranteeing that spatial queries and operations can be conducted
+   * efficiently.
+   *
+   * @note This function should be called after all input and raster data have
+   * been fully processed but before the simulation begins to ensure that all
+   * dependent data structures are accurately populated. Failure to call this
+   * function in the correct sequence may result in uninitialized or incorrect
+   * data being used in the simulation, leading to potential errors or
+   * inaccurate results.
+   *
+   * @pre Raster files and input data must be loaded and processed. This
+   * includes loading spatial data such as district boundaries and population
+   * distributions from raster files.
+   *
+   * @post The total district count is cached, the first district index is
+   * determined, and the district lookup table is created and populated. These
+   * actions prepare the system for efficient spatial operations and
+   * simulations.
+   */
+  void populate_dependent_data();
 
   // Refresh the data from the model (i.e., Location DB) to the spatial data
   void refresh();

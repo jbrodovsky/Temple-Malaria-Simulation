@@ -27,7 +27,8 @@ void DbReporterDistrict::initialize(int job_number, std::string path) {
 
   // Build a lookup for location to district
   for (auto loc = 0; loc < Model::CONFIG->number_of_locations(); loc++) {
-    district_lookup.emplace_back(SpatialData::get_instance().get_district(loc));
+    district_lookup.emplace_back(
+        SpatialData::get_instance().get_raster_district(loc));
   }
 }
 

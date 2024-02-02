@@ -39,6 +39,7 @@ protected:
   )""";
 
   void populate_genotype_table();
+
   void populate_db_schema();
 
   // Return the character code that indicates the level of genotype records (c:

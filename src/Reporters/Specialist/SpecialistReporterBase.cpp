@@ -34,7 +34,7 @@ void SpecialistReporterBase::build_lookup(pqxx::connection* connection) {
     // identification
     auto offset = SpatialData::get_instance().get_first_district();
     for (auto loc = 0; loc < Model::CONFIG->number_of_locations(); loc++) {
-      lookup.emplace_back(SpatialData::get_instance().get_district(loc)
+      lookup.emplace_back(SpatialData::get_instance().get_raster_district(loc)
                           - offset);
     }
     lookup_allocation = SpatialData::get_instance().get_district_count();
