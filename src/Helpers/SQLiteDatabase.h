@@ -7,11 +7,13 @@
 
 #include <ctime>
 
+#include "Core/PropertyMacro.h"
 #include "easylogging++.h"
 
 // SQLiteDatabase class manages the lifecycle and operations of an SQLite
 // database connection.
 class SQLiteDatabase {
+  DELETE_COPY_AND_MOVE(SQLiteDatabase)
 private:
   sqlite3* db = nullptr;  // Pointer to the SQLite database
   // Base case for bind_values. Does nothing and is used to handle the case
@@ -59,10 +61,6 @@ private:
   }
 
 public:
-  SQLiteDatabase(const SQLiteDatabase &) = default;
-  SQLiteDatabase(SQLiteDatabase &&) = delete;
-  SQLiteDatabase &operator=(const SQLiteDatabase &) = default;
-  SQLiteDatabase &operator=(SQLiteDatabase &&) = delete;
   // Constructor: Opens a connection to the SQLite database at the specified
   // path.
   // Throws a runtime_error if the database cannot be opened.
@@ -76,7 +74,10 @@ public:
 
   // Destructor: Closes the database connection.
   ~SQLiteDatabase() {
-    if (db != nullptr) { sqlite3_close(db); }
+    if (db != nullptr) {
+      sqlite3_close(db);
+      db = nullptr;
+    }
   }
 
   // Executes a given SQL statement without expecting a return value.

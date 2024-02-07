@@ -52,7 +52,7 @@ protected:
 public:
   // Constructor and destructor
   SQLiteDbReporter() = default;
-  virtual ~SQLiteDbReporter() = default;
+  ~SQLiteDbReporter() override = default;
 
   // Initialize the reporter with job number and path
   void initialize(int job_number, std::string path) override;

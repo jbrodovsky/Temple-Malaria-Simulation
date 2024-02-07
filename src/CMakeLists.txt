@@ -70,7 +70,7 @@ endif()
 target_link_libraries(MaSimCore PUBLIC
         yaml-cpp::yaml-cpp
         GSL::gsl GSL::gslcblas
-        fmt::fmt fmt::fmt-header-only
+        fmt::fmt-header-only
         ${SQLITE_LIB}
         CLI11::CLI11
         date::date

@@ -11,9 +11,9 @@ option(BUILD_CLUSTER "Enable for builds on the cluster" OFF)
 option(ENABLE_TRAVEL_TRACKING "Enable tracking of individual travel data and generating travel reports" OFF)
 
 if(ENABLE_TRAVEL_TRACKING)
-    message(STATUS "Travel tracking feature is enabled")
-    # Add definitions or configurations specific to the travel tracking feature
-    add_definitions(-DENABLE_TRAVEL_TRACKING)
+  message(STATUS "Travel tracking feature is enabled")
+  # Add definitions or configurations specific to the travel tracking feature
+  add_definitions(-DENABLE_TRAVEL_TRACKING)
 endif()
 
 if(WIN32)
