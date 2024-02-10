@@ -23,7 +23,7 @@
 INITIALIZE_EASYLOGGINGPP
 // NOLINTEND(cert-err58-cpp)
 
-void handle_cli(Model *model, int argc, char **argv, int &job_number,
+void handle_cli(Model* model, int argc, char** argv, int &job_number,
                 std::string &path);
 
 void config_logger() {
@@ -55,11 +55,11 @@ void config_logger() {
   el::Loggers::reconfigureLogger("default", default_conf);
 }
 
-int main(const int argc, char **argv) {
+int main(const int argc, char** argv) {
   // Parse the CLI
   int job_number = 0;
   std::string path;
-  auto *m = new Model();
+  auto* m = new Model();
   handle_cli(m, argc, argv, job_number, path);
 
   // Prepare the logger
@@ -84,7 +84,7 @@ int main(const int argc, char **argv) {
   exit(EXIT_SUCCESS);
 }
 
-void handle_cli(Model *model, int argc, char **argv, int &job_number,
+void handle_cli(Model* model, int argc, char** argv, int &job_number,
                 std::string &path) {
   /* QUICK REFERENCE
    * -c / --config - config file
@@ -201,8 +201,8 @@ void handle_cli(Model *model, int argc, char **argv, int &job_number,
         "File {0} does not exists. Rerun with -h or --help for help.", input);
     exit(EXIT_FAILURE);
   }
-  if (input.find(".yml") == std::string::npos &&
-      input.find(".yaml") == std::string::npos) {
+  if (input.find(".yml") == std::string::npos
+      && input.find(".yaml") == std::string::npos) {
     LOG(ERROR) << fmt::format("File {0} does not appear to be a YAML file",
                               input);
     exit(EXIT_FAILURE);
@@ -213,7 +213,7 @@ void handle_cli(Model *model, int argc, char **argv, int &job_number,
   if (list_genotypes) {
     std::cout << "Genotypes present in configuration and their ids:"
               << std::endl;
-    auto *config = new Config();
+    auto* config = new Config();
     config->read_from_file(model->config_filename());
     for (auto id = 0ul; id < config->number_of_parasite_types(); id++) {
       auto genotype = (*config->genotype_db())[id];

@@ -114,7 +114,7 @@ void SQLitePixelReporter::monthly_genome_data(int month_id) {
       for (auto genotype = 0; genotype < genotypes; genotype++) {
         if (weightedOccurrences[genotype] == 0) { continue; }
 
-        std::string singleRow = fmt::format(
+        std::string const singleRow = fmt::format(
             "({}, {}, {}, {}, {}, {}, {}, {})", month_id, location, genotype,
             occurrences[genotype], clinicalOccurrences[genotype],
             occurrencesZeroToFive[genotype], occurrencesTwoToTen[genotype],
@@ -124,12 +124,12 @@ void SQLitePixelReporter::monthly_genome_data(int month_id) {
       }
     }
 
-    std::string updateQuery = fmt::format(
+    std::string const updateQuery = fmt::format(
         UPDATE_INFECTED_INDIVIDUALS, infectedIndividuals, month_id, location);
     db->execute(updateQuery);
   }
 
-  std::string insertQuery =
+  std::string const insertQuery =
       INSERT_GENOTYPE_PREFIX + StringHelpers::join(insertValues, ",") + ";";
   db->execute(insertQuery);
 }
@@ -208,7 +208,7 @@ void SQLitePixelReporter::monthly_site_data(int month_id) {
     values.push_back(singleRow);
   }
 
-  std::string query =
+  std::string const query =
       INSERT_SITE_PREFIX + StringHelpers::join(values, ",") + ";";
   db->execute(query);
 }
@@ -242,7 +242,7 @@ void SQLitePixelReporter::monthly_infected_individuals(int month_id) {
       }
     }
 
-    std::string updateQuery = fmt::format(
+    std::string const updateQuery = fmt::format(
         UPDATE_INFECTED_INDIVIDUALS, infected_individuals, month_id, location);
     db->execute(updateQuery);
   }
