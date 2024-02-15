@@ -8,7 +8,6 @@ BUILD_TYPE ?= Release
 DEFAULT_APP_EXECUTABLE := build/bin/MaSim
 # Capture the second word in MAKECMDGOALS (if it exists)
 APP_EXECUTABLE ?= $(or $(word 2,$(MAKECMDGOALS)),$(DEFAULT_APP_EXECUTABLE))
-BUILD_CLUSTER ?= OFF
 ENABLE_TRAVEL_TRACKING ?= OFF
 BUILD_TESTS ?= OFF
 
@@ -39,11 +38,8 @@ install_deps: setup-vcpkg
 	[ -z "$(VCPKG_BASE)" ] || $(VCPKG_EXEC) install gsl yaml-cpp fmt libpq libpqxx sqlite3 date args cli11 gtest catch easyloggingpp
 
 generate g:
-	cmake -Bbuild -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DBUILD_CLUSTER=$(BUILD_CLUSTER) -DENABLE_TRAVEL_TRACKING=$(ENABLE_TRAVEL_TRACKING) -DBUILD_TESTS=$(BUILD_TESTS) $(TOOLCHAIN_ARG) .
+	cmake -Bbuild -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DENABLE_TRAVEL_TRACKING=$(ENABLE_TRAVEL_TRACKING) -DBUILD_TESTS=$(BUILD_TESTS) $(TOOLCHAIN_ARG) .
 	cp $(PWD)build/compile_commands.json $(PWD)
-
-generate_cluster gc:
-	@$(MAKE) generate BUILD_CLUSTER=ON
 
 generate_test gt:
 	@$(MAKE) generate BUILD_TESTS=ON

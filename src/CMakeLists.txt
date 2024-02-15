@@ -13,6 +13,7 @@ find_package(args CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 #find_package(PostgreSQL REQUIRED) # Not needed (it will duplicate the libs)
 find_package(libpqxx CONFIG REQUIRED)
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
@@ -59,19 +60,12 @@ target_compile_features(MaSimCore PRIVATE cxx_std_17)
 
 find_library(EASYLOGGINGPP_LIB easyloggingpp)
 
-if(BUILD_CLUSTER)
-  find_package(SQLite3 REQUIRED)
-  set(SQLITE_LIB SQLite::SQLite3)
-else()
-  find_package(unofficial-sqlite3 CONFIG REQUIRED)
-  set(SQLITE_LIB unofficial::sqlite3::sqlite3)
-endif()
 
 target_link_libraries(MaSimCore PUBLIC
         yaml-cpp::yaml-cpp
         GSL::gsl GSL::gslcblas
         fmt::fmt-header-only
-        ${SQLITE_LIB}
+        unofficial::sqlite3::sqlite3
         CLI11::CLI11
         date::date
         date::date-tz

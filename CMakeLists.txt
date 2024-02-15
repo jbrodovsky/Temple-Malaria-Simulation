@@ -5,9 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Enable if building on the cluster
-# the command line use -DBUILD_CLUSTER=1
-option(BUILD_CLUSTER "Enable for builds on the cluster" OFF)
 option(ENABLE_TRAVEL_TRACKING "Enable tracking of individual travel data and generating travel reports" OFF)
 
 if(ENABLE_TRAVEL_TRACKING)
