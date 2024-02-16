@@ -60,7 +60,6 @@ target_compile_features(MaSimCore PRIVATE cxx_std_17)
 
 find_library(EASYLOGGINGPP_LIB easyloggingpp)
 
-
 target_link_libraries(MaSimCore PUBLIC
         yaml-cpp::yaml-cpp
         GSL::gsl GSL::gslcblas
@@ -72,7 +71,8 @@ target_link_libraries(MaSimCore PUBLIC
         taywee::args
         ${EASYLOGGINGPP_LIB}
         PRIVATE libpqxx::pqxx
-        PRIVATE PostgreSQL::PostgreSQL
+        # libpqxx already includes PostgreSQL
+        # PRIVATE PostgreSQL::PostgreSQL
         PRIVATE OpenSSL::SSL
         PRIVATE OpenSSL::Crypto
 )
