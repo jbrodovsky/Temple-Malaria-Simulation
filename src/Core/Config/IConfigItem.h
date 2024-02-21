@@ -32,7 +32,7 @@ public:
 
   // Verify the existence of the node given key before reading the value.
   template <typename T>
-  inline T read_node(const YAML::Node &node, const std::string name) {
+  inline T read_node(const YAML::Node &node, const std::string &name) {
     if (!node[name]) {
       throw std::invalid_argument(
           fmt::format("The node with the name '{}' cannot be found.", name));

@@ -17,16 +17,15 @@ protected:
   // Return the character code that indicates the level of genotype records (c:
   // cell, d: district)
   char get_genotype_level() override { return 'C'; }
-  void monthly_genome_data(int month_id) override;
-  void monthly_infected_individuals(int month_id) override;
-  void monthly_site_data(int month_id) override;
+  void monthly_genome_data(int monthId) override;
+  void monthly_site_data(int monthId) override;
 
 public:
   SQLitePixelReporter() = default;
   ~SQLitePixelReporter() override = default;
 
   // Overrides
-  void initialize(int job_number, std::string path) override;
+  void initialize(int jobNumber, std::string path) override;
 };
 
 #endif

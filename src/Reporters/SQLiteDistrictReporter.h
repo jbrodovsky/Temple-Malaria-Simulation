@@ -16,16 +16,15 @@ class SQLiteDistrictReporter : public SQLiteDbReporter {
 private:
   // Get the genotype level (specific to district level in this case)
   char get_genotype_level() override { return 'D'; }
-  void monthly_genome_data(int month_id) override;
-  void monthly_infected_individuals(int month_id) override;
-  void monthly_site_data(int month_id) override;
+  void monthly_genome_data(int monthId) override;
+  void monthly_site_data(int monthId) override;
 
 public:
   SQLiteDistrictReporter() = default;
   ~SQLiteDistrictReporter() override = default;
 
   // Initialize the reporter with job number and path
-  void initialize(int job_number, std::string path) override;
+  void initialize(int jobNumber, std::string path) override;
 };
 
 #endif

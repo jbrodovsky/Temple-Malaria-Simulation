@@ -15,10 +15,10 @@
 class SQLiteDatabase {
   DELETE_COPY_AND_MOVE(SQLiteDatabase)
 private:
-  sqlite3* db = nullptr;  // Pointer to the SQLite database
+  sqlite3* db_ = nullptr;  // Pointer to the SQLite database
   // Base case for bind_values. Does nothing and is used to handle the case
   // where no arguments are provided.
-  void bind_values(sqlite3_stmt* stmt) {}
+  void bind_values_(sqlite3_stmt* stmt) {}
 
   // Binds an integer value to the first placeholder in the prepared SQL
   // statement.
@@ -65,18 +65,18 @@ public:
   // path.
   // Throws a runtime_error if the database cannot be opened.
   explicit SQLiteDatabase(const std::string &path) {
-    if (sqlite3_open_v2(path.c_str(), &db,
+    if (sqlite3_open_v2(path.c_str(), &db_,
                         SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)
         != SQLITE_OK) {
-      LOG(ERROR) << "Error opening SQLite database: " << sqlite3_errmsg(db);
+      LOG(ERROR) << "Error opening SQLite database: " << sqlite3_errmsg(db_);
     }
   }
 
   // Destructor: Closes the database connection.
   ~SQLiteDatabase() {
-    if (db != nullptr) {
-      sqlite3_close(db);
-      db = nullptr;
+    if (db_ != nullptr) {
+      sqlite3_close(db_);
+      db_ = nullptr;
     }
   }
 
@@ -84,7 +84,7 @@ public:
   // Throws a runtime_error if the execution fails.
   void execute(const std::string &sql) {
     char* zErrMsg = nullptr;
-    if (sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &zErrMsg)
+    if (sqlite3_exec(db_, sql.c_str(), nullptr, nullptr, &zErrMsg)
         != SQLITE_OK) {
       std::string error = "SQL error: " + std::string(zErrMsg);
       sqlite3_free(zErrMsg);
@@ -98,10 +98,10 @@ public:
   // fails.
   sqlite3_stmt* prepare(const std::string &sql) {
     sqlite3_stmt* stmt = nullptr;
-    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db_, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
       /* throw std::runtime_error("Error preparing statement: " + */
       /*                          std::string(sqlite3_errmsg(db))); */
-      LOG(ERROR) << "Error preparing statement: " << sqlite3_errmsg(db);
+      LOG(ERROR) << "Error preparing statement: " << sqlite3_errmsg(db_);
     }
     return stmt;
   }
@@ -117,7 +117,7 @@ public:
 
     if (sqlite3_step(stmt) != SQLITE_ROW) {
       std::string error = "Error executing insert statement: "
-                          + std::string(sqlite3_errmsg(db));
+                          + std::string(sqlite3_errmsg(db_));
       sqlite3_finalize(stmt);
       LOG(ERROR) << error;
       throw std::runtime_error(error);
@@ -128,7 +128,7 @@ public:
     // Expect the next step to be SQLITE_DONE
     if (sqlite3_step(stmt) != SQLITE_DONE) {
       std::string error =
-          "Execution didn't finish: " + std::string(sqlite3_errmsg(db));
+          "Execution didn't finish: " + std::string(sqlite3_errmsg(db_));
       sqlite3_finalize(stmt);
       LOG(ERROR) << error;
       throw std::runtime_error(error);
@@ -136,6 +136,40 @@ public:
 
     sqlite3_finalize(stmt);
     return returned_id;
+  }
+
+  // Starts a database transaction
+  void begin_transaction() { execute("BEGIN TRANSACTION;"); }
+
+  // Commits the current transaction
+  void commit_transaction() { execute("COMMIT TRANSACTION;"); }
+};
+
+class TransactionGuard {
+private:
+  SQLiteDatabase* db_;
+  bool committed_{false};
+
+public:
+  TransactionGuard(TransactionGuard &&) = delete;
+  TransactionGuard &operator=(TransactionGuard &&) = delete;
+  explicit TransactionGuard(SQLiteDatabase* database) : db_(database) {
+    db_->begin_transaction();
+  }
+  // Prevent copy and assignment
+  TransactionGuard(const TransactionGuard &) = delete;
+  TransactionGuard &operator=(const TransactionGuard &) = delete;
+
+  ~TransactionGuard() {
+    if (!committed_) { db_->commit_transaction(); }
+  }
+
+  // Method to manually commit the transaction and prevent automatic commit
+  void commit() {
+    if (!committed_) {
+      db_->commit_transaction();
+      committed_ = true;
+    }
   }
 };
 

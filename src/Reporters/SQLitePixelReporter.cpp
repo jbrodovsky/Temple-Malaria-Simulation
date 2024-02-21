@@ -16,11 +16,11 @@
 #include "Population/Properties/PersonIndexByLocationStateAgeClass.h"
 #include "easylogging++.h"
 
-void SQLitePixelReporter::initialize(int job_number, std::string path) {
+void SQLitePixelReporter::initialize(int jobNumber, std::string path) {
   // Inform the user of the reporter type is pixel / cell level
   VLOG(1)
       << "Using SQLiteDbReporterwith aggregation at the pixel / cell level.";
-  SQLiteDbReporter::initialize(job_number, path);
+  SQLiteDbReporter::initialize(jobNumber, path);
 }
 
 // Iterate over all the sites and prepare the query for the site specific genome
@@ -30,7 +30,9 @@ void SQLitePixelReporter::initialize(int job_number, std::string path) {
 // infected individuals, so it MUST
 //         be invoked after monthly_site_data to ensure the data is inserted
 //         correctly.
-void SQLitePixelReporter::monthly_genome_data(int month_id) {
+void SQLitePixelReporter::monthly_genome_data(int monthId) {
+  TransactionGuard transaction{db.get()};
+
   // Prepare the data structures
   auto genotypes = Model::CONFIG->number_of_parasite_types();
   std::vector<int> individual(genotypes, 0);
@@ -38,7 +40,7 @@ void SQLitePixelReporter::monthly_genome_data(int month_id) {
   // Cache some values
   auto* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
-  auto age_classes = index->vPerson()[0][0].size();
+  auto numAgeClasses = index->vPerson()[0][0].size();
 
   std::vector<std::string> insertValues;
 
@@ -65,10 +67,10 @@ void SQLitePixelReporter::monthly_genome_data(int month_id) {
     // Iterate over all the possible states
     for (auto hs = 0; hs < Person::NUMBER_OF_STATE - 1; hs++) {
       // Iterate over all the age classes
-      for (unsigned int ac = 0; ac < age_classes; ac++) {
+      for (unsigned int ac = 0; ac < numAgeClasses; ac++) {
         // Iterate over all the genotypes
-        auto age_class = index->vPerson()[location][hs][ac];
-        for (auto &person : age_class) {
+        auto peopleInAgeClass = index->vPerson()[location][hs][ac];
+        for (auto &person : peopleInAgeClass) {
           // Get the person, press on if they are not infected (i.e., no
           // parasites)
           auto* parasites =
@@ -82,20 +84,20 @@ void SQLitePixelReporter::monthly_genome_data(int month_id) {
                                            == Person::HostStates::CLINICAL);
 
           // Update count of infected individuals
-          infectedIndividuals += 1;
+          infectedIndividuals++;
 
           // Count the genotypes present in the individuals
           for (unsigned int ndx = 0; ndx < size; ndx++) {
-            auto* parasite_population = (*parasites)[ndx];
-            auto genotype_id = parasite_population->genotype()->genotype_id();
-            occurrences[genotype_id]++;
-            occurrencesZeroToFive[genotype_id] += (age <= 5) ? 1 : 0;
-            occurrencesTwoToTen[genotype_id] += (age >= 2 && age <= 10) ? 1 : 0;
-            individual[genotype_id]++;
+            auto* parasitePopulation = (*parasites)[ndx];
+            auto genotypeId = parasitePopulation->genotype()->genotype_id();
+            occurrences[genotypeId]++;
+            occurrencesZeroToFive[genotypeId] += (age <= 5) ? 1 : 0;
+            occurrencesTwoToTen[genotypeId] += (age >= 2 && age <= 10) ? 1 : 0;
+            individual[genotypeId]++;
 
             // Count a clinical occurrence if the individual has clinical
             // symptoms
-            clinicalOccurrences[genotype_id] += clinical;
+            clinicalOccurrences[genotypeId] += clinical;
           }
 
           // Update the weighted occurrences and reset the individual count
@@ -115,7 +117,7 @@ void SQLitePixelReporter::monthly_genome_data(int month_id) {
         if (weightedOccurrences[genotype] == 0) { continue; }
 
         std::string const singleRow = fmt::format(
-            "({}, {}, {}, {}, {}, {}, {}, {})", month_id, location, genotype,
+            "({}, {}, {}, {}, {}, {}, {}, {})", monthId, location, genotype,
             occurrences[genotype], clinicalOccurrences[genotype],
             occurrencesZeroToFive[genotype], occurrencesTwoToTen[genotype],
             weightedOccurrences[genotype]);
@@ -123,21 +125,23 @@ void SQLitePixelReporter::monthly_genome_data(int month_id) {
         insertValues.push_back(singleRow);
       }
     }
-
-    std::string const updateQuery = fmt::format(
-        UPDATE_INFECTED_INDIVIDUALS, infectedIndividuals, month_id, location);
-    db->execute(updateQuery);
   }
 
+  if (insertValues.empty()) {
+    LOG(INFO) << "No genotypes recorded in the simulation at timestep, "
+              << Model::SCHEDULER->current_time();
+    return;
+  }
   std::string const insertQuery =
       INSERT_GENOTYPE_PREFIX + StringHelpers::join(insertValues, ",") + ";";
   db->execute(insertQuery);
 }
 
 // Iterate over all the sites and prepare the query for the site specific data
-void SQLitePixelReporter::monthly_site_data(int month_id) {
+void SQLitePixelReporter::monthly_site_data(int monthId) {
+  TransactionGuard transaction{db.get()};
   /* std::cout << "monthly_site_data" << std::endl; */
-  auto &age_classes = Model::CONFIG->age_structure();
+  auto &ageClasses = Model::CONFIG->age_structure();
 
   // collect data
   std::vector<std::string> values;
@@ -147,34 +151,61 @@ void SQLitePixelReporter::monthly_site_data(int month_id) {
     // Check the population, if there is nobody there, press on
     if (Model::POPULATION->size(location) == 0) { continue; }
 
+    // count the number of infected individuals by location
+    auto* index = Model::POPULATION
+                      ->get_person_index<PersonIndexByLocationStateAgeClass>();
+    auto numAgeClasses = index->vPerson()[0][0].size();
+    if (numAgeClasses != ageClasses.size()) {
+      throw std::invalid_argument(
+          "The number of age classes in the population does not match the "
+          "number of age classes in the configuration.");
+    }
+    int infectedIndividuals = 0;
+    // Iterate over all the possible states
+    for (auto hs = 0; hs < Person::NUMBER_OF_STATE - 1; hs++) {
+      // Iterate over all the age classes
+      for (unsigned int ac = 0; ac < numAgeClasses; ac++) {
+        // Iterate over all the genotypes
+        auto peopleInAgeClass = index->vPerson()[location][hs][ac];
+        for (auto &person : peopleInAgeClass) {
+          // Update the count if the individual is infected
+          if (!person->all_clonal_parasite_populations()
+                   ->parasites()
+                   ->empty()) {
+            infectedIndividuals++;
+          }
+        }
+      }
+    }
+
     // Determine the EIR and PfPR values
     auto eir =
         Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[location].empty()
             ? 0
             : Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[location]
                   .back();
-    auto pfpr_under5 =
+    auto pfprUnder5 =
         Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 0, 5)
         * 100.0;
-    auto pfpr_2to10 =
+    auto pfpr2to10 =
         Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 2, 10)
         * 100.0;
-    auto pfpr_all = Model::MAIN_DATA_COLLECTOR
-                        ->blood_slide_prevalence_by_location()[location]
-                    * 100.0;
+    auto pfprAll = Model::MAIN_DATA_COLLECTOR
+                       ->blood_slide_prevalence_by_location()[location]
+                   * 100.0;
 
     // Collect the treatment by age class, following the 0-59 month convention
     // for under-5
-    auto treatments_under5 = 0;
-    auto treatments_over5 = 0;
-    for (auto ndx = 0; ndx < age_classes.size(); ndx++) {
-      if (age_classes[ndx] < 5) {
-        treatments_under5 +=
+    auto treatmentsUnder5 = 0;
+    auto treatmentsOver5 = 0;
+    for (auto ndx = 0; ndx < ageClasses.size(); ndx++) {
+      if (ageClasses[ndx] < 5) {
+        treatmentsUnder5 +=
             Model::MAIN_DATA_COLLECTOR
                 ->monthly_number_of_treatment_by_location_age_class()[location]
                                                                      [ndx];
       } else {
-        treatments_over5 +=
+        treatmentsOver5 +=
             Model::MAIN_DATA_COLLECTOR
                 ->monthly_number_of_treatment_by_location_age_class()[location]
                                                                      [ndx];
@@ -182,8 +213,7 @@ void SQLitePixelReporter::monthly_site_data(int month_id) {
     }
 
     std::string singleRow = fmt::format(
-        "({}, {}, {}, {}", month_id, location,
-        Model::POPULATION->size(location),
+        "({}, {}, {}, {}", monthId, location, Model::POPULATION->size(location),
         Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_clinical_episode_by_location()[location]);
 
@@ -195,15 +225,15 @@ void SQLitePixelReporter::monthly_site_data(int month_id) {
     }
 
     singleRow +=
-        fmt::format(", {}, {}, {}, {}, {}, {}, {}, {}, {})",
+        fmt::format(", {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
                     Model::MAIN_DATA_COLLECTOR
                         ->monthly_number_of_treatment_by_location()[location],
-                    eir, pfpr_under5, pfpr_2to10, pfpr_all,
+                    eir, pfprUnder5, pfpr2to10, pfprAll, infectedIndividuals,
                     Model::MAIN_DATA_COLLECTOR
                         ->monthly_treatment_failure_by_location()[location],
                     Model::MAIN_DATA_COLLECTOR
                         ->monthly_nontreatment_by_location()[location],
-                    treatments_under5, treatments_over5);
+                    treatmentsUnder5, treatmentsOver5);
 
     values.push_back(singleRow);
   }
@@ -213,37 +243,3 @@ void SQLitePixelReporter::monthly_site_data(int month_id) {
   db->execute(query);
 }
 
-// Update the monthly count of infected individuals.
-void SQLitePixelReporter::monthly_infected_individuals(int month_id) {
-  /* std::cout << "monthly_infected_individuals" << std::endl; */
-  // Cache some values
-  auto* index =
-      Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
-  auto age_classes = index->vPerson()[0][0].size();
-
-  // Iterate overall of the possible locations
-  for (auto location = 0; location < Model::CONFIG->number_of_locations();
-       location++) {
-    int infected_individuals = 0;
-    // Iterate over all the possible states
-    for (auto hs = 0; hs < Person::NUMBER_OF_STATE - 1; hs++) {
-      // Iterate over all the age classes
-      for (unsigned int ac = 0; ac < age_classes; ac++) {
-        // Iterate over all the genotypes
-        auto age_class = index->vPerson()[location][hs][ac];
-        for (auto &person : age_class) {
-          // Update the count if the individual is infected
-          if (!person->all_clonal_parasite_populations()
-                   ->parasites()
-                   ->empty()) {
-            infected_individuals++;
-          }
-        }
-      }
-    }
-
-    std::string const updateQuery = fmt::format(
-        UPDATE_INFECTED_INDIVIDUALS, infected_individuals, month_id, location);
-    db->execute(updateQuery);
-  }
-}

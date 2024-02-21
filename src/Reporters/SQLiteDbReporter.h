@@ -15,6 +15,9 @@ class SQLiteDbReporter : public Reporter {
 protected:
   std::unique_ptr<SQLiteDatabase> db;
 
+  const std::string INSERT_GENOTYPE =
+      "INSERT INTO genotype (id, name) VALUES (?, ?);";
+
   const std::string INSERT_COMMON = R""""(
   INSERT INTO MonthlyData (DaysElapsed, ModelTime, SeasonalFactor)
   VALUES (?, ?, ?)
@@ -45,9 +48,8 @@ protected:
   // Return the character code that indicates the level of genotype records (c:
   // cell, d: district)
   virtual char get_genotype_level() = 0;
-  virtual void monthly_genome_data(int month_id) = 0;
-  virtual void monthly_infected_individuals(int month_id) = 0;
-  virtual void monthly_site_data(int month_id) = 0;
+  virtual void monthly_genome_data(int monthId) = 0;
+  virtual void monthly_site_data(int monthId) = 0;
 
 public:
   // Constructor and destructor
@@ -55,7 +57,7 @@ public:
   ~SQLiteDbReporter() override = default;
 
   // Initialize the reporter with job number and path
-  void initialize(int job_number, std::string path) override;
+  void initialize(int jobNumber, std::string path) override;
 
   // Basic declarations for before run and begin time step
   void before_run() override {}

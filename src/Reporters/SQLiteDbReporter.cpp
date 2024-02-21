@@ -10,9 +10,6 @@
 
 // Function to populate the 'genotype' table in the database
 void SQLiteDbReporter::populate_genotype_table() {
-  const std::string INSERT_GENOTYPE =
-      "INSERT INTO genotype (id, name) VALUES (?, ?);";
-
   try {
     // Use the Database class to execute and prepare SQL statements
     db->execute("DELETE FROM genotype;");  // Clear the genotype table
@@ -56,12 +53,12 @@ void SQLiteDbReporter::populate_db_schema() {
     );
   )"""";
 
-  std::string age_class_columns;
+  std::string ageClassColumns;
   for (auto ndx = 0; ndx < Model::CONFIG->age_structure().size(); ndx++) {
-    auto ag_from = ndx == 0 ? 0 : Model::CONFIG->age_structure()[ndx - 1];
-    auto ag_to = Model::CONFIG->age_structure()[ndx];
-    age_class_columns +=
-        fmt::format("clinicalepisodes_by_age_class_{}_{}, ", ag_from, ag_to);
+    auto agFrom = ndx == 0 ? 0 : Model::CONFIG->age_structure()[ndx - 1];
+    auto agTo = Model::CONFIG->age_structure()[ndx];
+    ageClassColumns +=
+        fmt::format("clinicalepisodes_by_age_class_{}_{}, ", agFrom, agTo);
   }
 
   const std::string createMonthlySiteData =
@@ -71,7 +68,7 @@ void SQLiteDbReporter::populate_db_schema() {
         locationid INTEGER NOT NULL,
         population INTEGER NOT NULL,
         clinicalepisodes INTEGER NOT NULL, )""""
-      + age_class_columns +
+      + ageClassColumns +
       R""""(
         treatments INTEGER NOT NULL,
         treatmentfailures INTEGER NOT NULL,
@@ -112,6 +109,7 @@ void SQLiteDbReporter::populate_db_schema() {
   )"""";
 
   try {
+    TransactionGuard tx(db.get());
     // Use the Database class to execute SQL statements
     db->execute(createMonthlyData);
     db->execute(createMonthlySiteData);
@@ -125,11 +123,11 @@ void SQLiteDbReporter::populate_db_schema() {
 
 // Initialize the reporter
 // Sets up the database and prepares it for data entry
-void SQLiteDbReporter::initialize(int job_number, std::string path) {
+void SQLiteDbReporter::initialize(int jobNumber, std::string path) {
   VLOG(1) << "Base SQLiteDbReporter initialized.\n";
 
   // Define the database file path
-  auto dbPath = fmt::format("{}monthly_data_{}.db", path, job_number);
+  auto dbPath = fmt::format("{}monthly_data_{}.db", path, jobNumber);
 
   // Check if the file exists
   if (std::filesystem::exists(dbPath)) {
@@ -150,41 +148,37 @@ void SQLiteDbReporter::initialize(int job_number, std::string path) {
   // populate the genotype table
   populate_genotype_table();
 
-  std::string age_class_columns;
+  std::string ageClassColumns;
   for (auto ndx = 0; ndx < Model::CONFIG->age_structure().size(); ndx++) {
-    auto ag_from = ndx == 0 ? 0 : Model::CONFIG->age_structure()[ndx - 1];
-    auto ag_to = Model::CONFIG->age_structure()[ndx];
-    age_class_columns +=
-        fmt::format("clinicalepisodes_by_age_class_{}_{}, ", ag_from, ag_to);
+    auto agFrom = ndx == 0 ? 0 : Model::CONFIG->age_structure()[ndx - 1];
+    auto agTo = Model::CONFIG->age_structure()[ndx];
+    ageClassColumns +=
+        fmt::format("clinicalepisodes_by_age_class_{}_{}, ", agFrom, agTo);
   }
 
   // craete insert query based on the age class config
   INSERT_SITE_PREFIX = " INSERT INTO MonthlySiteData (MonthlyDataId, LocationId, "
     "Population, ClinicalEpisodes, " 
-    + age_class_columns + 
-    " Treatments, EIR, PfPrUnder5, PfPr2to10, PfPrAll, TreatmentFailures,"
+    + ageClassColumns + 
+    " Treatments, EIR, PfPrUnder5, PfPr2to10, PfPrAll, infectedindividuals , TreatmentFailures,"
     " NonTreatment, Under5Treatment, Over5Treatment) VALUES";
 }
 
 void SQLiteDbReporter::monthly_report() {
   // Get the relevant data
-  auto days_elapsed = Model::SCHEDULER->current_time();
-  auto model_time =
+  auto daysElapsed = Model::SCHEDULER->current_time();
+  auto modelTime =
       std::chrono::system_clock::to_time_t(Model::SCHEDULER->calendar_date);
-  auto seasonal_factor = Model::CONFIG->seasonal_info()->get_seasonal_factor(
+  auto seasonalFactor = Model::CONFIG->seasonal_info()->get_seasonal_factor(
       Model::SCHEDULER->calendar_date, 0);
 
-  auto month_id =
-      db->insert_data(INSERT_COMMON, days_elapsed, model_time, seasonal_factor);
+  auto monthId =
+      db->insert_data(INSERT_COMMON, daysElapsed, modelTime, seasonalFactor);
 
-  monthly_site_data(month_id);
+  monthly_site_data(monthId);
   if (Model::CONFIG->record_genome_db()
       && Model::MAIN_DATA_COLLECTOR->recording_data()) {
     // Add the genome information, this will also update infected individuals
-    monthly_genome_data(month_id);
-  } else {
-    // If we aren't recording genome data still update the infected
-    // individuals
-    monthly_infected_individuals(month_id);
+    monthly_genome_data(monthId);
   }
 }

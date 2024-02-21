@@ -42,6 +42,7 @@ private:                                                 \
                                                          \
 public:                                                  \
   property_type property_name() const { return property_name##_; }
+
 #define READ_ONLY_PROPERTY_REF(property_type, property_name) \
 private:                                                     \
   property_type property_name##_;                            \

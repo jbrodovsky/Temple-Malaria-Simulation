@@ -35,6 +35,8 @@ void config_logger() {
   // Create the default configuration
   el::Configurations default_conf;
   default_conf.setToDefault();
+  // default_conf.set(el::Level::Global, el::ConfigurationType::Enabled,
+  // "false");
   default_conf.set(el::Level::Debug, el::ConfigurationType::Format,
                    OUTPUT_FORMAT);
   default_conf.set(el::Level::Error, el::ConfigurationType::Format,

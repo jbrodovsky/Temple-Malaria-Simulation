@@ -13,7 +13,7 @@
 
 // Initialize the reporter
 // Sets up the database and prepares it for data entry
-void SQLiteDistrictReporter::initialize(int job_number, std::string path) {
+void SQLiteDistrictReporter::initialize(int jobNumber, std::string path) {
   // Inform the user of the reporter type and make sure there are districts
   VLOG(1) << "Using SQLiteDbReporterwith aggregation at the district level.";
   if (!SpatialData::get_instance().has_raster(SpatialData::Districts)) {
@@ -22,74 +22,95 @@ void SQLiteDistrictReporter::initialize(int job_number, std::string path) {
     throw std::invalid_argument("No district raster present");
   }
 
-  SQLiteDbReporter::initialize(job_number, path);
+  SQLiteDbReporter::initialize(jobNumber, path);
 }
 // Collect and store monthly site data
 // Aggregates data related to various site metrics and stores them in the
 // database
-void SQLiteDistrictReporter::monthly_site_data(int month_id) {
-  auto &district_lookup = SpatialData::get_instance().district_lookup();
+void SQLiteDistrictReporter::monthly_site_data(int monthId) {
+  TransactionGuard transaction{db.get()};
+  auto &districtLookup = SpatialData::get_instance().district_lookup();
 
   // Prepare the data structures
-  auto &age_classes = Model::CONFIG->age_structure();
+  auto &ageClasses = Model::CONFIG->age_structure();
   auto districts = SpatialData::get_instance().get_district_count();
   std::vector<double> eir(districts, 0);
-  std::vector<double> pfpr_under5(districts, 0);
-  std::vector<double> pfpr_2to10(districts, 0);
-  std::vector<double> pfpr_all(districts, 0);
+  std::vector<double> pfprUnder5(districts, 0);
+  std::vector<double> pfpr2to10(districts, 0);
+  std::vector<double> pfprAll(districts, 0);
   std::vector<int> population(districts, 0);
-  std::vector<int> clinical_episodes(districts, 0);
-  std::vector<std::vector<int>> clinical_episodes_by_age_class(
-      districts, std::vector<int>(age_classes.size(), 0));
+  std::vector<int> clinicalEpisodes(districts, 0);
+  std::vector<std::vector<int>> clinicalEpisodesByAgeClass(
+      districts, std::vector<int>(ageClasses.size(), 0));
   std::vector<int> treatments(districts, 0);
-  std::vector<int> treatment_failures(districts, 0);
+  std::vector<int> treatmentFailures(districts, 0);
   std::vector<int> nontreatment(districts, 0);
-  std::vector<int> treatments_under5(districts, 0);
-  std::vector<int> treatments_over5(districts, 0);
+  std::vector<int> treatmentsUnder5(districts, 0);
+  std::vector<int> treatmentsOver5(districts, 0);
 
+  auto* index =
+      Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
+  std::vector<int> infectionsDistrict(districts, 0);
+
+  for (auto location = 0; location < index->vPerson().size(); location++) {
+    for (auto hs = 0; hs < Person::NUMBER_OF_STATE - 1; hs++) {
+      for (unsigned int ac = 0; ac < ageClasses.size(); ac++) {
+        for (auto &person : index->vPerson()[location][hs][ac]) {
+          // Is the individual infected by at least one parasite?
+          if (person->all_clonal_parasite_populations()->parasites()->empty()) {
+            continue;
+          }
+
+          // Calculate the correct index and update the count
+          auto district = districtLookup[location];
+          infectionsDistrict[district]++;
+        }
+      }
+    }
+  }
   // Collect the data
   for (auto location = 0; location < Model::CONFIG->number_of_locations();
        location++) {
     // If the population is zero, press on
-    auto location_population =
+    auto locationPopulation =
         static_cast<int>(Model::POPULATION->size(location));
-    if (location_population == 0) { continue; }
+    if (locationPopulation == 0) { continue; }
 
-    auto district = district_lookup[location];
+    auto district = districtLookup[location];
 
     // Collect the simple data
-    population[district] += location_population;
-    clinical_episodes[district] +=
+    population[district] += locationPopulation;
+    clinicalEpisodes[district] +=
         Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_clinical_episode_by_location()[location];
 
     treatments[district] +=
         Model::MAIN_DATA_COLLECTOR
             ->monthly_number_of_treatment_by_location()[location];
-    treatment_failures[district] +=
+    treatmentFailures[district] +=
         Model::MAIN_DATA_COLLECTOR
             ->monthly_treatment_failure_by_location()[location];
     nontreatment[district] +=
         Model::MAIN_DATA_COLLECTOR
             ->monthly_nontreatment_by_location()[location];
 
-    for (auto ndx = 0; ndx < age_classes.size(); ndx++) {
+    for (auto ndx = 0; ndx < ageClasses.size(); ndx++) {
       // Collect the treatment by age class, following the 0-59 month convention
       // for under-5
-      if (age_classes[ndx] < 5) {
-        treatments_under5[district] +=
+      if (ageClasses[ndx] < 5) {
+        treatmentsUnder5[district] +=
             Model::MAIN_DATA_COLLECTOR
                 ->monthly_number_of_treatment_by_location_age_class()[location]
                                                                      [ndx];
       } else {
-        treatments_over5[district] +=
+        treatmentsOver5[district] +=
             Model::MAIN_DATA_COLLECTOR
                 ->monthly_number_of_treatment_by_location_age_class()[location]
                                                                      [ndx];
       }
 
       // collect the clinical episodes by age class
-      clinical_episodes_by_age_class[district][ndx] +=
+      clinicalEpisodesByAgeClass[district][ndx] +=
           Model::MAIN_DATA_COLLECTOR
               ->monthly_number_of_clinical_episode_by_location_age_class()
                   [location][ndx];
@@ -99,24 +120,23 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
     // early in the simulation, and when aggregating at the district level the
     // weighted mean needs to be reported instead
     if (Model::MAIN_DATA_COLLECTOR->recording_data()) {
-      auto eir_location =
+      auto eirLocation =
           Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[location].empty()
               ? 0
               : Model::MAIN_DATA_COLLECTOR->EIR_by_location_year()[location]
                     .back();
-      eir[district] += (eir_location * location_population);
-      pfpr_under5[district] +=
+      eir[district] += (eirLocation * locationPopulation);
+      pfprUnder5[district] +=
           (Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 0,
                                                                   5)
-           * location_population);
-      pfpr_2to10[district] +=
+           * locationPopulation);
+      pfpr2to10[district] +=
           (Model::MAIN_DATA_COLLECTOR->get_blood_slide_prevalence(location, 2,
                                                                   10)
-           * location_population);
-      pfpr_all[district] +=
-          (Model::MAIN_DATA_COLLECTOR
-               ->blood_slide_prevalence_by_location()[location]
-           * location_population);
+           * locationPopulation);
+      pfprAll[district] += (Model::MAIN_DATA_COLLECTOR
+                                ->blood_slide_prevalence_by_location()[location]
+                            * locationPopulation);
     }
   }
 
@@ -125,34 +145,35 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
     double calculatedEir =
         (eir[district] != 0) ? (eir[district] / population[district]) : 0;
     double calculatedPfprUnder5 =
-        (pfpr_under5[district] != 0)
-            ? (pfpr_under5[district] / population[district]) * 100.0
+        (pfprUnder5[district] != 0)
+            ? (pfprUnder5[district] / population[district]) * 100.0
             : 0;
     double calculatedPfpr2to10 =
-        (pfpr_2to10[district] != 0)
-            ? (pfpr_2to10[district] / population[district]) * 100.0
+        (pfpr2to10[district] != 0)
+            ? (pfpr2to10[district] / population[district]) * 100.0
             : 0;
     double calculatedPfprAll =
-        (pfpr_all[district] != 0)
-            ? (pfpr_all[district] / population[district]) * 100.0
+        (pfprAll[district] != 0)
+            ? (pfprAll[district] / population[district]) * 100.0
             : 0;
 
     std::string singleRow = fmt::format(
-        "({}, {}, {}, {}", month_id,
+        "({}, {}, {}, {}", monthId,
         SpatialData::get_instance().adjust_simulation_district_to_raster_index(
             district),
-        population[district], clinical_episodes[district]);
+        population[district], clinicalEpisodes[district]);
 
     // Append clinical episodes by age class
-    for (const auto &episodes : clinical_episodes_by_age_class[district]) {
+    for (const auto &episodes : clinicalEpisodesByAgeClass[district]) {
       singleRow += fmt::format(", {}", episodes);
     }
 
     singleRow += fmt::format(
-        ", {}, {}, {}, {}, {}, {}, {}, {}, {})", treatments[district],
+        ", {}, {}, {}, {}, {}, {}, {}, {}, {}, {})", treatments[district],
         calculatedEir, calculatedPfprUnder5, calculatedPfpr2to10,
-        calculatedPfprAll, treatment_failures[district], nontreatment[district],
-        treatments_under5[district], treatments_over5[district]);
+        calculatedPfprAll, infectionsDistrict[district],
+        treatmentFailures[district], nontreatment[district],
+        treatmentsUnder5[district], treatmentsOver5[district]);
 
     values.push_back(singleRow);
   }
@@ -164,19 +185,20 @@ void SQLiteDistrictReporter::monthly_site_data(int month_id) {
 
 // Collect and store monthly genome data
 // Aggregates and stores data related to the genotypes found in the population
-void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
-  auto &district_lookup = SpatialData::get_instance().district_lookup();
+void SQLiteDistrictReporter::monthly_genome_data(int monthId) {
+  TransactionGuard transaction{db.get()};
+  auto &districtLookup = SpatialData::get_instance().district_lookup();
 
   // Cache some values
   auto genotypes = Model::CONFIG->number_of_parasite_types();
   auto districts = SpatialData::get_instance().get_district_count();
   auto* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
-  auto age_classes = index->vPerson()[0][0].size();
+  auto ageClasses = index->vPerson()[0][0].size();
 
   // Prepare the data structures
   std::vector<int> individual(genotypes, 0);
-  std::vector<int> infections_district(districts, 0);
+  std::vector<int> infectionsDistrict(districts, 0);
   std::vector<std::vector<int>> occurrences(districts,
                                             std::vector<int>(genotypes, 0));
   std::vector<std::vector<int>> clinicalOccurrences(
@@ -191,15 +213,15 @@ void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
   // Iterate over all the possible states
   for (auto location = 0; location < index->vPerson().size(); location++) {
     // Get the current index and apply the off set, so we are zero aligned
-    auto district = district_lookup[location];
+    auto district = districtLookup[location];
     int infectedIndividuals = 0;
 
     for (auto hs = 0; hs < Person::NUMBER_OF_STATE - 1; hs++) {
       // Iterate over all the age classes
-      for (unsigned int ac = 0; ac < age_classes; ac++) {
+      for (unsigned int ac = 0; ac < ageClasses; ac++) {
         // Iterate over all the genotypes
-        auto age_class = index->vPerson()[location][hs][ac];
-        for (auto &person : age_class) {
+        auto peopleInAgeClass = index->vPerson()[location][hs][ac];
+        for (auto &person : peopleInAgeClass) {
           // Get the person, press on if they are not infected
           auto* parasites =
               person->all_clonal_parasite_populations()->parasites();
@@ -216,17 +238,17 @@ void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
 
           // Count the genotypes present in the individual
           for (unsigned int ndx = 0; ndx < size; ndx++) {
-            auto* parasite_population = (*parasites)[ndx];
-            auto genotype_id = parasite_population->genotype()->genotype_id();
-            occurrences[district][genotype_id]++;
-            occurrencesZeroToFive[district][genotype_id] += (age <= 5);
-            occurrencesTwoToTen[district][genotype_id] +=
-                (age >= 2 && age <= 10);
-            individual[genotype_id]++;
+            auto* parasitePopulation = (*parasites)[ndx];
+            auto genotypeId = parasitePopulation->genotype()->genotype_id();
+            occurrences[district][genotypeId]++;
+            occurrencesZeroToFive[district][genotypeId] += (age <= 5) ? 1 : 0;
+            occurrencesTwoToTen[district][genotypeId] +=
+                (age >= 2 && age <= 10) ? 1 : 0;
+            individual[genotypeId]++;
 
             // Count a clinical occurrence if the individual has clinical
             // symptoms
-            clinicalOccurrences[district][genotype_id] += clinical;
+            clinicalOccurrences[district][genotypeId] += clinical;
           }
 
           // Update the weighted occurrences and reset the individual count
@@ -238,20 +260,19 @@ void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
         }
       }
     }
-
     // Update the number of individuals in the location
-    infections_district[district] += infectedIndividuals;
+    infectionsDistrict[district] += infectedIndividuals;
   }
 
   std::vector<std::string> insertValues;
   // Iterate over the districts and append the query
-  std::string insert_genotypes;
-  std::string update_infections;
+  std::string insertGenotypes;
+  std::string updateInfections;
   for (auto district = 0; district < districts; district++) {
     for (auto genotype = 0; genotype < genotypes; genotype++) {
       if (weightedOccurrences[district][genotype] == 0) { continue; }
       std::string singleRow =
-          fmt::format("({}, {}, {}, {}, {}, {}, {}, {})", month_id,
+          fmt::format("({}, {}, {}, {}, {}, {}, {}, {})", monthId,
                       SpatialData::get_instance()
                           .adjust_simulation_district_to_raster_index(district),
                       genotype, occurrences[district][genotype],
@@ -262,12 +283,6 @@ void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
 
       insertValues.push_back(singleRow);
     }
-
-    std::string updateQuery = fmt::format(
-        UPDATE_INFECTED_INDIVIDUALS, infections_district[district], month_id,
-        SpatialData::get_instance().adjust_simulation_district_to_raster_index(
-            district));
-    db->execute(updateQuery);
   }
   if (insertValues.empty()) {
     LOG(INFO) << "No genotypes recorded in the simulation at timestep, "
@@ -280,43 +295,3 @@ void SQLiteDistrictReporter::monthly_genome_data(int month_id) {
   db->execute(insertQuery);
 }
 
-// Update the count of infected individuals in the database
-// Aggregates data on the number of infected individuals per district and
-// updates the database
-void SQLiteDistrictReporter::monthly_infected_individuals(int month_id) {
-  auto &district_lookup = SpatialData::get_instance().district_lookup();
-  // Cache some values and prepare the data structure
-  auto districts = SpatialData::get_instance().get_district_count();
-  auto* index =
-      Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
-  auto age_classes = index->vPerson()[0][0].size();
-  std::vector<int> infections_district(districts, 0);
-
-  // Iterate overall the possible locations and states
-  for (auto location = 0; location < index->vPerson().size(); location++) {
-    for (auto hs = 0; hs < Person::NUMBER_OF_STATE - 1; hs++) {
-      for (unsigned int ac = 0; ac < age_classes; ac++) {
-        for (auto &person : index->vPerson()[location][hs][ac]) {
-          // Is the individual infected by at least one parasite?
-          if (person->all_clonal_parasite_populations()->parasites()->empty()) {
-            continue;
-          }
-
-          // Calculate the correct index and update the count
-          auto district = district_lookup[location];
-          infections_district[district]++;
-        }
-      }
-    }
-  }
-
-  // realign with based 1 from ARCGIS
-  // Iterate over the districts and append the query
-  for (auto district = 0; district < districts; district++) {
-    std::string updateQuery = fmt::format(
-        UPDATE_INFECTED_INDIVIDUALS, infections_district[district], month_id,
-        SpatialData::get_instance().adjust_simulation_district_to_raster_index(
-            district));
-    db->execute(updateQuery);
-  }
-}
