@@ -57,7 +57,7 @@ public:
   ~SQLiteDbReporter() override = default;
 
   // Initialize the reporter with job number and path
-  void initialize(int jobNumber, std::string path) override;
+  void initialize(int jobNumber, const std::string &path) override;
 
   // Basic declarations for before run and begin time step
   void before_run() override {}

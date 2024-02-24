@@ -16,7 +16,7 @@
 #include "Reporters/Utility/PqxxHelpers.h"
 #include "easylogging++.h"
 
-void GenotypeCarriersReporter::initialize(int job_number, std::string path) {
+void GenotypeCarriersReporter::initialize(int job_number, const std::string &path) {
   // Query to verify that the database has been properly configured
   pqxx::connection* connection = pqxx_db::get_connection();
   pqxx::work db(*connection);

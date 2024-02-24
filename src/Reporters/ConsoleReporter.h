@@ -19,7 +19,7 @@ public:
   //    ConsoleReporter(const ConsoleReporter& orig);
   virtual ~ConsoleReporter();
 
-  virtual void initialize(int job_number, std::string path) {}
+  virtual void initialize(int job_number, const std::string &path) {}
 
   virtual void before_run();
 

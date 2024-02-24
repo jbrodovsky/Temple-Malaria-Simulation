@@ -22,7 +22,7 @@ MonthlyReporter::MonthlyReporter() = default;
 
 MonthlyReporter::~MonthlyReporter() = default;
 
-void MonthlyReporter::initialize(int job_number, std::string path) {
+void MonthlyReporter::initialize(int job_number, const std::string &path) {
   // Create the configuration for the monthly reporter
   el::Configurations monthly_reporter_logger;
   monthly_reporter_logger.setToDefault();

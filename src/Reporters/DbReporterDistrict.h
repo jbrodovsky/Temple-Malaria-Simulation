@@ -21,7 +21,7 @@ protected:
   void monthly_site_data(int id, std::string &query) override;
 
 public:
-  void initialize(int job_number, std::string path) override;
+  void initialize(int job_number, const std::string &path) override;
 };
 
 #endif

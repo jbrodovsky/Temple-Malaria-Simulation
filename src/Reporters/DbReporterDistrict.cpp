@@ -13,7 +13,7 @@
 #include "Population/Properties/PersonIndexByLocationStateAgeClass.h"
 #include "easylogging++.h"
 
-void DbReporterDistrict::initialize(int job_number, std::string path) {
+void DbReporterDistrict::initialize(int job_number, const std::string &path) {
   // Inform the user of the reporter type and make sure there are districts
   VLOG(1) << "Using DbReporter with aggregation at the district level.";
   if (!SpatialData::get_instance().has_raster(SpatialData::Districts)) {

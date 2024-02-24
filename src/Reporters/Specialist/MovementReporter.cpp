@@ -81,7 +81,7 @@ void MovementReporter::coarse_report() {
 }
 
 // Open a connection to the database
-void MovementReporter::initialize(int job_number, std::string path) {
+void MovementReporter::initialize(int job_number, const std::string &path) {
   // Connect to the database
   conn = new pqxx::connection(Model::CONFIG->connection_string());
 

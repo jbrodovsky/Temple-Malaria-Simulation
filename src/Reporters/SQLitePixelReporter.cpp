@@ -16,7 +16,7 @@
 #include "Population/Properties/PersonIndexByLocationStateAgeClass.h"
 #include "easylogging++.h"
 
-void SQLitePixelReporter::initialize(int jobNumber, std::string path) {
+void SQLitePixelReporter::initialize(int jobNumber, const std::string &path) {
   // Inform the user of the reporter type is pixel / cell level
   VLOG(1)
       << "Using SQLiteDbReporterwith aggregation at the pixel / cell level.";

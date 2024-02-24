@@ -24,7 +24,7 @@ public:
   ~SQLiteDistrictReporter() override = default;
 
   // Initialize the reporter with job number and path
-  void initialize(int jobNumber, std::string path) override;
+  void initialize(int jobNumber, const std::string &path) override;
 };
 
 #endif

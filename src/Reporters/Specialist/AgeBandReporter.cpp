@@ -10,7 +10,7 @@
 #include "Model.h"
 #include "easylogging++.h"
 
-void AgeBandReporter::initialize(int job_number, std::string path) {
+void AgeBandReporter::initialize(int job_number, const std::string &path) {
   // Create the configuration for the PfPR reporter
   el::Configurations pfpr_reporter;
   pfpr_reporter.setToDefault();

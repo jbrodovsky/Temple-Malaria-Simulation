@@ -76,7 +76,7 @@ public:
 
   virtual ~Reporter() = default;
 
-  virtual void initialize(int job_number, std::string path) = 0;
+  virtual void initialize(int job_number, const std::string &path) = 0;
 
   virtual void before_run() = 0;
 

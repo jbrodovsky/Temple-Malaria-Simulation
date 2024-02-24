@@ -25,7 +25,7 @@ public:
   ~SQLitePixelReporter() override = default;
 
   // Overrides
-  void initialize(int jobNumber, std::string path) override;
+  void initialize(int jobNumber, const std::string &path) override;
 };
 
 #endif

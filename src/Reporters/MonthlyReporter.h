@@ -21,7 +21,7 @@ public:
 
   void begin_time_step() override {}
 
-  void initialize(int job_number, std::string path) override;
+  void initialize(int job_number, const std::string &path) override;
 
   void after_run() override;
 

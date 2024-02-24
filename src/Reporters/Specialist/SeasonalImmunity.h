@@ -35,7 +35,7 @@ public:
   void after_run() override{};
 
   // Overrides
-  void initialize(int job_number, std::string path) override;
+  void initialize(int job_number, const std::string &path) override;
   void monthly_report() override;
 };
 

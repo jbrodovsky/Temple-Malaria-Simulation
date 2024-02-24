@@ -27,7 +27,7 @@ public:
   virtual ~IndividualsFileReporter();
 
 private:
-  void initialize(int job_number, std::string path) override {}
+  void initialize(int job_number, const std::string &path) override {}
 
   void before_run() override;
 

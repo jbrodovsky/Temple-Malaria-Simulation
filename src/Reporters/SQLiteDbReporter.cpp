@@ -123,7 +123,7 @@ void SQLiteDbReporter::populate_db_schema() {
 
 // Initialize the reporter
 // Sets up the database and prepares it for data entry
-void SQLiteDbReporter::initialize(int jobNumber, std::string path) {
+void SQLiteDbReporter::initialize(int jobNumber, const std::string &path) {
   VLOG(1) << "Base SQLiteDbReporter initialized.\n";
 
   // Define the database file path

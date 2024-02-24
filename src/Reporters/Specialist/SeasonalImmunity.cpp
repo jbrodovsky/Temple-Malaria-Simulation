@@ -16,7 +16,7 @@
 #include "Population/Properties/PersonIndexByLocationStateAgeClass.h"
 #include "easylogging++.h"
 
-void SeasonalImmunity::initialize(int job_number, std::string path) {
+void SeasonalImmunity::initialize(int job_number, const std::string &path) {
   // Start by building our look-up
   build_lookup();
 

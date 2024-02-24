@@ -6,7 +6,7 @@
 #include "Population/Population.h"
 #include "Population/Properties/PersonIndexAll.h"
 
-void TravelTrackingReporter::initialize(int job_number, std::string path) {
+void TravelTrackingReporter::initialize(int job_number, const std::string &path) {
   output_file.open(fmt::format("{}travel_tracking_{}.csv", path, job_number));
 }
 

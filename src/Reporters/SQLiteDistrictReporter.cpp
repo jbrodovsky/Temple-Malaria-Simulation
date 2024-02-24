@@ -13,7 +13,7 @@
 
 // Initialize the reporter
 // Sets up the database and prepares it for data entry
-void SQLiteDistrictReporter::initialize(int jobNumber, std::string path) {
+void SQLiteDistrictReporter::initialize(int jobNumber, const std::string &path) {
   // Inform the user of the reporter type and make sure there are districts
   VLOG(1) << "Using SQLiteDbReporterwith aggregation at the district level.";
   if (!SpatialData::get_instance().has_raster(SpatialData::Districts)) {

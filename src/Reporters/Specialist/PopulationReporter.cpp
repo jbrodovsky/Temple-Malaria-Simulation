@@ -11,7 +11,7 @@
 #include "Population/Population.h"
 #include "easylogging++.h"
 
-void PopulationReporter::initialize(int job_number, std::string path) {
+void PopulationReporter::initialize(int job_number, const std::string &path) {
   el::Configurations reporter;
   reporter.setToDefault();
   reporter.set(el::Level::Info, el::ConfigurationType::Format, "%msg");

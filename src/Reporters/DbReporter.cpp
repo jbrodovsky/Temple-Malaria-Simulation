@@ -44,7 +44,7 @@ pqxx::connection* DbReporter::get_connection() const {
   exit(-1);
 }
 
-void DbReporter::initialize(int job_number, std::string path) {
+void DbReporter::initialize(int job_number, const std::string &path) {
   // Connect to the database
   pqxx::connection* connection = get_connection();
   LOG(INFO) << "Connected to " << connection->dbname();
