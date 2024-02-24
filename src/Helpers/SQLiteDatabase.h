@@ -1,5 +1,3 @@
-
-
 #ifndef HELPERS_SQLITEDATABASE_H
 #define HELPERS_SQLITEDATABASE_H
 
@@ -10,22 +8,21 @@
 #include "Core/PropertyMacro.h"
 #include "easylogging++.h"
 
+// NOTE: Consider using other SQLite wrapper library for better binding and
+// error handling
 // SQLiteDatabase class manages the lifecycle and operations of an SQLite
 // database connection.
 class SQLiteDatabase {
   DELETE_COPY_AND_MOVE(SQLiteDatabase)
 private:
   sqlite3* db_ = nullptr;  // Pointer to the SQLite database
-  // Base case for bind_values. Does nothing and is used to handle the case
-  // where no arguments are provided.
-  void bind_values_(sqlite3_stmt* stmt) {}
 
   // Binds an integer value to the first placeholder in the prepared SQL
   // statement.
   // stmt: Pointer to the prepared SQL statement.
   // value: Integer value to bind.
-  static void bind_values(sqlite3_stmt* stmt, int value) {
-    sqlite3_bind_int(stmt, 1, value);
+  static void Bind_Single_Value(sqlite3_stmt* stmt, int index, int value) {
+    sqlite3_bind_int(stmt, index, value);
   }
 
   // Binds a time_t value to the second placeholder in the prepared SQL
@@ -34,8 +31,9 @@ private:
   // timestamps).
   // stmt: Pointer to the prepared SQL statement.
   // value: time_t value to bind.
-  static void bind_values(sqlite3_stmt* stmt, const std::time_t &value) {
-    sqlite3_bind_int64(stmt, 2, static_cast<sqlite3_int64>(value));
+  static void Bind_Single_Value(sqlite3_stmt* stmt, int index,
+                                const std::time_t &value) {
+    sqlite3_bind_int64(stmt, index, static_cast<sqlite3_int64>(value));
   }
 
   // Binds a double value to the third placeholder in the prepared SQL
@@ -43,8 +41,31 @@ private:
   // This is typically used for binding floating-point numbers.
   // stmt: Pointer to the prepared SQL statement.
   // value: Double value to bind.
-  static void bind_values(sqlite3_stmt* stmt, double value) {
-    sqlite3_bind_double(stmt, 3, value);
+  static void Bind_Single_Value(sqlite3_stmt* stmt, int index, double value) {
+    sqlite3_bind_double(stmt, index, value);
+  }
+
+  // Binds a std::string value to the specified placeholder in the prepared SQL
+  // statement.
+  static void Bind_Single_Value(sqlite3_stmt* stmt, int index,
+                                const std::string &value) {
+    sqlite3_bind_text(stmt, index, value.c_str(), -1, SQLITE_TRANSIENT);
+  }
+
+  // Binds a C-style string (const char*) to the specified placeholder in the
+  // prepared SQL statement.
+  static void Bind_Single_Value(sqlite3_stmt* stmt, int index,
+                                const char* value) {
+    sqlite3_bind_text(stmt, index, value, -1, SQLITE_TRANSIENT);
+  }
+
+  template <typename T>
+  static void Bind_Single_Value(sqlite3_stmt* /*stmt*/, int /*index*/,
+                                const T & /*value*/) {
+    std::cerr << "Unsupported type for binding: " << typeid(T).name()
+              << std::endl;
+    // exit program
+    throw std::runtime_error("Unsupported type for binding");
   }
 
   // Template function for binding multiple values to a prepared SQL statement.
@@ -52,12 +73,15 @@ private:
   // different types. It recursively calls itself to bind each argument in the
   // parameter pack to the statement.
   // stmt: Pointer to the prepared SQL statement.
+  // index: The index of the first placeholder in the statement to bind.
   // first: The first value in the parameter pack to bind.
   // rest...: The remaining values in the parameter pack.
   template <typename First, typename... Rest>
-  void bind_values(sqlite3_stmt* stmt, First first, Rest... rest) {
-    bind_values(stmt, first);
-    bind_values(stmt, rest...);
+  void bind_values_(sqlite3_stmt* stmt, int index, First first, Rest... rest) {
+    SQLiteDatabase::Bind_Single_Value(stmt, index, first);
+    if constexpr (sizeof...(rest) > 0) {
+      bind_values_(stmt, index + 1, rest...);
+    }
   }
 
 public:
@@ -108,12 +132,14 @@ public:
 
   // Inserts data into the database using a prepared statement with variable
   // arguments.
+  // NOTE: Curruently, insert data only support interger, time_t, and double
+  //
   // Returns the ID of the inserted row
   // Throws a runtime_error on execution failure.
   template <typename... Args>
   int insert_data(const std::string &query, Args... args) {
     sqlite3_stmt* stmt = prepare(query);
-    bind_values(stmt, args...);
+    bind_values_(stmt, 1, args...);
 
     if (sqlite3_step(stmt) != SQLITE_ROW) {
       std::string error = "Error executing insert statement: "
