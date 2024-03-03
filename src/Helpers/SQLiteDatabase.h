@@ -21,7 +21,7 @@ private:
   // statement.
   // stmt: Pointer to the prepared SQL statement.
   // value: Integer value to bind.
-  static void Bind_Single_Value(sqlite3_stmt* stmt, int index, int value) {
+  static void bind_single_value(sqlite3_stmt* stmt, int index, int value) {
     sqlite3_bind_int(stmt, index, value);
   }
 
@@ -31,7 +31,7 @@ private:
   // timestamps).
   // stmt: Pointer to the prepared SQL statement.
   // value: time_t value to bind.
-  static void Bind_Single_Value(sqlite3_stmt* stmt, int index,
+  static void bind_single_value(sqlite3_stmt* stmt, int index,
                                 const std::time_t &value) {
     sqlite3_bind_int64(stmt, index, static_cast<sqlite3_int64>(value));
   }
@@ -41,26 +41,26 @@ private:
   // This is typically used for binding floating-point numbers.
   // stmt: Pointer to the prepared SQL statement.
   // value: Double value to bind.
-  static void Bind_Single_Value(sqlite3_stmt* stmt, int index, double value) {
+  static void bind_single_value(sqlite3_stmt* stmt, int index, double value) {
     sqlite3_bind_double(stmt, index, value);
   }
 
   // Binds a std::string value to the specified placeholder in the prepared SQL
   // statement.
-  static void Bind_Single_Value(sqlite3_stmt* stmt, int index,
+  static void bind_single_value(sqlite3_stmt* stmt, int index,
                                 const std::string &value) {
     sqlite3_bind_text(stmt, index, value.c_str(), -1, SQLITE_TRANSIENT);
   }
 
   // Binds a C-style string (const char*) to the specified placeholder in the
   // prepared SQL statement.
-  static void Bind_Single_Value(sqlite3_stmt* stmt, int index,
+  static void bind_single_value(sqlite3_stmt* stmt, int index,
                                 const char* value) {
     sqlite3_bind_text(stmt, index, value, -1, SQLITE_TRANSIENT);
   }
 
   template <typename T>
-  static void Bind_Single_Value(sqlite3_stmt* /*stmt*/, int /*index*/,
+  static void bind_single_value(sqlite3_stmt* /*stmt*/, int /*index*/,
                                 const T & /*value*/) {
     std::cerr << "Unsupported type for binding: " << typeid(T).name()
               << std::endl;
@@ -78,7 +78,7 @@ private:
   // rest...: The remaining values in the parameter pack.
   template <typename First, typename... Rest>
   void bind_values_(sqlite3_stmt* stmt, int index, First first, Rest... rest) {
-    SQLiteDatabase::Bind_Single_Value(stmt, index, first);
+    SQLiteDatabase::bind_single_value(stmt, index, first);
     if constexpr (sizeof...(rest) > 0) {
       bind_values_(stmt, index + 1, rest...);
     }
@@ -107,13 +107,13 @@ public:
   // Executes a given SQL statement without expecting a return value.
   // Throws a runtime_error if the execution fails.
   void execute(const std::string &sql) {
-    char* zErrMsg = nullptr;
-    if (sqlite3_exec(db_, sql.c_str(), nullptr, nullptr, &zErrMsg)
+    char* err_msg = nullptr;
+    if (sqlite3_exec(db_, sql.c_str(), nullptr, nullptr, &err_msg)
         != SQLITE_OK) {
-      std::string error = "SQL error: " + std::string(zErrMsg);
-      sqlite3_free(zErrMsg);
+      std::string error = "SQL error: " + std::string(err_msg);
+      sqlite3_free(err_msg);
       /* throw std::runtime_error(error); */
-      LOG(ERROR) << "SQL error: " << zErrMsg;
+      LOG(ERROR) << "SQL error: " << err_msg;
     }
   }
 

@@ -11,35 +11,32 @@
 #include "Helpers/SQLiteDatabase.h"
 #include "Reporter.h"
 
-class SQLiteDbReporter : public Reporter {
-protected:
-  std::unique_ptr<SQLiteDatabase> db;
+class PersonIndexByLocationStateAgeClass;
 
-  const std::string INSERT_GENOTYPE =
+class SQLiteDbReporter : public Reporter {
+private:
+  const std::string insert_genotype_query_ =
       "INSERT INTO genotype (id, name) VALUES (?, ?);";
 
-  const std::string INSERT_COMMON = R""""(
+  const std::string insert_common_query_ = R""""(
   INSERT INTO MonthlyData (DaysElapsed, ModelTime, SeasonalFactor)
   VALUES (?, ?, ?)
   RETURNING id;
   )"""";
 
-  // this query must be created in the initialize function (after the config is
-  // initialized)
-  std::string INSERT_SITE_PREFIX = "";
-
-  const std::string INSERT_GENOTYPE_PREFIX = R"""(
+  const std::string insert_genotype_query_prefix_ = R"""(
     INSERT INTO MonthlyGenomeData 
     (MonthlyDataId, LocationId, GenomeId, Occurrences, 
     ClinicalOccurrences, Occurrences0to5, Occurrences2to10, 
     WeightedOccurrences) 
     VALUES 
   )""";
+  // this query must be created in the initialize function (after the config is
+  // initialized)
+  std::string insert_site_query_prefix_;
 
-  const std::string UPDATE_INFECTED_INDIVIDUALS = R"""(
-    UPDATE MonthlySiteData SET InfectedIndividuals = {} 
-    WHERE MonthlyDataId = {} AND LocationId = {};
-  )""";
+protected:
+  std::unique_ptr<SQLiteDatabase> db;
 
   void populate_genotype_table();
 
@@ -48,12 +45,19 @@ protected:
   // Return the character code that indicates the level of genotype records (c:
   // cell, d: district)
   virtual char get_genotype_level() = 0;
-  virtual void monthly_genome_data(int monthId) = 0;
-  virtual void monthly_site_data(int monthId) = 0;
+  virtual void monthly_report_genome_data(int monthId) = 0;
+  virtual void monthly_report_site_data(int monthId) = 0;
+
+  void insert_monthly_site_data(const std::vector<std::string> &siteData);
+  void insert_monthly_genome_data(const std::vector<std::string> &genomeData);
 
 public:
   // Constructor and destructor
   SQLiteDbReporter() = default;
+  SQLiteDbReporter(const SQLiteDbReporter &) = delete;
+  SQLiteDbReporter(SQLiteDbReporter &&) = delete;
+  SQLiteDbReporter &operator=(const SQLiteDbReporter &) = delete;
+  SQLiteDbReporter &operator=(SQLiteDbReporter &&) = delete;
   ~SQLiteDbReporter() override = default;
 
   // Initialize the reporter with job number and path

@@ -15,7 +15,7 @@ template <typename T>
 class MatrixWriter {
 public:
   // Write the matrix provided to the path indicated.
-  void static write(T matrix, std::string fileName) {
+  void static write(T matrix, const std::string &fileName) {
     // Open the file, check for errors
     std::ofstream out(fileName);
     if (out.fail()) {
@@ -33,7 +33,8 @@ public:
   }
 
   // Write the matrix provided to the path indicated.
-  void static write(std::vector<std::vector<T>> matrix, std::string fileName) {
+  void static write(std::vector<std::vector<T>> matrix,
+                    const std::string &fileName) {
     std::ofstream out(fileName);
     if (out.fail()) {
       throw std::runtime_error("Error opening file to write.");

@@ -3,6 +3,7 @@
 #include <filesystem>
 
 #include "Core/Config/Config.h"
+#include "Helpers/StringHelpers.h"
 #include "MDC/MainDataCollector.h"
 #include "Model.h"
 #include "Population/Population.h"
@@ -15,7 +16,7 @@ void SQLiteDbReporter::populate_genotype_table() {
     db->execute("DELETE FROM genotype;");  // Clear the genotype table
 
     // Prepare the bulk query
-    auto* stmt = db->prepare(INSERT_GENOTYPE);
+    auto* stmt = db->prepare(insert_genotype_query_);
 
     auto* config = Model::CONFIG;
 
@@ -157,7 +158,7 @@ void SQLiteDbReporter::initialize(int jobNumber, const std::string &path) {
   }
 
   // craete insert query based on the age class config
-  INSERT_SITE_PREFIX = " INSERT INTO MonthlySiteData (MonthlyDataId, LocationId, "
+  insert_site_query_prefix_ = " INSERT INTO MonthlySiteData (MonthlyDataId, LocationId, "
     "Population, ClinicalEpisodes, " 
     + ageClassColumns + 
     " Treatments, EIR, PfPrUnder5, PfPr2to10, PfPrAll, infectedindividuals , TreatmentFailures,"
@@ -172,13 +173,30 @@ void SQLiteDbReporter::monthly_report() {
   auto seasonalFactor = Model::CONFIG->seasonal_info()->get_seasonal_factor(
       Model::SCHEDULER->calendar_date, 0);
 
-  auto monthId =
-      db->insert_data(INSERT_COMMON, daysElapsed, modelTime, seasonalFactor);
+  auto monthId = db->insert_data(insert_common_query_, daysElapsed, modelTime,
+                                 seasonalFactor);
 
-  monthly_site_data(monthId);
+  monthly_report_site_data(monthId);
   if (Model::CONFIG->record_genome_db()
       && Model::MAIN_DATA_COLLECTOR->recording_data()) {
     // Add the genome information, this will also update infected individuals
-    monthly_genome_data(monthId);
+    monthly_report_genome_data(monthId);
   }
 }
+
+void SQLiteDbReporter::insert_monthly_site_data(
+    const std::vector<std::string> &siteData) {
+  // Insert the site data into the database
+  std::string const query =
+      insert_site_query_prefix_ + StringHelpers::join(siteData, ",") + ";";
+  db->execute(query);
+}
+
+void SQLiteDbReporter::insert_monthly_genome_data(
+    const std::vector<std::string> &genomeData) {
+  // Insert the genome data into the database
+  std::string const query = insert_genotype_query_prefix_
+                            + StringHelpers::join(genomeData, ",") + ";";
+  db->execute(query);
+}
+

@@ -490,10 +490,11 @@ void MainDataCollector::record_1_non_treated_case(const int &location,
 }
 
 void MainDataCollector::begin_time_step() {
-  // Set our recording flag for the day, doing this once per simulation day
-  // saves a couple cycles
-  recording = (Model::SCHEDULER->current_time()
-               >= Model::CONFIG->start_collect_data_day());
+  if (!recording
+      && Model::SCHEDULER->current_time()
+             >= Model::CONFIG->start_collect_data_day()) {
+    recording = true;
+  }
 }
 
 void MainDataCollector::record_1_treatment(const int &location,
