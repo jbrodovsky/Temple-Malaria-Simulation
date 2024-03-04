@@ -77,10 +77,10 @@ private:
   // first: The first value in the parameter pack to bind.
   // rest...: The remaining values in the parameter pack.
   template <typename First, typename... Rest>
-  void bind_values_(sqlite3_stmt* stmt, int index, First first, Rest... rest) {
+  void bind_values(sqlite3_stmt* stmt, int index, First first, Rest... rest) {
     SQLiteDatabase::bind_single_value(stmt, index, first);
     if constexpr (sizeof...(rest) > 0) {
-      bind_values_(stmt, index + 1, rest...);
+      bind_values(stmt, index + 1, rest...);
     }
   }
 
@@ -139,7 +139,7 @@ public:
   template <typename... Args>
   int insert_data(const std::string &query, Args... args) {
     sqlite3_stmt* stmt = prepare(query);
-    bind_values_(stmt, 1, args...);
+    bind_values(stmt, 1, args...);
 
     if (sqlite3_step(stmt) != SQLITE_ROW) {
       std::string error = "Error executing insert statement: "

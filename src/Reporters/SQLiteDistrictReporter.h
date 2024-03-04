@@ -43,14 +43,14 @@ protected:
   std::vector<std::string> insert_values;
 
 private:
-  void reset_site_data_structures_(int numDistricts, size_t numAgeClasses);
-  void reset_genome_data_structures_(int numDistricts, size_t numGenotypes);
-  void count_infections_for_location_(int location);
-  void collect_site_data_for_location_(int location);
-  void calculate_and_build_up_site_data_insert_values_(int monthId);
-  void collect_genome_data_for_location_(size_t location);
-  void collect_genome_data_for_a_person_(Person* person, int site);
-  void build_up_genome_data_insert_values_(int monthId);
+  void reset_site_data_structures(int numDistricts, size_t numAgeClasses);
+  void reset_genome_data_structures(int numDistricts, size_t numGenotypes);
+  void count_infections_for_location(int location);
+  void collect_site_data_for_location(int location);
+  void calculate_and_build_up_site_data_insert_values(int monthId);
+  void collect_genome_data_for_location(size_t location);
+  void collect_genome_data_for_a_person(Person* person, int site);
+  void build_up_genome_data_insert_values(int monthId);
 
 public:
   SQLiteDistrictReporter() = default;

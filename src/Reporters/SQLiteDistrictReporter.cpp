@@ -25,7 +25,7 @@ void SQLiteDistrictReporter::initialize(int jobNumber,
   SQLiteDbReporter::initialize(jobNumber, path);
 }
 
-void SQLiteDistrictReporter::count_infections_for_location_(int location) {
+void SQLiteDistrictReporter::count_infections_for_location(int location) {
   auto &districtLookup = SpatialData::get_instance().district_lookup();
   auto &ageClasses = Model::CONFIG->age_structure();
   auto* index =
@@ -48,12 +48,12 @@ void SQLiteDistrictReporter::count_infections_for_location_(int location) {
   }
 }
 
-void SQLiteDistrictReporter::collect_site_data_for_location_(int location) {
+void SQLiteDistrictReporter::collect_site_data_for_location(int location) {
   auto &districtLookup = SpatialData::get_instance().district_lookup();
   auto district = districtLookup[location];
   auto &ageClasses = Model::CONFIG->age_structure();
 
-  count_infections_for_location_(location);
+  count_infections_for_location(location);
 
   auto locationPopulation = static_cast<int>(Model::POPULATION->size(location));
   // Collect the simple data
@@ -118,7 +118,7 @@ void SQLiteDistrictReporter::collect_site_data_for_location_(int location) {
   }
 }
 
-void SQLiteDistrictReporter::calculate_and_build_up_site_data_insert_values_(
+void SQLiteDistrictReporter::calculate_and_build_up_site_data_insert_values(
     int monthId) {
   auto numDistricts = SpatialData::get_instance().get_district_count();
   insert_values.clear();
@@ -182,7 +182,7 @@ void SQLiteDistrictReporter::monthly_report_site_data(int monthId) {
   auto &ageClasses = Model::CONFIG->age_structure();
 
   // Prepare the data structures
-  reset_site_data_structures_(numDistricts, ageClasses.size());
+  reset_site_data_structures(numDistricts, ageClasses.size());
 
   // Collect the data
   for (auto location = 0; location < Model::CONFIG->number_of_locations();
@@ -192,16 +192,15 @@ void SQLiteDistrictReporter::monthly_report_site_data(int monthId) {
         static_cast<int>(Model::POPULATION->size(location));
     if (locationPopulation == 0) { continue; }
 
-    collect_site_data_for_location_(location);
+    collect_site_data_for_location(location);
   }
 
-  calculate_and_build_up_site_data_insert_values_(monthId);
+  calculate_and_build_up_site_data_insert_values(monthId);
 
   insert_monthly_site_data(insert_values);
 }
 
-void SQLiteDistrictReporter::collect_genome_data_for_location_(
-    size_t location) {
+void SQLiteDistrictReporter::collect_genome_data_for_location(size_t location) {
   const auto &districtLookup = SpatialData::get_instance().district_lookup();
   const auto district = districtLookup[location];
   auto* index =
@@ -214,14 +213,14 @@ void SQLiteDistrictReporter::collect_genome_data_for_location_(
       // Iterate over all the genotypes
       auto peopleInAgeClass = index->vPerson()[location][hs][ac];
       for (auto &person : peopleInAgeClass) {
-        collect_genome_data_for_a_person_(person, district);
+        collect_genome_data_for_a_person(person, district);
       }
     }
   }
 }
 
-void SQLiteDistrictReporter::reset_site_data_structures_(int numDistricts,
-                                                         size_t numAgeClasses) {
+void SQLiteDistrictReporter::reset_site_data_structures(int numDistricts,
+                                                        size_t numAgeClasses) {
   // reset the data structures
   monthly_site_data.eir.assign(numDistricts, 0);
   monthly_site_data.pfpr_under5.assign(numDistricts, 0);
@@ -239,8 +238,8 @@ void SQLiteDistrictReporter::reset_site_data_structures_(int numDistricts,
   monthly_site_data.infections_by_district.assign(numDistricts, 0);
 }
 
-void SQLiteDistrictReporter::reset_genome_data_structures_(
-    int numDistricts, size_t numGenotypes) {
+void SQLiteDistrictReporter::reset_genome_data_structures(int numDistricts,
+                                                          size_t numGenotypes) {
   // reset the data structures
   monthly_genome_data.occurrences.assign(numDistricts,
                                          std::vector<int>(numGenotypes, 0));
@@ -253,8 +252,8 @@ void SQLiteDistrictReporter::reset_genome_data_structures_(
   monthly_genome_data.weighted_occurrences.assign(
       numDistricts, std::vector<double>(numGenotypes, 0));
 }
-void SQLiteDistrictReporter::collect_genome_data_for_a_person_(Person* person,
-                                                               int site) {
+void SQLiteDistrictReporter::collect_genome_data_for_a_person(Person* person,
+                                                              int site) {
   const auto numGenotypes = Model::CONFIG->number_of_parasite_types();
   auto individual = std::vector<int>(numGenotypes, 0);
   // Get the person, press on if they are not infected
@@ -290,7 +289,7 @@ void SQLiteDistrictReporter::collect_genome_data_for_a_person_(Person* person,
   }
 }
 
-void SQLiteDistrictReporter::build_up_genome_data_insert_values_(int monthId) {
+void SQLiteDistrictReporter::build_up_genome_data_insert_values(int monthId) {
   auto numGenotypes = Model::CONFIG->number_of_parasite_types();
   auto numDistricts = SpatialData::get_instance().get_district_count();
 
@@ -329,14 +328,14 @@ void SQLiteDistrictReporter::monthly_report_genome_data(int monthId) {
   auto* index =
       Model::POPULATION->get_person_index<PersonIndexByLocationStateAgeClass>();
 
-  reset_genome_data_structures_(numDistricts, numGenotypes);
+  reset_genome_data_structures(numDistricts, numGenotypes);
 
   // Iterate over all the possible states
   for (auto location = 0; location < index->vPerson().size(); location++) {
-    collect_genome_data_for_location_(location);
+    collect_genome_data_for_location(location);
   }
 
-  build_up_genome_data_insert_values_(monthId);
+  build_up_genome_data_insert_values(monthId);
 
   if (insert_values.empty()) {
     LOG(INFO) << "No genotypes recorded in the simulation at timestep, "
