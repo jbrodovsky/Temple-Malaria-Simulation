@@ -687,6 +687,18 @@ void Population::perform_circulation_for_1_location(
       Person* p = pi->vPerson()[from_location][moving_level][index];
       assert(p->host_state() != Person::DEAD);
 
+      // if that person age is less than 18 then do another random to decide
+      // whether they move or not
+      if (p->age() <= 18) {
+        auto prob =
+            Model::CONFIG->circulation_info()
+                .relative_probability_that_child_travels_compared_to_adult;
+        if (prob < 1.0 && model_->random()->random_flat(0, 1) > prob) {
+          // that child does not move
+          continue;
+        }
+      }
+
       p->today_target_locations()->push_back(target_location);
       today_circulations.push_back(p);
     }

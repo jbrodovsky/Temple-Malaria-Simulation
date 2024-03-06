@@ -350,6 +350,17 @@ void circulation_info::set_value(const YAML::Node &node) {
   value_.length_of_stay_sd = length_of_stay_sd;
   value_.length_of_stay_theta = theta;
   value_.length_of_stay_k = k;
+
+  if (info_node["relative_probability_that_child_travels_compared_to_adult"]) {
+    value_.relative_probability_that_child_travels_compared_to_adult =
+        info_node["relative_probability_that_child_travels_compared_to_adult"]
+            .as<double>();
+  } else {
+    // log warning
+    LOG(INFO) << "Relative probability that child travels compared to adult is "
+                 "not set hin input file, defaulting to 1.0";
+    value_.relative_probability_that_child_travels_compared_to_adult = 1.0;
+  }
 }
 
 void relative_bitting_info::set_value(const YAML::Node &node) {
