@@ -15,6 +15,7 @@
 #include "NestedMFTMultiLocationStrategy.h"
 #include "NestedMFTStrategy.h"
 #include "SFTStrategy.h"
+#include "Strategies/MFTAgeBasedStrategy.h"
 
 StrategyBuilder::StrategyBuilder() = default;
 
@@ -40,6 +41,8 @@ IStrategy* StrategyBuilder::build(const YAML::Node &ns, const int &strategy_id,
             ns, strategy_id, config);
       case IStrategy::DistrictMftStrategy:
         return buildDistrictMftStrategy(ns, strategy_id, config);
+      case IStrategy::MFTAgeBased:
+        return buildMFTAgeBasedStrategy(ns, strategy_id, config);
       default:
         LOG(WARNING) << "Unknown strategy type: "
                      << ns["type"].as<std::string>();
@@ -315,4 +318,28 @@ IStrategy* StrategyBuilder::buildDistrictMftStrategy(const YAML::Node &node,
 
   // Everything looks good, return the strategy
   return strategy;
+}
+
+IStrategy* StrategyBuilder::buildMFTAgeBasedStrategy(const YAML::Node &node,
+                                                     const int &strategyId,
+                                                     Config* config) {
+  auto* result = new MFTAgeBasedStrategy();
+  result->set_id(strategyId);
+  result->set_name(node["name"].as<std::string>());
+  for (std::size_t i = 0; i < node["therapy_ids"].size(); i++) {
+    result->add_therapy(config->therapy_db()[node["therapy_ids"][i].as<int>()]);
+  }
+  add_distributions(node["age_boundaries"], result->age_boundaries);
+
+  if (result->age_boundaries.size() != result->therapy_list.size() - 1) {
+    LOG(ERROR) << "The number of age boundaries should be one less than the "
+                  "number of therapies.";
+    throw std::invalid_argument(
+        "The number of age boundaries should be one less than the number of "
+        "therapies.");
+  }
+
+  result->build_map_age_to_therapy_index();
+
+  return result;
 }

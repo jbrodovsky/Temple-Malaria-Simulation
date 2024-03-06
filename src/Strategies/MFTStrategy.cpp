@@ -22,7 +22,7 @@ void MFTStrategy::add_therapy(Therapy* therapy) {
   therapy_list.push_back(therapy);
 }
 
-Therapy* MFTStrategy::get_therapy(Person* person) {
+Therapy* MFTStrategy::get_therapy(Person* /*person*/) {
   const auto p = Model::RANDOM->random_flat(0.0, 1.0);
 
   double sum = 0;

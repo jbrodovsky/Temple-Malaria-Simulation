@@ -35,6 +35,10 @@ and includes the following updates:
 
 7. SQLiteDistrictReporter and SQLitePixelReporter report clinical episodes by age group (the structure of age group defined in the input file)
 
+8. Introduce `relative_probability_that_child_travels_compared_to_adult`, refer to [Issue #7](https://github.com/bonilab/Temple-Malaria-Simulation/issues/7) for more details.
+
+9. Introduces the MFTAgeBasedStrategy, an efficient mechanism for assigning therapies based on individual ages within the simulation. We've optimized therapy assignment by precomputing a mapping from integer ages to therapy indices, thus eliminating the need for repetitive boundary checks. Refer to [Issue #8](https://github.com/bonilab/Temple-Malaria-Simulation/issues/8) for more details.
+
 #### Usage
 
 To turn on the `TravelTracking` feature, you need to specify the `-DENABLE_TRAVEL_TRACKING=ON` option to `cmake` when building the simulation:

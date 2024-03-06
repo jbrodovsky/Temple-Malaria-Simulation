@@ -55,6 +55,10 @@ public:
   static IStrategy* buildDistrictMftStrategy(const YAML::Node &node,
                                              const int &strategy_id,
                                              Config* config);
+
+  static IStrategy* buildMFTAgeBasedStrategy(const YAML::Node &node,
+                                             const int &strategyId,
+                                             Config* config);
 };
 
 #endif

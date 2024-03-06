@@ -30,7 +30,8 @@ public:
     MFTMultiLocation = 5,
     NestedMFT = 6,
     NestedMFTMultiLocation = 7,
-    DistrictMftStrategy = 8
+    DistrictMftStrategy = 8,
+    MFTAgeBased = 9,
   };
 
   static inline std::map<std::string, IStrategy::StrategyType> StrategyTypeMap{
@@ -40,7 +41,8 @@ public:
       {"NestedMFT", NestedMFT},
       {"MFTMultiLocation", MFTMultiLocation},
       {"NestedMFTMultiLocation", NestedMFTMultiLocation},
-      {"DistrictMFT", DistrictMftStrategy}};
+      {"DistrictMFT", DistrictMftStrategy},
+      {"MFTAgeBased", MFTAgeBased}};
 
   PROPERTY(int, id)
   PROPERTY(std::string, name)
