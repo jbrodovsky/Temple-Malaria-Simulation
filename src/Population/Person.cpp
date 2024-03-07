@@ -147,6 +147,11 @@ void Person::set_host_state(const HostStates &value) {
 
 int Person::age() const { return age_; }
 
+double Person::age_in_floating() const {
+  auto days = Model::SCHEDULER->current_time() - birthday_;
+  return days / Constants::DAYS_IN_YEAR();
+}
+
 void Person::set_age(const int &value) {
   if (age_ != value) {
     // TODO::if age access the limit of age structure i.e. 100, remove person???
@@ -568,8 +573,6 @@ void Person::update() {
   // Update the overall state
   update_current_state();
 
-  // Update biting level only less than 1 to save performance, the other will be
-  // update in birthday event
   update_biting_level();
 
   // Set the current time for bookkeeping
@@ -578,7 +581,6 @@ void Person::update() {
 
 void Person::update_biting_level() {
   if (Model::CONFIG->using_age_dependent_bitting_level()) {
-    // TODO: test here
     const auto new_biting_level_value =
         base_biting_level_value_ * get_age_dependent_biting_factor();
     const auto diff_in_level = static_cast<int>(
@@ -784,19 +786,18 @@ double Person::get_age_dependent_biting_factor() const {
   // + 2.75kg until 20
   // then divide by 61.5
 
-  if (age_ < 1) {
-    const auto age = ((Model::SCHEDULER->current_time() - birthday_)
-                      % Constants::DAYS_IN_YEAR())
-                     / static_cast<double>(Constants::DAYS_IN_YEAR());
+  const auto age = age_in_floating();
+  // std::cout << "age: " << age << std::endl;
+  if (age < 1) {
     if (age < 0.25) return 0.106;
     if (age < 0.5) return 0.13;
     if (age < 0.75) return 0.1463;
     return 0.1545;
   }
-  if (age_ < 2) return 0.1789;
-  if (age_ < 3) return 0.2195;
-  if (age_ < 4) return 0.2520;
-  if (age_ < 20) return (17.5 + (age_ - 4) * 2.75) / 61.5;
+  if (age < 2) return 0.1789;
+  if (age < 3) return 0.2195;
+  if (age < 4) return 0.2520;
+  if (age < 20) return (17.5 + (age - 4) * 2.75) / 61.5;
   return 1.0;
 }
 

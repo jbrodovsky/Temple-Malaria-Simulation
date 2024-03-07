@@ -280,8 +280,8 @@ void Population::generate_individual(int location, int age_class) {
   p->set_age(static_cast<int>(
       Model::RANDOM->random_uniform_int(age_from, age_to + 1)));
 
-  auto days_to_next_birthday = static_cast<int>(
-      Model::RANDOM->random_uniform(Constants::DAYS_IN_YEAR()));
+  auto days_to_next_birthday = static_cast<int>(Model::RANDOM->random_uniform(
+      static_cast<unsigned long>(Constants::DAYS_IN_YEAR())));
   auto simulation_time_birthday = TimeHelpers::get_simulation_time_birthday(
       days_to_next_birthday, p->age(), Model::SCHEDULER->calendar_date);
   p->set_birthday(simulation_time_birthday);
@@ -293,15 +293,15 @@ void Population::generate_individual(int location, int age_class) {
   BirthdayEvent::schedule_event(Model::SCHEDULER, p, days_to_next_birthday);
   RaptEvent::schedule_event(Model::SCHEDULER, p, days_to_next_birthday);
 
-  // set immune component
-  if (simulation_time_birthday + Constants::DAYS_IN_YEAR() / 2 >= 0) {
+  // set immune component at 6 months
+  if ((simulation_time_birthday + Constants::DAYS_IN_YEAR() / 2) >= 0) {
     LOG_IF(p->age() > 0, FATAL)
         << "Error in calculating simulation_time_birthday";
     p->immune_system()->set_immune_component(new InfantImmuneComponent());
     // schedule for switch
     auto time = simulation_time_birthday + Constants::DAYS_IN_YEAR() / 2;
     SwitchImmuneComponentEvent::schedule_for_switch_immune_component_event(
-        Model::SCHEDULER, p, time);
+        Model::SCHEDULER, p, static_cast<int>(time));
   } else {
     p->immune_system()->set_immune_component(new NonInfantImmuneComponent());
   }
@@ -480,14 +480,14 @@ void Population::perform_birth_event() {
       give_1_birth(loc);
       Model::MAIN_DATA_COLLECTOR->record_1_birth(loc);
       Model::MAIN_DATA_COLLECTOR->update_person_days_by_years(
-          loc,
-          Constants::DAYS_IN_YEAR() - Model::SCHEDULER->current_day_in_year());
+          loc, static_cast<int>(Constants::DAYS_IN_YEAR()
+                                - Model::SCHEDULER->current_day_in_year()));
     }
   }
 }
 
 void Population::give_1_birth(const int &location) {
-  auto p = new Person();
+  auto* p = new Person();
   p->init();
   p->set_age(0);
   p->set_host_state(Person::SUSCEPTIBLE);
@@ -523,7 +523,8 @@ void Population::give_1_birth(const int &location) {
   // schedule for switch
   SwitchImmuneComponentEvent::schedule_for_switch_immune_component_event(
       Model::SCHEDULER, p,
-      Model::SCHEDULER->current_time() + Constants::DAYS_IN_YEAR() / 2);
+      Model::SCHEDULER->current_time()
+          + static_cast<int>(Constants::DAYS_IN_YEAR() / 2));
 
   p->schedule_update_every_K_days_event(Model::CONFIG->update_frequency());
   p->generate_prob_present_at_mda_by_age();

@@ -13,7 +13,7 @@ public:                                                           \
   }
 
 class Constants {
-  MY_CONSTANT(int, DAYS_IN_YEAR, 365)
+  MY_CONSTANT(double, DAYS_IN_YEAR, 365.25)
 
   //  static std::chrono::hours const &ONE_DAY() {
   //    static std::chrono::hours one_day_{24};

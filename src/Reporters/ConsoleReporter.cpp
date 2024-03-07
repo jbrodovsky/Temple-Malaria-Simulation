@@ -53,7 +53,7 @@ void ConsoleReporter::after_run() {
   // total time
   double total_time_in_years = (Model::SCHEDULER->current_time()
                                 - Model::CONFIG->start_collect_data_day())
-                               / (double)Constants::DAYS_IN_YEAR();
+                               / Constants::DAYS_IN_YEAR();
   std::cout << "Total time (from equilibrium) : " << total_time_in_years
             << " years" << std::endl;
 

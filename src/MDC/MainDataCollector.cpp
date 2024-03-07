@@ -362,7 +362,7 @@ void MainDataCollector::calculate_eir() {
       const auto total_time_in_years =
           (Model::SCHEDULER->current_time()
            - Model::CONFIG->start_collect_data_day())
-          / static_cast<double>(Constants::DAYS_IN_YEAR());
+          / Constants::DAYS_IN_YEAR();
       auto eir =
           (person_days_by_location_year_[loc] == 0)
               ? 0

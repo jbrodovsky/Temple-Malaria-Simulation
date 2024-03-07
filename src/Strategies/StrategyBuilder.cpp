@@ -339,7 +339,5 @@ IStrategy* StrategyBuilder::buildMFTAgeBasedStrategy(const YAML::Node &node,
         "therapies.");
   }
 
-  result->build_map_age_to_therapy_index();
-
   return result;
 }

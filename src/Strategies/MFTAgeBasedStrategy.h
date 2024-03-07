@@ -28,7 +28,10 @@ public:
 
   void monthly_update() override{};
 
-  void build_map_age_to_therapy_index();
+  [[nodiscard]] size_t find_age_range_index(double age) const;
+
+  static size_t find_age_range_index(const std::vector<double> &ageBoundaries,
+                                     double age);
 };
 
 #endif  // STRATEGIES_MFTAGEBASED_H

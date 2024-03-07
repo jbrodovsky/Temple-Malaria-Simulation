@@ -358,7 +358,7 @@ void circulation_info::set_value(const YAML::Node &node) {
   } else {
     // log warning
     LOG(INFO) << "Relative probability that child travels compared to adult is "
-                 "not set hin input file, defaulting to 1.0";
+                 "not set in input file, defaulting to 1.0";
     value_.relative_probability_that_child_travels_compared_to_adult = 1.0;
   }
 }

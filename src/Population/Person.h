@@ -281,6 +281,8 @@ public:
   bool has_effective_drug_in_blood() const;
 
   void receive_therapy(SCTherapy* sc_therapy, bool is_mac_therapy);
+
+  [[nodiscard]] double age_in_floating() const;
 };
 
 #endif
