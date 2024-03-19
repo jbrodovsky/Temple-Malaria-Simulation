@@ -84,6 +84,9 @@ public:
 
   static std::vector<Event*> build_rotate_treatment_strategy_event(
       const YAML::Node &node, Config* config);
+
+  static std::vector<Event*> build_import_district_mutant_daily_events(
+      const YAML::Node &node, Config* config);
 };
 
 #endif

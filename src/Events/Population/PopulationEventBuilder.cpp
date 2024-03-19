@@ -17,6 +17,7 @@
 #include "ChangeStrategyEvent.h"
 #include "ChangeTreatmentCoverageEvent.h"
 #include "Core/Config/Config.h"
+#include "DistrictImportationDailyEvent.h"
 #include "ImportationEvent.h"
 #include "ImportationPeriodicallyEvent.h"
 #include "ImportationPeriodicallyRandomEvent.h"
@@ -561,6 +562,28 @@ std::vector<Event*> PopulationEventBuilder::build_update_beta_raster_event(
   }
 }
 
+std::vector<Event*>
+PopulationEventBuilder::build_import_district_mutant_daily_events(
+    const YAML::Node &node, Config* config) {
+  std::vector<Event*> events;
+  for (const auto &entry : node) {
+    auto district = entry["district"].as<int>();
+    auto locus = entry["locus"].as<int>();
+    auto mutant_allele = entry["mutant_allele"].as<int>();
+    auto daily_rate = entry["daily_rate"].as<double>();
+
+    auto start_date = entry["start_date"].as<date::year_month_day>();
+    auto start_day =
+        (date::sys_days{start_date} - date::sys_days{config->starting_date()})
+            .count();
+    auto* event = new DistrictImportationDailyEvent(
+        district, locus, mutant_allele, daily_rate, start_day);
+    event->dispatcher = nullptr;
+    events.push_back(event);
+  }
+  return events;
+}
+
 std::vector<Event*> PopulationEventBuilder::build(const YAML::Node &node,
                                                   Config* config) {
   std::vector<Event*> events;
@@ -630,6 +653,9 @@ std::vector<Event*> PopulationEventBuilder::build(const YAML::Node &node,
   }
   if (name == RotateStrategyEvent::EventName) {
     events = build_rotate_treatment_strategy_event(node["info"], config);
+  }
+  if (name == DistrictImportationDailyEvent::EventName) {
+    events = build_import_district_mutant_daily_events(node["info"], config);
   }
 
   return events;
