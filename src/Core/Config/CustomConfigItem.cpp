@@ -361,6 +361,16 @@ void circulation_info::set_value(const YAML::Node &node) {
                  "not set in input file, defaulting to 1.0";
     value_.relative_probability_that_child_travels_compared_to_adult = 1.0;
   }
+  if (info_node["relative_probability_for_clinical_to_travel"]) {
+    value_.relative_probability_for_clinical_to_travel =
+        info_node["relative_probability_that_child_travels_compared_to_adult"]
+            .as<double>();
+  } else {
+    // log warning
+    LOG(INFO) << "Relative probability for a clinical case to travel is "
+                 "not set in input file, defaulting to 1.0";
+    value_.relative_probability_for_clinical_to_travel = 1.0;
+  }
 }
 
 void relative_bitting_info::set_value(const YAML::Node &node) {

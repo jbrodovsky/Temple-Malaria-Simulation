@@ -170,6 +170,7 @@ struct RelativeMovingInformation {
   double length_of_stay_theta;
   double length_of_stay_k;
   double relative_probability_that_child_travels_compared_to_adult{1.0};
+  double relative_probability_for_clinical_to_travel{1.0};
 };
 
 struct InitialParasiteInfo {

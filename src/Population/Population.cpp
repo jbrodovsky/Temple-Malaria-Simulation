@@ -688,6 +688,15 @@ void Population::perform_circulation_for_1_location(
       Person* p = pi->vPerson()[from_location][moving_level][index];
       assert(p->host_state() != Person::DEAD);
 
+      if (p->host_state() == Person::CLINICAL) {
+        auto prob = Model::CONFIG->circulation_info()
+                        .relative_probability_for_clinical_to_travel;
+        if (prob < 1.0 && model_->random()->random_flat(0, 1) > prob) {
+          // that person does not move due to having clinical symptoms
+          continue;
+        }
+      }
+
       // if that person age is less than 18 then do another random to decide
       // whether they move or not
       if (p->age() <= 18) {
