@@ -45,8 +45,12 @@ void DistrictImportationDailyEvent::execute() {
   // performance
   auto district_lookup = SpatialData::get_instance().district_lookup();
   std::vector<int> locations;
+
+  // the input district is 1-based, but the district_lookup is 0-based
+  const auto actual_district =
+      district_ - SpatialData::get_instance().get_first_district();
   for (auto i = 0; i < district_lookup.size(); i++) {
-    if (district_lookup[i] == district_) { locations.push_back(i); }
+    if (district_lookup[i] == actual_district) { locations.push_back(i); }
   }
 
   auto* pi =
