@@ -65,10 +65,10 @@ void SeasonalRainfall::read(std::string &filename) {
   // Read and store the data
   double data = 0.0;
   while (in >> data) {
-    if (data > 1.0) {
-      throw std::runtime_error(
-          fmt::format("Rain fall factor exceeded 1.0: {0}", data));
-    }
+    // if (data > 1.0) {
+    //   throw std::runtime_error(
+    //       fmt::format("Rain fall factor exceeded 1.0: {0}", data));
+    // }
     if (data < 0.0) {
       throw std::runtime_error(
           fmt::format("Rain fall factor less than zero: {0}", data));
