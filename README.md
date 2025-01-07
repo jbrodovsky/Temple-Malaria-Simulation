@@ -12,7 +12,7 @@ A comprehensive [technical manual](manual/manual.pdf) (PDF) for the simulation c
 
 The simulation has been tested to run on Windows 10, Windows Subsystem for Linux (Ubuntu), and Red Hat 7.9. The majority of development is performed on under Linux so building and running under Windows may be impacted.  While basic simulations are possible on desktop computing environments, regional and national scale simulations require advanced computing environments with access to 64 GB of RAM or more. Sample configuration files can be found under [documentation/input/](documentation/input), and examination of `simple.yml` or `spatial.yml` is recommended after working with the demonstration configuration in [documentation/demo/](documentation/demo/).
 
-After cloning the repository to your local computer, the `config.sh` script can be run via `sudo` to install dependencies for building and creation of the build script at `build\build.sh`.
+After cloning the repository to your local computer, the [`config.sh`](https://github.com/rjzupkoii/PSU-CIDD-Malaria-Simulation/blob/4.x.main/config.sh) script can be run via `sudo` to install dependencies for building and creation of the build script at `build\build.sh`.
 
 ## Command Line Arguments
 
