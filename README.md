@@ -1,4 +1,4 @@
-# PSU-CIDD-Malaria-Simulation
+# Temple University - Boni Lab - Spatial Malaria Simulation
 
 [Temple University](https://www.temple.edu/) - [Boni Lab](http://mol.ax/)
 
