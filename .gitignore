@@ -34,3 +34,6 @@ reporter\.txt
 
 # Ignore log files
 *.log
+
+# Ignore VCPKG dependencies
+vcpkg_installed

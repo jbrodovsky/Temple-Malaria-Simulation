@@ -34,9 +34,6 @@
 	*/
 	"workspaceMount": "source=${localWorkspaceFolder},target=/home/${localWorkspaceFolderBasename},type=bind",
 	"workspaceFolder": "/home/${localWorkspaceFolderBasename}",
-	"build" : {
-		"dockerfile": "Dockerfile"
-	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -51,9 +48,13 @@
 				"redhat.vscode-yaml"
 			],
 			"settings": {
-				"terminal.integrated.defaultProfile.linux": "bash"
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"cmake.configureOnOpen": true
 			}
 		}
-	}
-	
+	},
+	"build" : {
+		"dockerfile": "Dockerfile"
+	}//,
+	//"postCreateCommand": "mkdir -p build && cmake -B build   && make -j4"    
 }

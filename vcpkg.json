@@ -1,0 +1,16 @@
+{
+    "name": "masim",
+    "dependencies": [
+        "args",
+        "catch",
+        "cli11",
+        "date",
+        "easyloggingpp",
+        "fmt",
+        "gsl",
+        "gtest",
+        "libpqxx",
+        "sqlite3",
+        "yaml-cpp"
+    ]
+}
