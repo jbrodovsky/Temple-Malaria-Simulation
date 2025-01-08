@@ -12,7 +12,22 @@ A comprehensive [technical manual](manual/manual.pdf) (PDF) for the simulation c
 
 The simulation has been tested to run on Windows 10, Windows Subsystem for Linux (Ubuntu), and Red Hat 7.9. The majority of development is performed on under Linux so building and running under Windows may be impacted.  While basic simulations are possible on desktop computing environments, regional and national scale simulations require advanced computing environments with access to 64 GB of RAM or more. Sample configuration files can be found under [documentation/input/](documentation/input), and examination of `simple.yml` or `spatial.yml` is recommended after working with the demonstration configuration in [documentation/demo/](documentation/demo/).
 
-After cloning the repository to your local computer, the [`config.sh`](https://github.com/rjzupkoii/PSU-CIDD-Malaria-Simulation/blob/4.x.main/config.sh) script can be run via `sudo` to install dependencies for building and creation of the build script at `build\build.sh`.
+## Installation
+
+The simulation is semi-portable and is currently run in a Linux environment using a [Development Container](https://containers.dev/) for two reasons. First, there are some system-level dependancies (ex: `cmake` and `flex`) that some users might not use from project to project as compared to a dependency like `git`. Second, the simulation is written in C++ and uses `vcpkg` for package management. `vcpkg` additionally has some system-level dependencies that are not always present on a system and users may not want to install them globally.
+
+The recommended way of building and running the simulation is through Visual Studio Code's [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension. This extension allows for the development of the simulation in a containerized environment that is consistent across all developers. The `Dockerfile` and `devcontainer.json` files are included in the repository for this purpose. This setup requires that [Docker](https://www.docker.com/) be installed on the host machine. The simplest method is to download and install Docker Desktop.
+
+With those prerequisites met, the following steps can be taken to build and run the simulation:
+
+1. Ensure that Docker Desktop is running on the host machine.
+2. Clone the repository to the host machine.
+3. Open the repository in Visual Studio Code.
+4. Open the Command Palette (Ctrl+Shift+P) and select "Dev Containers: Reopen in Container".
+
+After this the Docker will pull the image and build the container and then subsequently the simulation will be built.
+
+If you are not using Visual Studio Code, the Dockerfile can still be used to build the container. To build the simulation once inside the running container, please use the script `scripts/build.sh`.
 
 ## Command Line Arguments
 

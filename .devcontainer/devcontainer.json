@@ -1,37 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-	"name": "Temple-Malaria-Simulation",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	// "image": "mcr.microsoft.com/devcontainers/base:noble",
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "uname -a",
-
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	//"remoteUser": "malsim", // default username is 'ubuntu', build doesn't work without connecting as root
-	/*
-	=======================================================================================================
-	NOTE:
-	Ok so I've tried simply using ubuntu as the remoteUser and others. It seems like I would then need to 
-	modify the Dockerfile to create a user with the same name as the remoteUser. While it is generally inadvisable
-	to run development containers as root (something about malicious code in the container and the root on the 
-	container potentially getting root access on the host), I think it is fine for this project as this is just
-	research code and we shouldn't be accepting pull requests from people we don't know.
-
-	For now, I will just leave remoteUser commented out and connect to the container as root. The working
-	directory will be configured as follows below.
-	=======================================================================================================
-	*/
+	"name": "Spatial-Malaria-Simulation",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/home/${localWorkspaceFolderBasename},type=bind",
 	"workspaceFolder": "/home/${localWorkspaceFolderBasename}",
 	"customizations": {
@@ -55,6 +25,6 @@
 	},
 	"build" : {
 		"dockerfile": "Dockerfile"
-	}//,
-	//"postCreateCommand": "mkdir -p build && cmake -B build   && make -j4"    
+	},
+	"postCreateCommand": "mkdir -p build && cd build && cmake -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake .. && CORES=$(nproc) && make -j$CORES && cd .."
 }
