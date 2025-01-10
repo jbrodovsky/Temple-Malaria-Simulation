@@ -15,7 +15,8 @@
 				"ms-vscode.cpptools",
 				"ms-vscode.cmake-tools",
 				"twxs.cmake",
-				"redhat.vscode-yaml"
+				"redhat.vscode-yaml",
+				"mechatroner.rainbow-csv"
 			],
 			"settings": {
 				"terminal.integrated.defaultProfile.linux": "bash",
@@ -26,5 +27,5 @@
 	"build" : {
 		"dockerfile": "Dockerfile"
 	},
-	"postCreateCommand": "mkdir -p build && cd build && cmake -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake .. && CORES=$(nproc) && make -j$CORES && cd .. && PATH='./build/bin/:${PATH}'"
+	"postCreateCommand": "mkdir -p build && cd build && cmake -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake .. && CORES=$(nproc) && make -j$CORES && cd ./bin"
 }

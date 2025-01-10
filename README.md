@@ -29,6 +29,16 @@ After this the Docker will pull the image and build the container and then subse
 
 If you are not using Visual Studio Code, the Dockerfile can still be used to build the container. To build the simulation once inside the running container, please use the script `scripts/build.sh`.
 
+## Operation
+
+The executable is configured to read everything from a relative path to where the binary is located. The current operatting practice is to navigate to the `build/bin` directory and run the simulation from there. Data files (`.asc`, `input.yml`, `.csv`, etc.) should be placed in the same directory as the binary or in a subdirectory. The simulation will create output files in the same directory as the binary. In the `input.yml` file, file paths to `.asc` files should be relative to the location of the binary.
+
+An example call looks like this:
+
+```bash
+./MaSim -i input.yml -r SQLiteDistrictReporter -o ./output
+```
+
 ## Command Line Arguments
 
 The following commands are available from the simulation:
