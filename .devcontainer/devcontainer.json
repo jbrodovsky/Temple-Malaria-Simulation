@@ -26,5 +26,5 @@
 	"build" : {
 		"dockerfile": "Dockerfile"
 	},
-	"postCreateCommand": "mkdir -p build && cd build && cmake -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake .. && CORES=$(nproc) && make -j$CORES && cd .."
+	"postCreateCommand": "mkdir -p build && cd build && cmake -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake .. && CORES=$(nproc) && make -j$CORES && cd .. && PATH='./build/bin/:${PATH}'"
 }
