@@ -2,6 +2,8 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
 	"name": "Spatial-Malaria-Simulation",
+	"image": "temple-malaria-simulation",
+	//"containerName": "MaSim",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/home/${localWorkspaceFolderBasename},type=bind",
 	"workspaceFolder": "/home/${localWorkspaceFolderBasename}",
 	"customizations": {
@@ -24,6 +26,7 @@
 			}
 		}
 	},
+	"runArgs": ["--name", "MaSim"],
 	"build" : {
 		"dockerfile": "Dockerfile"
 	},

@@ -21,14 +21,12 @@ RUN apt-get install -y \
     pkg-config \
     unzip \
     zip
-    
 # Install vcpgk
 RUN git clone https://github.com/microsoft/vcpkg.git /usr/local/vcpkg
 # Bootstrap vcpkg
 RUN /usr/local/vcpkg/bootstrap-vcpkg.sh
 # Add vcpkg to PATH
 ENV PATH="/usr/local/vcpkg:${PATH}"
-
 # Set environment variables for vcpkg integration
 ENV VCPKG_ROOT=/usr/local/vcpkg
 ENV CMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake
