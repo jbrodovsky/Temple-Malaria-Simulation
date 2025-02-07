@@ -11,6 +11,8 @@
         "gtest",
         "libpqxx",
         "sqlite3",
-        "yaml-cpp"
+        "yaml-cpp",
+        "lz4",
+        "openssl"
     ]
 }
