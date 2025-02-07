@@ -21,7 +21,7 @@ export CXXFLAGS="-std=c++11"
 export CFLAGS="-DOPENSSL_NO_ASM" 
 export CXXFLAGS="-DOPENSSL_NO_ASM" 
 ./vcpkg install openssl 
-./vcpkg install gsl yaml-cpp fmt date args CLI11 gtest catch easyloggingpp sqlite3 libpqxx
+# ./vcpkg install gsl yaml-cpp fmt date args CLI11 gtest catch easyloggingpp sqlite3 libpqxx
 # Build the project
 mkdir -p build 
 cd build 
